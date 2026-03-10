@@ -3,13 +3,17 @@
    ========================================================================== */
 :root {
     /* Paleta de Colores (Estilo Premium/Pastelería) */
-    --color-primary: #8C5535; /* Chocolate oscuro/Tierra */
+    --color-primary: #8C5535;
+    /* Chocolate oscuro/Tierra */
     --color-primary-light: #A66A44;
-    --color-secondary: #D9A05B; /* Dorado suave/Galleta */
-    --color-accent: #E85D75; /* Fresa brillante/Acento */
+    --color-secondary: #D9A05B;
+    /* Dorado suave/Galleta */
+    --color-accent: #E85D75;
+    /* Fresa brillante/Acento */
     --color-text: #333333;
     --color-text-light: #666666;
-    --color-bg: #FCFAFA; /* Crema muy claro */
+    --color-bg: #FCFAFA;
+    /* Crema muy claro */
     --color-white: #FFFFFF;
     --color-border: #E5E5E5;
 
@@ -45,7 +49,12 @@ body {
     overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: var(--font-heading);
     color: var(--color-primary);
     font-weight: 600;
@@ -247,12 +256,22 @@ img {
 .hero {
     height: 80vh;
     min-height: 600px;
-    background-image: url('../img/hero-bg.png'); /* Placeholder */
-    background-size: cover;
-    background-position: center;
+    background-color: var(--color-primary);
+    /* Fallback */
     position: relative;
     display: flex;
     align-items: center;
+    overflow: hidden;
+}
+
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
 }
 
 .hero-overlay {
@@ -261,7 +280,8 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: 1;
 }
 
 .hero-content {
@@ -276,7 +296,7 @@ img {
     line-height: 1.2;
     margin-bottom: 1.5rem;
     color: var(--color-white);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero-subtitle {
@@ -388,7 +408,8 @@ img {
    Sección Sobre Nosotros
    ========================================================================== */
 .bg-light {
-    background-color: #f9f6f0; /* Tono muy suave tierra/crema */
+    background-color: #f9f6f0;
+    /* Tono muy suave tierra/crema */
 }
 
 .about-container {
@@ -493,7 +514,7 @@ img {
 .social-links a {
     width: 35px;
     height: 35px;
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -517,7 +538,7 @@ img {
 .footer-bottom {
     text-align: center;
     padding-top: 2rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     opacity: 0.7;
     font-size: 0.9rem;
 }
@@ -529,9 +550,11 @@ img {
     .about-container {
         grid-template-columns: 1fr;
     }
+
     .about-image {
         order: 2;
     }
+
     .about-text {
         order: 1;
     }
@@ -539,7 +562,8 @@ img {
 
 @media (max-width: 768px) {
     .nav-links {
-        display: none; /* Oculto por defecto en móvil, JS lo mostrará */
+        display: none;
+        /* Oculto por defecto en móvil, JS lo mostrará */
         position: absolute;
         top: 100%;
         left: 0;
@@ -547,7 +571,7 @@ img {
         background-color: var(--color-white);
         flex-direction: column;
         padding: 1rem 0;
-        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         text-align: center;
     }
 
@@ -562,16 +586,21 @@ img {
     .hero-title {
         font-size: 2.5rem;
     }
-    
+
     .hero-buttons {
         flex-direction: column;
     }
-    
+
     .section-title {
         font-size: 2rem;
     }
 }
 
 /* Utilities */
-.text-center { text-align: center; }
-.mt-4 { margin-top: 2rem; }
+.text-center {
+    text-align: center;
+}
+
+.mt-4 {
+    margin-top: 2rem;
+}
