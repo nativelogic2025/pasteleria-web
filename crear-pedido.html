@@ -164,11 +164,14 @@
 
                     <h3 class="form-section-title">1. Datos de Entrega</h3>
                     <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label class="radio-card" style="display: inline-block; padding: 0.5rem 1rem; margin-right: 1rem;">
-                            <input type="checkbox" id="envioDomicilioCheckbox" style="display: inline-block; margin-right: 0.5rem; transform: scale(1.2);">
+                        <label class="radio-card"
+                            style="display: inline-block; padding: 0.5rem 1rem; margin-right: 1rem;">
+                            <input type="checkbox" id="envioDomicilioCheckbox"
+                                style="display: inline-block; margin-right: 0.5rem; transform: scale(1.2);">
                             Quiero Envío a Domicilio ($50 MXN)
                         </label>
-                        <span style="color: var(--color-text-light); font-size: 0.9rem;">(Si no lo marcas, recogerás en sucursal)</span>
+                        <span style="color: var(--color-text-light); font-size: 0.9rem;">(Si no lo marcas, recogerás en
+                            sucursal)</span>
                     </div>
 
                     <div class="grid-2">
@@ -351,7 +354,7 @@
         const domicilioGroup = document.getElementById('domicilioGroup');
         const domicilioInput = document.getElementById('domicilio');
 
-        envioCheckbox.addEventListener('change', function() {
+        envioCheckbox.addEventListener('change', function () {
             if (this.checked) {
                 domicilioGroup.classList.remove('hidden');
                 domicilioInput.required = true;
@@ -369,9 +372,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 dbProductos = await fetchProductos();
-                
+
                 selectProducto.innerHTML = '<option value="" disabled selected>-- Selecciona un producto --</option>';
-                
+
                 if (dbProductos && dbProductos.length > 0) {
                     dbProductos.forEach(prod => {
                         const option = document.createElement('option');
@@ -431,8 +434,8 @@
             if (producto && producto.producto_variantes) {
                 producto.producto_variantes.forEach(v => {
                     const el = document.createElement('option');
-                    el.value = v.id_variante; 
-                    
+                    el.value = v.id_variante;
+
                     let texto = `${v.tamaño}`;
                     if (v.porciones) texto += ` (${v.porciones} personas)`;
                     texto += ` - $${v.precio_venta} MXN`;
@@ -444,7 +447,7 @@
                         }
                     }
                     el.textContent = texto;
-                    
+
                     el.dataset.precio = v.precio_venta;
                     selectTamano.appendChild(el);
                 });
@@ -526,17 +529,19 @@
 
                 const itemData = {
                     id_carrito: idCarrito,
-                    id_producto: parseInt(selectProducto.value),
                     id_variante: parseInt(selectTamano.value),
-                    cantidad: 1, 
+                    cantidad: 1,
                     precio_unitario: precioBase,
-                    sabor: orderData.sabor,
-                    dedicatoria: orderData.dedicatoria,
+                    fecha: orderData.fecha || null,
+                    hora: orderData.hora || null,
+                    domicilio: orderData.domicilio || null,
+                    sabor: orderData.sabor || null,
+                    dedicatoria: orderData.dedicatoria || null,
                     observaciones: JSON.stringify(orderData)
                 };
 
                 const res = await agregarItemCarrito(itemData);
-                
+
                 if (res) {
                     // Update button temporarily to show success
                     btnSubmit.innerHTML = '<i class="fas fa-check"></i> ¡Agregado!';

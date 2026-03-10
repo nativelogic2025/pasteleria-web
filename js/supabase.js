@@ -1,7 +1,7 @@
 /**
  * Supabase Config & REST API Wrapper
  */
-const SUPABASE_URL = 'https://wvogrcteltoljtjvneyv.supabase.co//rest/v1';
+const SUPABASE_URL = 'https://wvogrcteltoljtjvneyv.supabase.co/rest/v1';
 const SUPABASE_KEY = 'sb_publishable_jTuZRwRohap9wJcfeJovlg_nzM2u-z-';
 
 const HEADERS = {
@@ -157,34 +157,45 @@ async function buscarPedidoPorFolio(folio) {
  * --- SHOPPING CART FUNCTIONS ---
  */
 
-async function obtenerOCrearCarrito(idCliente = null) {
-    let idCarrito = localStorage.getItem('carritoActivo');
+async function obtenerOCrearCarrito(idCliente) {
 
-    // If local storage has a cart ID, try to get it
-    if (idCarrito) {
-        try {
-            const res = await fetch(`${SUPABASE_URL}/carrito?id_carrito=eq.${idCarrito}&estado=eq.activo`, { headers: HEADERS });
-            const data = await res.json();
-            if (data && data.length > 0) return data[0].id_carrito;
-        } catch (e) { console.error(e); }
-    }
-
-    // Otherwise, create a new one
+    if (!idCliente) return null; // Requiere estar logueado como acordamos
+    
+    // Buscar carrito activo del usuario
     try {
-        const insertData = { estado: 'activo' };
-        if (idCliente) insertData.id_cliente = idCliente;
-
-        const res = await fetch(`${SUPABASE_URL}/carrito`, {
-            method: 'POST',
-            headers: HEADERS,
-            body: JSON.stringify(insertData)
+        const res = await fetch(`${SUPABASE_URL}/carrito?id_cliente=eq.${idCliente}&activo=eq.true&select=id`, {
+            headers: HEADERS
         });
         const data = await res.json();
+    
         if (data && data.length > 0) {
-            localStorage.setItem('carritoActivo', data[0].id_carrito);
-            return data[0].id_carrito;
+            localStorage.setItem('carritoActivo', data[0].id);
+            return data[0].id;
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error("Error al buscar carrito:", e);
+    }
+    
+    // Si no tiene carrito activo, crear uno nuevo
+    try {
+        const crear = await fetch(`${SUPABASE_URL}/carrito`, {
+            method: "POST",
+            headers: { ...HEADERS, "Prefer": "return=representation" },
+            body: JSON.stringify({
+                id_cliente: parseInt(idCliente),
+                activo: true
+            })
+        });
+    
+        const nuevo = await crear.json();
+    
+        if (nuevo && nuevo.length > 0) {
+            localStorage.setItem('carritoActivo', nuevo[0].id);
+            return nuevo[0].id;
+        }
+    } catch (e) {
+        console.error("Error al crear la tabla carrito:", e);
+    }
 
     return null;
 }
@@ -207,7 +218,7 @@ async function obtenerItemsCarrito(idCarrito) {
     try {
         // Fetch cart details along with related product and variant info horizontally if possible
         // But since REST relations can be tricky, we just fetch detalle first
-        const res = await fetch(`${SUPABASE_URL}/carrito_detalle?id_carrito=eq.${idCarrito}&select=*,productos(*),producto_variantes(*)`, {
+        const res = await fetch(`${SUPABASE_URL}/carrito_detalle?id_carrito=eq.${idCarrito}&select=*,producto_variantes(*,productos(*))`, {
             headers: HEADERS
         });
         const items = await res.json();
@@ -215,8 +226,11 @@ async function obtenerItemsCarrito(idCarrito) {
         // Add full URL to image_url for cart items
         const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/productos/`;
         return items.map(item => {
-            if (item.productos && item.productos.imagen_url && !item.productos.imagen_url.startsWith('http')) {
-                item.productos.imagen_url = STORAGE_BASE + item.productos.imagen_url;
+            if (item.producto_variantes && item.producto_variantes.productos) {
+                const prod = item.producto_variantes.productos;
+                if (prod.imagen_url && !prod.imagen_url.startsWith('http')) {
+                    prod.imagen_url = STORAGE_BASE + prod.imagen_url;
+                }
             }
             return item;
         });
@@ -228,7 +242,7 @@ async function obtenerItemsCarrito(idCarrito) {
 
 async function eliminarItemCarrito(idDetalle) {
     try {
-        const res = await fetch(`${SUPABASE_URL}/carrito_detalle?id_carrito_detalle=eq.${idDetalle}`, {
+        const res = await fetch(`${SUPABASE_URL}/carrito_detalle?id=eq.${idDetalle}`, {
             method: 'DELETE',
             headers: HEADERS
         });
@@ -254,10 +268,10 @@ async function vaciarCarrito(idCarrito) {
 
 async function completarCarrito(idCarrito) {
     try {
-        const res = await fetch(`${SUPABASE_URL}/carrito?id_carrito=eq.${idCarrito}`, {
+        const res = await fetch(`${SUPABASE_URL}/carrito?id=eq.${idCarrito}`, {
             method: 'PATCH',
             headers: HEADERS,
-            body: JSON.stringify({ estado: 'completado' })
+            body: JSON.stringify({ activo: false })
         });
         if (res.ok) {
             localStorage.removeItem('carritoActivo');

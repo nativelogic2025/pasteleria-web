@@ -179,16 +179,33 @@
                 `;
 
                 items.forEach(item => {
-                    const productoInfo = item.productos || {};
                     const varianteInfo = item.producto_variantes || {};
-                    const obsInfo = item.observaciones ? JSON.parse(item.observaciones) : null;
+                    const productoInfo = varianteInfo.productos || {};
                     
                     const itemTotal = parseFloat(item.cantidad) * parseFloat(item.precio_unitario);
                     subtotal += itemTotal;
 
-                    const extraDetails = obsInfo ? 
-                        `Sabor: ${obsInfo.sabor || 'N/A'}<br>Diseño: ${obsInfo.armado || ''} ${obsInfo.pisos || ''} ${obsInfo.diseno || ''}<br>Para: ${obsInfo.fecha || ''} a las ${obsInfo.hora || ''}` 
-                        : '';
+                    let extraHtml = [];
+                    if(item.sabor) extraHtml.push(`<strong>Sabor:</strong> ${item.sabor}`);
+                    if(item.dedicatoria) extraHtml.push(`<strong>Dedicatoria:</strong> ${item.dedicatoria}`);
+                    
+                    if(item.observaciones) {
+                        try {
+                            const obs = JSON.parse(item.observaciones);
+                            let detallesExtras = [];
+                            if(obs.armado) detallesExtras.push(obs.armado);
+                            if(obs.pisos) detallesExtras.push(`Pisos: ${obs.pisos}`);
+                            if(obs.diseno) detallesExtras.push(`Diseño: ${obs.diseno}`);
+                            if(obs.descripcion) detallesExtras.push(`Notas: ${obs.descripcion}`);
+                            if(detallesExtras.length > 0) extraHtml.push(`<strong>Extras:</strong> ${detallesExtras.join(', ')}`);
+                        } catch(e) {
+                            extraHtml.push(`<strong>Extras:</strong> ${item.observaciones}`);
+                        }
+                    }
+                    if(item.fecha) extraHtml.push(`Para: ${item.fecha} a las ${item.hora || ''}`);
+                    if(item.domicilio) extraHtml.push(`Entrega en: ${item.domicilio}`);
+
+                    const extraDetails = extraHtml.join('<br>');
 
                     cartHTML += `
                         <div class="cart-item">
@@ -207,7 +224,7 @@
                                 $${itemTotal.toFixed(2)}
                             </div>
                             <div style="grid-column: 1 / -1; margin-top: 10px;">
-                                <button onclick="eliminarDelCarrito(${item.id_carrito_detalle})" class="btn-icon" style="color:#e74c3c; border:none; background:none; cursor:pointer;" title="Eliminar"><i class="fas fa-trash-alt"></i> Quitar</button>
+                                <button onclick="eliminarDelCarrito(${item.id || item.id_carrito_detalle})" class="btn-icon" style="color:#e74c3c; border:none; background:none; cursor:pointer;" title="Eliminar"><i class="fas fa-trash-alt"></i> Quitar</button>
                             </div>
                         </div>
                     `;
@@ -216,9 +233,7 @@
                 // Assume $50 mxn for shipping if the user has requested home delivery in their items
                 // This is a simplified approach. Usually shipping is calculated at checkout.
                 const hasDeliveryInfo = items.some(item => {
-                    if(!item.observaciones) return false;
-                    const o = JSON.parse(item.observaciones);
-                    return o.domicilio && o.domicilio.length > 5; // Simplified heuristic
+                    return item.domicilio && item.domicilio.length > 5;
                 });
 
                 const flete = hasDeliveryInfo ? 50 : 0;

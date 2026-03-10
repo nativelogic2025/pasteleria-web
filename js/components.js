@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     badge.innerHTML = '<span style="width:10px;height:10px;border-radius:50%;background-color:#9CA3AF; display:inline-block;" id="db-status-dot"></span> <span id="db-status-text">Conectando BD...</span>';
     document.body.appendChild(badge);
 
-    const checkUrl = 'https://wvogrcteltojtjvneyv.supabase.co/rest/v1/categorias?select=id_categoria&limit=1';
+    const checkUrl = 'https://wvogrcteltoljtjvneyv.supabase.co/rest/v1/categorias?select=id_categoria&limit=1';
     const checkHeaders = {
         'apikey': 'sb_publishable_jTuZRwRohap9wJcfeJovlg_nzM2u-z-',
         'Authorization': 'Bearer sb_publishable_jTuZRwRohap9wJcfeJovlg_nzM2u-z-',
