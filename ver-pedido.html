@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Pedido | Pastelería La Estrella</title>
+    <meta name="description" content="Rastrea el estado de tu pedido.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--color-white);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            border: 2px solid var(--color-border);
+            border-radius: 30px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-family: var(--font-body);
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .timeline {
+            display: none;
+            margin-top: 4rem;
+            background: var(--color-white);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .timeline.active {
+            display: block;
+        }
+
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .status-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .status-steps::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 10%;
+            width: 80%;
+            height: 4px;
+            background-color: var(--color-border);
+            z-index: 1;
+        }
+
+        .status-steps::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 10%;
+            width: 25%;
+            /* Simulated Progress */
+            height: 4px;
+            background-color: var(--color-primary);
+            z-index: 2;
+            transition: width 1s ease;
+        }
+
+        .step {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            width: 80px;
+        }
+
+        .step-icon {
+            width: 54px;
+            height: 54px;
+            background-color: var(--color-white);
+            border: 4px solid var(--color-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 1.2rem;
+            color: var(--color-text-light);
+            transition: var(--transition);
+        }
+
+        .step.done .step-icon,
+        .step.active .step-icon {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .step.active .step-icon {
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 0 0 5px rgba(140, 85, 53, 0.2);
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+
+        .step.done .step-label,
+        .step.active .step-label {
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 500px;
+            border: 2px dashed var(--color-border);
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .step-label {
+                font-size: 0.7rem;
+            }
+
+            .step-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .status-steps::before,
+            .status-steps::after {
+                top: 18px;
+            }
+
+            .pdf-viewer {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header-component></header-component>
+
+    <section class="page-header" style="background-color: #fcf5ee; padding: 4rem 0; text-align: center;">
+        <div class="container">
+            <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--color-primary);">Rastrea
+                Tu Pedido</h1>
+            <p style="font-size: 1.1rem; color: var(--color-text-light);">Ingresa tu número de orden para ver tu ticket
+                y estado de preparación.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+
+            <div class="search-container">
+                <i class="fas fa-search"
+                    style="font-size: 2.5rem; color: var(--color-secondary); margin-bottom: 1rem;"></i>
+                <h2 style="margin-bottom: 1.5rem;">Número de Folio</h2>
+                <input type="text" id="orderNumber" class="search-input" placeholder="Ej. EST-84920">
+                <button id="searchBtn" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">Buscar
+                    Folio</button>
+                <div id="errorMsg" style="color: red; margin-top: 1rem; display: none;">Folio no encontrado.</div>
+            </div>
+
+            <!-- Div que se muestra al buscar -->
+            <div id="orderResult" class="timeline">
+                <div class="order-summary">
+                    <div>
+                        <h3 style="color: var(--color-primary); margin-bottom: 0.2rem;">Folio: <span
+                                id="displayOrder">EST-12345</span></h3>
+                        <p style="color: var(--color-text-light);"><i class="fas fa-calendar-alt"></i> Entrega: <strong
+                                id="displayDate">--</strong></p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="badge"
+                            style="position: static; font-size: 1rem; padding: 0.5rem 1rem; background-color: var(--color-secondary);">Recibido
+                            / Pendiente</span>
+                    </div>
+                </div>
+
+                <div class="status-steps">
+                    <div class="step active">
+                        <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
+                        <div class="step-label">Recibido</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-blender"></i></div>
+                        <div class="step-label">Preparando</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-box"></i></div>
+                        <div class="step-label">Finalizado</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-truck"></i></div>
+                        <div class="step-label">En Entrega</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+                    <h3
+                        style="margin-bottom: 1rem; color: var(--color-primary); display: flex; align-items: center; justify-content: space-between;">
+                        <span><i class="fas fa-file-pdf"></i> Tu Ticket Digital</span>
+                        <button id="downloadBtn" class="btn btn-outline"
+                            style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                            <i class="fas fa-download"></i> Descargar
+                        </button>
+                    </h3>
+                    <iframe id="pdfViewer" class="pdf-viewer"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer-component></footer-component>
+
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Check Auth visual
+        if (localStorage.getItem('isLoggedIn')) {
+            document.getElementById('navAccountBtn').textContent = "Mi Perfil";
+        }
+
+        const searchBtn = document.getElementById('searchBtn');
+        const orderInput = document.getElementById('orderNumber');
+        const orderResult = document.getElementById('orderResult');
+        const displayOrder = document.getElementById('displayOrder');
+        const displayDate = document.getElementById('displayDate');
+        const errorMsg = document.getElementById('errorMsg');
+        const pdfViewer = document.getElementById('pdfViewer');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let currentPdfDataUri = "";
+
+        // Check if coming from payment
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlFolio = urlParams.get('folio');
+
+        if (urlFolio) {
+            orderInput.value = urlFolio;
+            buscarFolio(urlFolio);
+        }
+
+        searchBtn.addEventListener('click', () => {
+            const val = orderInput.value.trim().toUpperCase();
+            if (val.length > 3) {
+                buscarFolio(val);
+            } else {
+                alert('Folio inválido.');
+            }
+        });
+
+        function buscarFolio(folio) {
+            searchBtn.textContent = 'Buscando...';
+            searchBtn.style.opacity = '0.7';
+            errorMsg.style.display = 'none';
+            orderResult.classList.remove('active');
+
+            setTimeout(() => {
+                const orders = JSON.parse(localStorage.getItem('ordersList')) || [];
+                const foundOrder = orders.find(o => o.folio === folio);
+
+                if (foundOrder) {
+                    displayOrder.textContent = foundOrder.folio;
+                    displayDate.textContent = `${foundOrder.fecha} a las ${foundOrder.hora}`;
+                    orderResult.classList.add('active');
+
+                    // Setup PDF
+                    if (foundOrder.pdf) {
+                        pdfViewer.src = foundOrder.pdf;
+                        pdfViewer.style.display = 'block';
+                        currentPdfDataUri = foundOrder.pdf;
+                    } else {
+                        pdfViewer.style.display = 'none';
+                    }
+
+                } else {
+                    errorMsg.style.display = 'block';
+                }
+
+                searchBtn.textContent = 'Buscar Folio';
+                searchBtn.style.opacity = '1';
+            }, 600);
+        }
+
+        // Force download link for the PDF
+        downloadBtn.addEventListener('click', () => {
+            if (currentPdfDataUri) {
+                const link = document.createElement("a");
+                link.href = currentPdfDataUri;
+                link.download = `${displayOrder.textContent}_Ticket.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+
+    </script>
+</body>
+
+</html>

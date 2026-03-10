@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación y Pago | Pastelería La Estrella</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        .checkout-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .checkout-box {
+            background: var(--color-white);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .box-title {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Resumen */
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            color: var(--color-text);
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: var(--color-text-light);
+        }
+
+        .summary-total {
+            border-top: 1px solid var(--color-border);
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Pagos Radio Cards */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .pay-card {
+            border: 2px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pay-card:hover {
+            background-color: #fcf5ee;
+        }
+
+        .pay-card input[type="radio"] {
+            display: none;
+        }
+
+        .pay-card:has(input:checked) {
+            border-color: var(--color-primary);
+            background-color: #fcf5ee;
+        }
+
+        .bank-details {
+            display: none;
+            background: #f9f6f0;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-primary);
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .bank-details.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #pdfLoading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header-component></header-component>
+
+    <section class="section">
+        <div class="container checkout-container" id="checkoutUI">
+
+            <!-- Resumen de Orden -->
+            <div class="checkout-box">
+                <h2 class="box-title"><i class="fas fa-receipt"></i> Resumen del Pedido</h2>
+                <div id="orderSummaryContent">
+                    <!-- JS fills this -->
+                    <p>Cargando datos del pedido...</p>
+                </div>
+            </div>
+
+            <!-- Método de Pago -->
+            <div class="checkout-box">
+                <h2 class="box-title"><i class="fas fa-wallet"></i> Método de Pago</h2>
+
+                <div class="payment-methods">
+                    <label class="pay-card">
+                        <input type="radio" name="payment" value="sucursal" checked>
+                        <i class="fas fa-store" style="font-size: 1.5rem; color: var(--color-secondary);"></i>
+                        <div>
+                            <span style="font-weight: 600; display: block;">Pagar en Sucursal</span>
+                            <span style="font-size: 0.9rem; color: var(--color-text-light);">Lleva tu folio y paga al
+                                recoger o previo a la entrega.</span>
+                        </div>
+                    </label>
+
+                    <label class="pay-card">
+                        <input type="radio" name="payment" value="transferencia">
+                        <i class="fas fa-university" style="font-size: 1.5rem; color: var(--color-secondary);"></i>
+                        <div>
+                            <span style="font-weight: 600; display: block;">Transferencia / Depósito</span>
+                            <span style="font-size: 0.9rem; color: var(--color-text-light);">Para anticipos inmediatos
+                                desde tu app bancaria.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="bank-details" id="bankInfo">
+                    <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> Datos Bancarios (BBVA)</h4>
+                    <p style="margin-bottom: 0.3rem;"><strong>Titular:</strong> Pastelería La Estrella S.A de C.V</p>
+                    <p style="margin-bottom: 0.3rem;"><strong>Cuenta:</strong> 0123456789</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>CLABE:</strong> 012 345 6789 0123 4567</p>
+                    <p style="font-size: 0.85rem; color: var(--color-text-light);">Realiza el pago por el "Anticipo
+                        Requerido" y conserva tu comprobante.</p>
+                </div>
+
+                <button id="btnConfirmar" class="btn btn-primary"
+                    style="width: 100%; font-size: 1.2rem; padding: 1rem;">Confirmar y Generar Folio <i
+                        class="fas fa-check-circle" style="margin-left: 10px;"></i></button>
+            </div>
+
+        </div>
+
+        <div class="container" id="pdfLoading">
+            <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 1rem;"></i>
+            <h2>Procesando tu pedido...</h2>
+            <p>Generando tu comprobante en PDF. Por favor espera.</p>
+        </div>
+    </section>
+
+    <!-- Footer ... -->
+    <footer-component></footer-component>
+
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Check Auth
+        if (localStorage.getItem('isLoggedIn')) {
+            document.getElementById('navAccountBtn').textContent = "Mi Perfil";
+        } else {
+            window.location.href = 'login.html';
+        }
+
+        // Toggles bank info
+        document.querySelectorAll('input[name="payment"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'transferencia') {
+                    document.getElementById('bankInfo').classList.add('active');
+                } else {
+                    document.getElementById('bankInfo').classList.remove('active');
+                }
+            });
+        });
+
+        // Load summary
+        const currentOrderJson = localStorage.getItem('currentOrder');
+        let orderData = {};
+
+        if (!currentOrderJson) {
+            document.getElementById('orderSummaryContent').innerHTML = "<p>No hay un pedido activo. Por favor <a href='crear-pedido.html' style='color:var(--color-primary);text-decoration:underline;'>regresa al formulario</a>.</p>";
+            document.getElementById('btnConfirmar').disabled = true;
+        } else {
+            orderData = JSON.parse(currentOrderJson);
+
+            // Build visual summary
+            let summaryHTML = `
+                <div class="summary-item"><span class="summary-label">Fecha Entrega:</span> <span>${orderData.fecha} a las ${orderData.hora}</span></div>
+                <div class="summary-item"><span class="summary-label">Domicilio:</span> <span>${orderData.domicilio}</span></div>
+                <div class="summary-item"><span class="summary-label">Producto:</span> <span>${orderData.producto} (${orderData.tamano})</span></div>
+            `;
+
+            if (orderData.producto === 'Pastel') {
+                summaryHTML += `
+                    <div class="summary-item"><span class="summary-label">Diseño:</span> <span>${orderData.armado}, ${orderData.pisos} piso(s), ${orderData.diseno}</span></div>
+                `;
+            }
+
+            summaryHTML += `
+                <div class="summary-item"><span class="summary-label">Sabor:</span> <span>${orderData.sabor}</span></div>
+                <div class="summary-item"><span class="summary-label">Dedicatoria:</span> <span>${orderData.dedicatoria || 'N/A'}</span></div>
+                <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
+                <div class="summary-item"><span class="summary-label">Subtotal Producto:</span> <span>$${orderData.precioBase.toFixed(2)} MXN</span></div>
+                <div class="summary-item"><span class="summary-label">Costo Flete:</span> <span>$${orderData.flete.toFixed(2)} MXN</span></div>
+                <div class="summary-total"><span>Total Completo:</span> <span>$${orderData.total.toFixed(2)} MXN</span></div>
+                <div class="summary-item" style="color: #d35400; font-weight:600; margin-top:0.5rem;"><span>Anticipo a pagar hoy:</span> <span>$${orderData.deposito.toFixed(2)} MXN</span></div>
+            `;
+
+            document.getElementById('orderSummaryContent').innerHTML = summaryHTML;
+        }
+
+        // GENERAR PDF Y FINALIZAR
+        document.getElementById('btnConfirmar').addEventListener('click', async () => {
+            const method = document.querySelector('input[name="payment"]:checked').value;
+            orderData.paymentMethod = method;
+
+            // Generate Random Folio
+            const folio = 'EST-' + Math.floor(10000 + Math.random() * 90000);
+            orderData.folio = folio;
+
+            // UI Loading state
+            document.getElementById('checkoutUI').style.display = 'none';
+            document.getElementById('pdfLoading').style.display = 'block';
+
+            // JS PDF Generation
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Diseño Estilo Ticket PDF
+            doc.setFillColor(140, 85, 53); // Color Primary #8C5535
+            doc.rect(0, 0, 210, 30, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text("PASTELERIA LA ESTRELLA", 105, 20, null, null, "center");
+
+            doc.setTextColor(51, 51, 51);
+            doc.setFontSize(16);
+            doc.text(`TICKET DE PEDIDO: ${folio}`, 105, 45, null, null, "center");
+
+            doc.setFontSize(12);
+            doc.text("Datos del Cliente y Entrega", 20, 60);
+            doc.line(20, 63, 190, 63);
+
+            const userEmail = localStorage.getItem('userEmail') || 'Cliente Invitado';
+            doc.setFontSize(10);
+            doc.text(`Correo Cuenta: ${userEmail}`, 20, 70);
+            doc.text(`Fecha y Hora: ${orderData.fecha} / ${orderData.hora}`, 20, 77);
+            doc.text(`Domicilio: ${orderData.domicilio}`, 20, 84);
+
+            doc.setFontSize(12);
+            doc.text("Detalles del Producto", 20, 100);
+            doc.line(20, 103, 190, 103);
+
+            doc.setFontSize(10);
+            doc.text(`Producto: ${orderData.producto} (${orderData.tamano})`, 20, 110);
+            doc.text(`Sabor: ${orderData.sabor}`, 20, 117);
+            if (orderData.producto === 'Pastel') {
+                doc.text(`Estructura: ${orderData.armado}, ${orderData.pisos} piso(s), ${orderData.diseno}`, 20, 124);
+            }
+            doc.text(`Dedicatoria: ${orderData.dedicatoria || 'Ninguna'}`, 20, 131);
+            doc.text(`Notas Extra: ${orderData.descripcion || 'Ninguna'}`, 20, 138);
+
+            doc.setFontSize(12);
+            doc.text("Cotización", 20, 155);
+            doc.line(20, 158, 190, 158);
+
+            doc.setFontSize(10);
+            doc.text(`Subtotal: $${orderData.precioBase.toFixed(2)} MXN`, 20, 165);
+            doc.text(`Flete: $${orderData.flete.toFixed(2)} MXN`, 20, 172);
+
+            doc.setFontSize(14);
+            doc.text(`TOTAL: $${orderData.total.toFixed(2)} MXN`, 20, 182);
+
+            doc.setFontSize(12);
+            doc.setTextColor(211, 84, 0); // Orange
+            doc.text(`Anticipo (50%): $${orderData.deposito.toFixed(2)} MXN`, 20, 190);
+
+            doc.setTextColor(51, 51, 51);
+            doc.setFontSize(10);
+            const pagoTexto = method === 'sucursal' ? "Pago a realizar en Sucursal" : "Pago mediante Transferencia/Depósito (BBVA Cta: 0123456789)";
+            doc.text(`Método seleccionado: ${pagoTexto}`, 20, 205);
+
+            doc.setFontSize(10);
+            doc.text("¡Gracias por confiar en nosotros! Presenta este folio al recoger tu pedido.", 105, 230, null, null, "center");
+
+            // Convert PDF to Data URI
+            const pdfDataUri = doc.output('datauristring');
+
+            // Guardar folio completo en LocalStorage
+            orderData.pdf = pdfDataUri;
+
+            // Simulated Orders Array
+            let orders = JSON.parse(localStorage.getItem('ordersList')) || [];
+            orders.push(orderData);
+            localStorage.setItem('ordersList', JSON.stringify(orders));
+
+            // Clean active cart
+            localStorage.removeItem('currentOrder');
+
+            setTimeout(() => {
+                alert(`¡Pedido Confirmado! Tu folio es ${folio}. Redirigiendo a seguimiento.`);
+                window.location.href = `ver-pedido.html?folio=${folio}`;
+            }, 1000);
+
+        });
+    </script>
+</body>
+
+</html>

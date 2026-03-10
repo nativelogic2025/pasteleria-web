@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastelería La Estrella | Inicio</title>
+    <meta name="description" content="Pastelería La Estrella - Los mejores pasteles en línea.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <header-component></header-component>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1 class="hero-title">El Sabor de las Estrellas en cada Bocado</h1>
+            <p class="hero-subtitle">Pasteles artesanales, creados con pasión y los mejores ingredientes para tus
+                momentos especiales.</p>
+            <div class="hero-buttons">
+                <a href="galeria.html" class="btn btn-primary">Ver Catálogo</a>
+                <a href="crear-pedido.html" class="btn btn-secondary">Personalizar Pastel</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Destacados -->
+    <section class="section featured">
+        <div class="container">
+            <h2 class="section-title">Nuestras Especialidades</h2>
+            <div class="grid featured-grid">
+                <!-- Tarjeta de Producto 1 -->
+                <div class="product-card">
+                    <div class="product-img-wrapper">
+                        <img src="img/cake1-placeholder.png" alt="Pastel de Chocolate" class="product-img">
+                        <span class="badge">Más Vendido</span>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Trufa Real</h3>
+                        <p class="product-desc">Exquisito pan de chocolate bañado en tres leches con relleno de trufa.
+                        </p>
+                        <div class="product-footer">
+                            <span class="price">$450 MXN</span>
+                            <a href="crear-pedido.html" class="btn-icon"><i class="fas fa-cart-plus"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Producto 2 -->
+                <div class="product-card">
+                    <div class="product-img-wrapper">
+                        <img src="img/cake2-placeholder.png" alt="Pastel de Fresa" class="product-img">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Fresa Elegancia</h3>
+                        <p class="product-desc">Pan vainilla suave, crema batida especial y fresas frescas
+                            seleccionadas.</p>
+                        <div class="product-footer">
+                            <span class="price">$380 MXN</span>
+                            <a href="crear-pedido.html" class="btn-icon"><i class="fas fa-cart-plus"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Producto 3 -->
+                <div class="product-card">
+                    <div class="product-img-wrapper">
+                        <img src="img/cake3-placeholder.png" alt="Pastel de Zanahoria" class="product-img">
+                        <span class="badge badge-new">Nuevo</span>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Zanahoria Nuez</h3>
+                        <p class="product-desc">Clásico pastel de zanahoria con betún de queso crema, nuez y un toque de
+                            canela.</p>
+                        <div class="product-footer">
+                            <span class="price">$420 MXN</span>
+                            <a href="crear-pedido.html" class="btn-icon"><i class="fas fa-cart-plus"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="galeria.html" class="btn btn-outline">Ver todos los pasteles</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sobre Nosotros -->
+    <section id="nosotros" class="section about bg-light">
+        <div class="container about-container">
+            <div class="about-image">
+                <img src="img/local.jpeg" alt="Nuestra Pastelería" class="rounded-img shadow">
+            </div>
+            <div class="about-text">
+                <span class="subtitle">Nuestra Historia</span>
+                <h2 class="section-title left">Tradición y Calidad desde 1999</h2>
+                <p>En Pastelería La Estrella, somos una pastelería tradicional fundada en 1999 con el firme propósito de
+                    endulzar la vida de nuestras familias y clientes. Cada una de nuestras recetas está hecha con amor,
+                    tradición y la mejor calidad.</p>
+                <p>Nuestro compromiso es no solo crear pasteles que se vean increíbles, sino que su sabor se quede en tu
+                    memoria para siempre.</p>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fas fa-star feature-icon"></i>
+                        <span>Ingredientes Premium</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-heart feature-icon"></i>
+                        <span>Hecho a mano</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer-component></footer-component>
+
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
