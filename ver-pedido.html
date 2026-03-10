@@ -259,6 +259,7 @@
     <footer-component></footer-component>
 
     <script src="js/components.js"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
     <script>
         // Check Auth visual
@@ -283,49 +284,75 @@
 
         if (urlFolio) {
             orderInput.value = urlFolio;
-            buscarFolio(urlFolio);
+            ejecutarBusqueda(urlFolio);
         }
 
         searchBtn.addEventListener('click', () => {
             const val = orderInput.value.trim().toUpperCase();
             if (val.length > 3) {
-                buscarFolio(val);
+                ejecutarBusqueda(val);
             } else {
                 alert('Folio inválido.');
             }
         });
 
-        function buscarFolio(folio) {
-            searchBtn.textContent = 'Buscando...';
+        async function ejecutarBusqueda(folio) {
+            searchBtn.textContent = 'Buscando en BD...';
+            searchBtn.disabled = true;
             searchBtn.style.opacity = '0.7';
             errorMsg.style.display = 'none';
             orderResult.classList.remove('active');
 
-            setTimeout(() => {
-                const orders = JSON.parse(localStorage.getItem('ordersList')) || [];
-                const foundOrder = orders.find(o => o.folio === folio);
+            try {
+                // Fetch direct from Supabase
+                const orderData = await buscarPedidoPorFolio(folio);
 
-                if (foundOrder) {
-                    displayOrder.textContent = foundOrder.folio;
-                    displayDate.textContent = `${foundOrder.fecha} a las ${foundOrder.hora}`;
-                    orderResult.classList.add('active');
+                if (orderData) {
+                    displayOrder.textContent = orderData.folio;
+                    displayDate.textContent = orderData.fecha_entrega ? `${orderData.fecha_entrega} a las ${orderData.hora_entrega || ''}` : '--';
+                    
+                    // Logic to set the timeline steps (mocked visual logic based on DB enum 'pendiente', 'pagado', 'enviado', etc.)
+                    const steps = document.querySelectorAll('.step');
+                    steps.forEach(s => { s.classList.remove('active', 'done'); });
 
-                    // Setup PDF
-                    if (foundOrder.pdf) {
-                        pdfViewer.src = foundOrder.pdf;
-                        pdfViewer.style.display = 'block';
-                        currentPdfDataUri = foundOrder.pdf;
+                    if(orderData.estado === 'pendiente') {
+                        steps[0].classList.add('active'); // Recibido
+                    } else if(orderData.estado === 'completado') {
+                        steps[0].classList.add('done');
+                        steps[1].classList.add('done'); // Preparando
+                        steps[2].classList.add('done'); // Finalizado
+                        steps[3].classList.add('active'); // En Entrega
                     } else {
-                        pdfViewer.style.display = 'none';
+                        // Generic intermediate logic for UI
+                         steps[0].classList.add('done');
+                         steps[1].classList.add('active');
                     }
 
+                    // For the PDF, since we don't store it in the DB yet, we look for a local fallback
+                    const localOrders = JSON.parse(localStorage.getItem('ordersList')) || [];
+                    const localMatch = localOrders.find(o => o.folio === folio);
+                    if (localMatch && localMatch.pdf) {
+                        pdfViewer.src = localMatch.pdf;
+                        pdfViewer.style.display = 'block';
+                        currentPdfDataUri = localMatch.pdf;
+                    } else {
+                         pdfViewer.style.display = 'none';
+                         currentPdfDataUri = "";
+                    }
+
+                    orderResult.classList.add('active');
                 } else {
                     errorMsg.style.display = 'block';
                 }
-
+            } catch (err) {
+                console.error(err);
+                errorMsg.textContent = "Error de conexión al buscar.";
+                errorMsg.style.display = 'block';
+            } finally {
                 searchBtn.textContent = 'Buscar Folio';
+                searchBtn.disabled = false;
                 searchBtn.style.opacity = '1';
-            }, 600);
+            }
         }
 
         // Force download link for the PDF
@@ -337,6 +364,8 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+            } else {
+                alert("El PDF ya no se encuentra disponible.");
             }
         });
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -45,57 +45,14 @@
     <section class="section featured">
         <div class="container">
             <h2 class="section-title">Nuestras Especialidades</h2>
-            <div class="grid featured-grid">
-                <!-- Tarjeta de Producto 1 -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/cake1-placeholder.png" alt="Pastel de Chocolate" class="product-img">
-                        <span class="badge">Más Vendido</span>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Trufa Real</h3>
-                        <p class="product-desc">Exquisito pan de chocolate bañado en tres leches con relleno de trufa.
-                        </p>
-                        <div class="product-footer">
-                            <span class="price">$450 MXN</span>
-                            <a href="crear-pedido.html" class="btn-icon"><i class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tarjeta de Producto 2 -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/cake2-placeholder.png" alt="Pastel de Fresa" class="product-img">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Fresa Elegancia</h3>
-                        <p class="product-desc">Pan vainilla suave, crema batida especial y fresas frescas
-                            seleccionadas.</p>
-                        <div class="product-footer">
-                            <span class="price">$380 MXN</span>
-                            <a href="crear-pedido.html" class="btn-icon"><i class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tarjeta de Producto 3 -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/cake3-placeholder.png" alt="Pastel de Zanahoria" class="product-img">
-                        <span class="badge badge-new">Nuevo</span>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Zanahoria Nuez</h3>
-                        <p class="product-desc">Clásico pastel de zanahoria con betún de queso crema, nuez y un toque de
-                            canela.</p>
-                        <div class="product-footer">
-                            <span class="price">$420 MXN</span>
-                            <a href="crear-pedido.html" class="btn-icon"><i class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
+            
+            <div class="grid featured-grid" id="homepageCatalog">
+                <div style="text-align: center; grid-column: 1 / -1; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--color-primary); margin-bottom: 1rem;"></i>
+                    <p>Cargando nuestras especialidades...</p>
                 </div>
             </div>
+
             <div class="text-center mt-4">
                 <a href="galeria.html" class="btn btn-outline">Ver todos los pasteles</a>
             </div>
@@ -134,7 +91,61 @@
     <footer-component></footer-component>
 
     <script src="js/components.js"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const grid = document.getElementById('homepageCatalog');
+            
+            try {
+                // Fetch first 3 products for homepage
+                const productos = await fetchProductos();
+                if (!grid) return;
+                
+                grid.innerHTML = '';
+                const displayLimit = 3;
+                let cardsRendered = 0;
+
+                if (!productos || productos.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Vuelve pronto para ver nuestras especialidades.</p>';
+                    return;
+                }
+
+                productos.forEach(producto => {
+                    if(cardsRendered >= displayLimit) return;
+                    
+                    let precioBase = 0;
+                    if (producto.producto_variantes && producto.producto_variantes.length > 0) {
+                        const precios = producto.producto_variantes.map(v => parseFloat(v.precio_venta));
+                        precioBase = Math.min(...precios);
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="product-img-wrapper">
+                            <img src="${producto.imagen_url || 'img/cake1-placeholder.png'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/cake1-placeholder.png'">
+                            ${producto.categorias ? `<span class="badge">${producto.categorias.nombre || ''}</span>` : ''}
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">${producto.nombre}</h3>
+                            <p class="product-desc">${producto.descripcion || 'Delicioso pastel artesanal.'}</p>
+                            <div class="product-footer">
+                                <span class="price">${precioBase > 0 ? `Desde $${precioBase} MXN` : 'Consultar'}</span>
+                                <a href="crear-pedido.html?producto=${producto.id_producto}" class="btn-icon" title="Pedir este"><i class="fas fa-cart-plus"></i></a>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                    cardsRendered++;
+                });
+
+            } catch (error) {
+                console.error(error);
+                if (grid) grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red;">Error cargando especialidades.</p>';
+            }
+        });
+    </script>
 </body>
 
 </html>

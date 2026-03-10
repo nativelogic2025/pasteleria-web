@@ -155,12 +155,33 @@
     </div>
 
     <script src="js/components.js"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
     <script>
-        document.getElementById('registerForm').addEventListener('submit', function (e) {
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            alert("¡Cuenta creada exitosamente! Ahora puedes iniciar sesión.");
-            window.location.href = 'login.html';
+            const btn = this.querySelector('button[type="submit"]');
+            btn.textContent = 'Registrando...';
+            btn.disabled = true;
+
+            const datosCliente = {
+                nombre: document.getElementById('nombre').value.trim(),
+                apellidos: document.getElementById('apellidos').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value
+            };
+
+            try {
+                await registrarCliente(datosCliente);
+                alert("¡Cuenta creada exitosamente! Ahora puedes iniciar sesión.");
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error(error);
+                alert("Error al registrar cuenta: " + error.message);
+                btn.textContent = 'Registrarme';
+                btn.disabled = false;
+            }
         });
     </script>
 </body>

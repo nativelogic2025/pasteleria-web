@@ -184,12 +184,7 @@
                         <div class="form-group">
                             <label class="form-label">Tipo de Producto</label>
                             <select id="producto" class="form-control" required>
-                                <option value="" disabled selected>-- Selecciona un producto --</option>
-                                <option value="Pastel">Pastel</option>
-                                <option value="Flan">Flan</option>
-                                <option value="Cupcakes">Cupcakes</option>
-                                <option value="Mousse">Mousse</option>
-                                <option value="Gelatina">Gelatina</option>
+                                <option value="" disabled selected>-- Cargando productos... --</option>
                             </select>
                         </div>
 
@@ -292,8 +287,8 @@
 
                     <div class="form-group" style="margin-top: 2rem; text-align: center;">
                         <button type="submit" class="btn btn-primary"
-                            style="font-size: 1.2rem; padding: 1rem 3rem;">Continuar al Pago <i
-                                class="fas fa-arrow-right" style="margin-left: 10px;"></i></button>
+                            style="font-size: 1.2rem; padding: 1rem 3rem;">Agregar al Carrito <i
+                                class="fas fa-shopping-cart" style="margin-left: 10px;"></i></button>
                     </div>
 
                 </form>
@@ -304,13 +299,11 @@
     <footer-component></footer-component>
 
     <script src="js/components.js"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
     <script>
         // 1. Verificar Autenticación
-        if (!localStorage.getItem('isLoggedIn')) {
-            alert("Por favor inicia sesión para crear un pedido.");
-            window.location.href = 'login.html';
-        } else {
+        if (localStorage.getItem('isLoggedIn')) {
             document.getElementById('navAccountBtn').textContent = "Mi Perfil";
         }
 
@@ -332,19 +325,42 @@
         // Valores de Precio
         let precioBase = 0;
         const costoFlete = 50.00;
+        let dbProductos = [];
 
-        // Mapeo dinámico de tamaños según producto
-        const opcionesTamanoPastel = [
-            { text: '5 Personas', value: '5 personas', precio: 250 },
-            { text: '10 Personas', value: '10 personas', precio: 380 },
-            { text: '20 Personas', value: '20 personas', precio: 550 }
-        ];
+        // Fetch de productos desde Supabase
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                dbProductos = await fetchProductos();
+                
+                selectProducto.innerHTML = '<option value="" disabled selected>-- Selecciona un producto --</option>';
+                
+                if (dbProductos && dbProductos.length > 0) {
+                    dbProductos.forEach(prod => {
+                        const option = document.createElement('option');
+                        option.value = prod.id_producto;
+                        option.textContent = prod.nombre;
+                        option.dataset.isPastel = prod.categorias?.nombre?.toLowerCase().includes('pastel') || prod.nombre.toLowerCase().includes('pastel');
+                        selectProducto.appendChild(option);
+                    });
+                } else {
+                    selectProducto.innerHTML = '<option value="" disabled selected>-- No hay productos --</option>';
+                }
 
-        const opcionesTamanoGeneral = [
-            { text: 'Chico', value: 'Chico', precio: 150 },
-            { text: 'Mediano', value: 'Mediano', precio: 220 },
-            { text: 'Grande', value: 'Grande', precio: 300 }
-        ];
+
+                // Auto-select product from URL if exists
+                const urlParams = new URLSearchParams(window.location.search);
+                const queryProduct = urlParams.get('producto');
+                if (queryProduct) {
+                    selectProducto.value = queryProduct;
+                    // Trigger change event to load variants
+                    const event = new Event('change');
+                    selectProducto.dispatchEvent(event);
+                }
+
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        });
 
         selectProducto.addEventListener('change', function () {
             selectTamano.innerHTML = '<option value="" disabled selected>-- Selecciona un tamaño --</option>';
@@ -352,31 +368,36 @@
             precioBase = 0;
             actualizarPrecios();
 
-            let opciones = [];
+            const selectedOption = this.options[this.selectedIndex];
+            const productId = parseInt(this.value);
+            const isPastel = selectedOption.dataset.isPastel === 'true';
 
-            if (this.value === 'Pastel') {
+            if (isPastel) {
                 opcionesPastel.classList.remove('hidden');
-                opciones = opcionesTamanoPastel;
             } else {
                 opcionesPastel.classList.add('hidden');
-                opciones = opcionesTamanoGeneral;
             }
 
-            opciones.forEach(opt => {
-                const el = document.createElement('option');
-                el.value = opt.value;
-                el.textContent = opt.text;
-                el.dataset.precio = opt.precio;
-                selectTamano.appendChild(el);
-            });
+            // Find product and populate variants
+            const producto = dbProductos.find(p => p.id_producto === productId);
+            if (producto && producto.producto_variantes) {
+                producto.producto_variantes.forEach(v => {
+                    const el = document.createElement('option');
+                    el.value = v.id_variante; 
+                    el.textContent = v.tamaño + (v.porciones ? ` (${v.porciones} personas)` : '');
+                    el.dataset.precio = v.precio_venta;
+                    selectTamano.appendChild(el);
+                });
+            }
         });
 
         selectTamano.addEventListener('change', function () {
             const selectedOpt = this.options[this.selectedIndex];
             precioBase = parseFloat(selectedOpt.dataset.precio || 0);
 
-            // Si es pastel doble, sumamos extra
-            if (selectProducto.value === 'Pastel') {
+            const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
+
+            if (isPastel) {
                 const esDoble = document.querySelector('input[name="armado"]:checked').value === 'Doble';
                 if (esDoble) precioBase += 150;
 
@@ -391,7 +412,6 @@
         document.querySelectorAll('input[name="armado"], #pisos').forEach(el => {
             el.addEventListener('change', () => {
                 if (selectTamano.value) {
-                    // Trigger refresh manually by creating fake event
                     const event = new Event('change');
                     selectTamano.dispatchEvent(event);
                 }
@@ -409,37 +429,71 @@
         }
 
         // Form Submit
-        document.getElementById('orderForm').addEventListener('submit', function (e) {
+        document.getElementById('orderForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // Recolectar datos
+            const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
+
+            // Recolectar datos extra
             const orderData = {
                 fecha: document.getElementById('fecha').value,
                 hora: document.getElementById('hora').value,
                 domicilio: document.getElementById('domicilio').value,
-                producto: selectProducto.value,
-                tamano: selectTamano.value,
                 sabor: document.getElementById('sabor').value,
                 dedicatoria: document.getElementById('dedicatoria').value,
-                descripcion: document.getElementById('descripcion').value,
-                precioBase: precioBase,
-                flete: costoFlete,
-                total: precioBase > 0 ? (precioBase + costoFlete) : 0,
-                deposito: (precioBase > 0 ? (precioBase + costoFlete) : 0) / 2
+                descripcion: document.getElementById('descripcion').value
             };
 
-            if (selectProducto.value === 'Pastel') {
+            if (isPastel) {
                 orderData.armado = document.querySelector('input[name="armado"]:checked').value;
                 orderData.pisos = document.getElementById('pisos').value;
                 orderData.diseno = document.getElementById('diseno_pastel').value;
             }
 
-            // Guardar en session local para recuperarlo en pago.html
-            localStorage.setItem('currentOrder', JSON.stringify(orderData));
-            window.location.href = 'pago.html';
+            try {
+                const btnSubmit = this.querySelector('button[type="submit"]');
+                const btnOriginalText = btnSubmit.innerHTML;
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
+                btnSubmit.disabled = true;
+
+                const idCliente = localStorage.getItem('userId') || null;
+                const idCarrito = await obtenerOCrearCarrito(idCliente);
+
+                if (!idCarrito) throw new Error("No se pudo crear el carrito");
+
+                const itemData = {
+                    id_carrito: idCarrito,
+                    id_producto: parseInt(selectProducto.value),
+                    id_variante: parseInt(selectTamano.value),
+                    cantidad: 1, 
+                    precio_unitario: precioBase,
+                    sabor: orderData.sabor,
+                    dedicatoria: orderData.dedicatoria,
+                    observaciones: JSON.stringify(orderData)
+                };
+
+                const res = await agregarItemCarrito(itemData);
+                
+                if (res) {
+                    // Update button temporarily to show success
+                    btnSubmit.innerHTML = '<i class="fas fa-check"></i> ¡Agregado!';
+                    setTimeout(() => {
+                        window.location.href = 'carrito.html'; // Redirect to cart
+                    }, 500);
+                } else {
+                    throw new Error("Error en DB");
+                }
+            } catch (error) {
+                console.error("Submit Error:", error);
+                alert("Hubo un problema agregando al carrito. Intenta nuevamente.");
+                const btnSubmit = document.querySelector('#orderForm button[type="submit"]');
+                btnSubmit.innerHTML = 'Agregar al Carrito <i class="fas fa-shopping-cart" style="margin-left: 10px;"></i>';
+                btnSubmit.disabled = false;
+            }
         });
 
     </script>
 </body>
+
 
 </html>

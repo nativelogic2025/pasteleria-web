@@ -1,200 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
+import re
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmación y Pago | Pastelería La Estrella</title>
+filepath = r'C:\Users\Alan\Documents\Pasteleria la Estrella\Pasteleria_la_Estrella_WEB\pago.html'
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+with open(filepath, 'r', encoding='utf-8') as f:
+    content = f.read()
 
-    <!-- Librería para generar PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <style>
-        .checkout-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        .checkout-box {
-            background: var(--color-white);
-            padding: 2.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-        }
-
-        .box-title {
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            border-bottom: 2px solid var(--color-border);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Resumen */
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.8rem;
-            color: var(--color-text);
-        }
-
-        .summary-label {
-            font-weight: 600;
-            color: var(--color-text-light);
-        }
-
-        .summary-total {
-            border-top: 1px solid var(--color-border);
-            padding-top: 1rem;
-            margin-top: 1rem;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--color-primary);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Pagos Radio Cards */
-        .payment-methods {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .pay-card {
-            border: 2px solid var(--color-border);
-            border-radius: var(--border-radius);
-            padding: 1.2rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .pay-card:hover {
-            background-color: #fcf5ee;
-        }
-
-        .pay-card input[type="radio"] {
-            display: none;
-        }
-
-        .pay-card:has(input:checked) {
-            border-color: var(--color-primary);
-            background-color: #fcf5ee;
-        }
-
-        .bank-details {
-            display: none;
-            background: #f9f6f0;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            border-left: 4px solid var(--color-primary);
-            margin-top: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .bank-details.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .checkout-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        #pdfLoading {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-            font-size: 1.2rem;
-            color: var(--color-primary);
-        }
-    </style>
-</head>
-
-<body>
-
-    <header-component></header-component>
-
-    <section class="section">
-        <div class="container checkout-container" id="checkoutUI">
-
-            <!-- Resumen de Orden -->
-            <div class="checkout-box">
-                <h2 class="box-title"><i class="fas fa-receipt"></i> Resumen del Pedido</h2>
-                <div id="orderSummaryContent">
-                    <!-- JS fills this -->
-                    <p>Cargando datos del pedido...</p>
-                </div>
-            </div>
-
-            <!-- Método de Pago -->
-            <div class="checkout-box">
-                <h2 class="box-title"><i class="fas fa-wallet"></i> Método de Pago</h2>
-
-                <div class="payment-methods">
-                    <label class="pay-card">
-                        <input type="radio" name="payment" value="sucursal" checked>
-                        <i class="fas fa-store" style="font-size: 1.5rem; color: var(--color-secondary);"></i>
-                        <div>
-                            <span style="font-weight: 600; display: block;">Pagar en Sucursal</span>
-                            <span style="font-size: 0.9rem; color: var(--color-text-light);">Lleva tu folio y paga al
-                                recoger o previo a la entrega.</span>
-                        </div>
-                    </label>
-
-                    <label class="pay-card">
-                        <input type="radio" name="payment" value="transferencia">
-                        <i class="fas fa-university" style="font-size: 1.5rem; color: var(--color-secondary);"></i>
-                        <div>
-                            <span style="font-weight: 600; display: block;">Transferencia / Depósito</span>
-                            <span style="font-size: 0.9rem; color: var(--color-text-light);">Para anticipos inmediatos
-                                desde tu app bancaria.</span>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="bank-details" id="bankInfo">
-                    <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> Datos Bancarios (BBVA)</h4>
-                    <p style="margin-bottom: 0.3rem;"><strong>Titular:</strong> Pastelería La Estrella S.A de C.V</p>
-                    <p style="margin-bottom: 0.3rem;"><strong>Cuenta:</strong> 0123456789</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>CLABE:</strong> 012 345 6789 0123 4567</p>
-                    <p style="font-size: 0.85rem; color: var(--color-text-light);">Realiza el pago por el "Anticipo
-                        Requerido" y conserva tu comprobante.</p>
-                </div>
-
-                <button id="btnConfirmar" class="btn btn-primary"
-                    style="width: 100%; font-size: 1.2rem; padding: 1rem;">Confirmar y Generar Folio <i
-                        class="fas fa-check-circle" style="margin-left: 10px;"></i></button>
-            </div>
-
-        </div>
-
-        <div class="container" id="pdfLoading">
-            <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 1rem;"></i>
-            <h2>Procesando tu pedido...</h2>
-            <p>Generando tu comprobante en PDF. Por favor espera.</p>
-        </div>
-    </section>
-
-    <!-- Footer ... -->
-    <footer-component></footer-component>
-
-    <script src="js/components.js"></script>
+script_replacement = """    <script src="js/components.js"></script>
     <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
     <script>
@@ -317,11 +128,11 @@
                 if (pedidoGuardado && pedidoGuardado[0]) {
                     const idPedido = pedidoGuardado[0].id_pedido;
                     
+                    // 2. Insertar Detalle desde carrito
                     for (const item of cartItems) {
                          const obsInfo = item.observaciones ? JSON.parse(item.observaciones) : {};
                          const detalleData = {
                             id_pedido: idPedido,
-                            id_producto: item.id_producto,
                             id_variante: item.id_variante,
                             cantidad: item.cantidad,
                             precio_unitario: item.precio_unitario,
@@ -433,7 +244,11 @@
             }
         });
     </script>
-</body>
+</body>"""
 
+content = re.sub(r'    <script src="js/components\.js"></script>.*?</body>', script_replacement, content, flags=re.DOTALL)
 
-</html>
+with open(filepath, 'w', encoding='utf-8') as f:
+    f.write(content)
+
+print("Patch pago.html done")

@@ -147,14 +147,38 @@
     </div>
 
     <script src="js/components.js"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            // Simulación de login exitoso guardando en localStorage
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('userEmail', document.getElementById('email').value);
-            window.location.href = 'crear-pedido.html';
+            const btn = this.querySelector('button[type="submit"]');
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const user = await loginCliente(email, password);
+                
+                if (user) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', user.email);
+                    localStorage.setItem('userId', user.id_cliente);
+                    localStorage.setItem('userName', user.nombre);
+                    window.location.href = 'crear-pedido.html';
+                } else {
+                    alert('Correo electrónico o contraseña incorrectos.');
+                    btn.textContent = 'Iniciar Sesión';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión al iniciar sesión.");
+                btn.textContent = 'Iniciar Sesión';
+                btn.disabled = false;
+            }
         });
     </script>
 </body>

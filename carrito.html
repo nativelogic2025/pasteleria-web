@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Carrito - Pastelería La Estrella</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .cart-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-header {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--color-border);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--color-secondary);
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px dashed var(--color-border);
+        }
+
+        .cart-item-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-item-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .cart-item-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+            line-height: 1.3;
+        }
+
+        .cart-summary {
+            background: #fdfaf6;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-radius: var(--border-radius);
+            text-align: right;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .cart-total-row.grand-total {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            border-top: 2px solid var(--color-border);
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .cart-actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .cart-header {
+                display: none;
+            }
+
+            .cart-item {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .cart-item-details {
+                flex-direction: column;
+            }
+
+            .cart-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header-component></header-component>
+
+    <section class="page-header" style="background-color: #fcf5ee; padding: 4rem 0; text-align: center;">
+        <div class="container">
+            <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--color-primary);">Mi Carrito</h1>
+            <p style="font-size: 1.1rem; color: var(--color-text-light);">Revisa tus pedidos antes de confirmar.</p>
+        </div>
+    </section>
+
+    <section class="section" style="background-color: #fafafa;">
+        <div class="container">
+            <div class="cart-container" id="cartContainer">
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color:var(--color-primary);"></i>
+                    <p style="margin-top:1rem;">Cargando tu carrito...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer-component></footer-component>
+
+    <script src="js/components.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('cartContainer');
+            const idCarrito = localStorage.getItem('carritoActivo');
+            
+            if (!idCarrito) {
+                renderEmptyCart(container);
+                return;
+            }
+
+            try {
+                const items = await obtenerItemsCarrito(idCarrito);
+                
+                if (!items || items.length === 0) {
+                    renderEmptyCart(container);
+                    return;
+                }
+
+                let subtotal = 0;
+                let cartHTML = `
+                    <div class="cart-header">
+                        <div>Producto</div>
+                        <div style="text-align:center;">Precio Unit.</div>
+                        <div style="text-align:center;">Cant.</div>
+                        <div style="text-align:right;">Subtotal</div>
+                    </div>
+                `;
+
+                items.forEach(item => {
+                    const productoInfo = item.productos || {};
+                    const varianteInfo = item.producto_variantes || {};
+                    const obsInfo = item.observaciones ? JSON.parse(item.observaciones) : null;
+                    
+                    const itemTotal = parseFloat(item.cantidad) * parseFloat(item.precio_unitario);
+                    subtotal += itemTotal;
+
+                    const extraDetails = obsInfo ? 
+                        `Sabor: ${obsInfo.sabor || 'N/A'}<br>Diseño: ${obsInfo.armado || ''} ${obsInfo.pisos || ''} ${obsInfo.diseno || ''}<br>Para: ${obsInfo.fecha || ''} a las ${obsInfo.hora || ''}` 
+                        : '';
+
+                    cartHTML += `
+                        <div class="cart-item">
+                            <div class="cart-item-details">
+                                <img src="${productoInfo.imagen_url || 'img/cake1-placeholder.png'}" alt="Item" class="cart-item-img" onerror="this.src='img/cake1-placeholder.png'">
+                                <div>
+                                    <div class="cart-item-title">${productoInfo.nombre || 'Producto'} (${varianteInfo.tamaño || item.id_variante})</div>
+                                    <div class="cart-item-desc">${extraDetails}</div>
+                                </div>
+                            </div>
+                            <div style="text-align:center; color:var(--color-text-light);">$${parseFloat(item.precio_unitario).toFixed(2)}</div>
+                            <div style="text-align:center;">
+                                <span style="background:#eee; padding:5px 15px; border-radius:15px; font-weight:bold;">${item.cantidad}</span>
+                            </div>
+                            <div style="text-align:right; font-weight:600; color:var(--color-secondary);">
+                                $${itemTotal.toFixed(2)}
+                            </div>
+                            <div style="grid-column: 1 / -1; margin-top: 10px;">
+                                <button onclick="eliminarDelCarrito(${item.id_carrito_detalle})" class="btn-icon" style="color:#e74c3c; border:none; background:none; cursor:pointer;" title="Eliminar"><i class="fas fa-trash-alt"></i> Quitar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Assume $50 mxn for shipping if the user has requested home delivery in their items
+                // This is a simplified approach. Usually shipping is calculated at checkout.
+                const hasDeliveryInfo = items.some(item => {
+                    if(!item.observaciones) return false;
+                    const o = JSON.parse(item.observaciones);
+                    return o.domicilio && o.domicilio.length > 5; // Simplified heuristic
+                });
+
+                const flete = hasDeliveryInfo ? 50 : 0;
+                const grandTotal = subtotal + flete;
+                const deposito = grandTotal / 2;
+
+                cartHTML += `
+                    <div class="cart-summary">
+                        <div class="cart-total-row">
+                            <span>Subtotal Productos:</span>
+                            <span>$${subtotal.toFixed(2)} MXN</span>
+                        </div>
+                        <div class="cart-total-row">
+                            <span>Flete Estimado:</span>
+                            <span>$${flete.toFixed(2)} MXN</span>
+                        </div>
+                        <div class="cart-total-row grand-total">
+                            <span>Total Estimado:</span>
+                            <span>$${grandTotal.toFixed(2)} MXN</span>
+                        </div>
+                        <div class="cart-total-row" style="color: #d35400; font-weight:600; margin-top: 0.5rem; justify-content:flex-end; gap:2rem;">
+                            <span>Anticipo Requerido (50%):</span>
+                            <span>$${deposito.toFixed(2)} MXN</span>
+                        </div>
+                    </div>
+                    <div class="cart-actions">
+                        <a href="galeria.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Seguir Comprando</a>
+                        <a href="pago.html" class="btn btn-primary" style="padding: 1rem 3rem; font-size:1.1rem;">Proceder al Pago <i class="fas fa-credit-card"></i></a>
+                    </div>
+                `;
+
+                container.innerHTML = cartHTML;
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="cart-empty"><p style="color:red;">Error al cargar el carrito.</p></div>';
+            }
+        });
+
+        async function eliminarDelCarrito(idDetalle) {
+            if(confirm('¿Deseas quitar este artículo del carrito?')) {
+                const exito = await eliminarItemCarrito(idDetalle);
+                if(exito) {
+                    window.location.reload();
+                } else {
+                    alert('Error al eliminar articulo');
+                }
+            }
+        }
+
+        function renderEmptyCart(container) {
+            container.innerHTML = `
+                <div class="cart-empty">
+                    <i class="fas fa-shopping-basket fa-4x" style="color: #ddd; margin-bottom: 1.5rem;"></i>
+                    <h2 style="color: var(--color-primary); margin-bottom: 1rem;">Tu carrito está vacío</h2>
+                    <p style="color: var(--color-text-light); margin-bottom: 2rem;">Aún no has agregado ningún delicioso postre a tu carrito.</p>
+                    <a href="galeria.html" class="btn btn-primary" style="padding: 0.8rem 2rem;">Ver Catálogo</a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>
