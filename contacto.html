@@ -36,43 +36,50 @@
             <div
                 style="background-color: #fcf5ee; padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
                 <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--color-primary); text-align: center;">Envíanos un Mensaje</h3>
-                <form action="#" method="POST">
+                <form id="contactForm">
 
                     <div style="margin-bottom: 1rem;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Nombre</label>
-                        <input type="text"
+                        <input type="text" id="form-nombre" name="nombre"
                             style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius);"
                             placeholder="Tu nombre" required>
                     </div>
 
                     <div style="margin-bottom: 1rem;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Correo Electrónico</label>
-                        <input type="email"
+                        <input type="email" id="form-correo" name="correo"
                             style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius);"
                             placeholder="tu@correo.com" required>
                     </div>
 
                     <div style="margin-bottom: 1rem;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Asunto</label>
-                        <select
+                        <select id="form-asunto" name="asunto"
                             style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius);">
-                            <option>Duda General</option>
-                            <option>Cotización Evento Grande (Boda/XV años)</option>
-                            <option>Problema con Mi Pedido</option>
-                            <option>Trabaja con Nosotros</option>
+                            <option value="Duda General">Duda General</option>
+                            <option value="Cotización Evento Grande (Boda/XV años)">Cotización Evento Grande (Boda/XV años)</option>
+                            <option value="Problema con Mi Pedido">Problema con Mi Pedido</option>
+                            <option value="Trabaja con Nosotros">Trabaja con Nosotros</option>
                         </select>
                     </div>
 
                     <div style="margin-bottom: 1.5rem;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Mensaje</label>
-                        <textarea
+                        <textarea id="form-mensaje" name="mensaje"
                             style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius); min-height: 120px; resize: vertical;"
                             placeholder="¿En qué te podemos ayudar?" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar Mensaje</button>
+                    <button type="submit" id="btn-submit" class="btn btn-primary" style="width: 100%;">Enviar Mensaje</button>
 
                 </form>
+
+                <!-- Mensaje de Éxito Oculto Inicialmente -->
+                <div id="success-message" style="display: none; background-color: #d1fae5; color: #065f46; padding: 1.5rem; border-radius: var(--border-radius); text-align: center; border: 1px solid #34d399; margin-top: 1rem;">
+                    <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; color: #10b981;"></i>
+                    <h4 style="margin-bottom: 0.5rem;">¡Mensaje enviado con éxito!</h4>
+                    <p>Hemos recibido tus datos. Te responderemos al correo proporcionado a la brevedad posible.</p>
+                </div>
             </div>
 
         </div>
@@ -83,6 +90,39 @@
 
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // INSTRUCCIÓN: Sustituye 'TU_PUBLIC_KEY' con la Public Key que te dé EmailJS
+            emailjs.init("thjPuoMDP3dKRlyi7");
+        })();
+
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btn-submit');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            btn.disabled = true;
+
+            // INSTRUCCIÓN: Sustituye estos dos valores con los de tu cuenta de EmailJS
+            const serviceID = 'service_dr6spge'; // O el service ID que hayas creado (Ej. 'service_xxxxxx')
+            const templateID = 'template_9uoe67d'; // Reemplazar (Ej. 'template_xxxxxx')
+
+            emailjs.sendForm(serviceID, templateID, this)
+                .then(() => {
+                    // Éxito: Ocultar formulario y mostrar mensaje verde
+                    document.getElementById('contactForm').style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
+                }, (err) => {
+                    // Error
+                    btn.innerHTML = 'Enviar Mensaje';
+                    btn.disabled = false;
+                    alert("Ocurrió un error al enviar el mensaje. Por favor intenta de nuevo. Error: " + JSON.stringify(err));
+                });
+        });
+    </script>
 </body>
 
 </html>
