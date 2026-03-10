@@ -21,7 +21,16 @@ async function fetchProductos() {
             headers: HEADERS
         });
         if (!response.ok) throw new Error('Error al obtener productos');
-        return await response.json();
+        const productos = await response.json();
+        
+        // Add full URL to image_url
+        const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/productos/`;
+        return productos.map(p => {
+            if (p.imagen_url && !p.imagen_url.startsWith('http')) {
+                p.imagen_url = STORAGE_BASE + p.imagen_url;
+            }
+            return p;
+        });
     } catch (error) {
         console.error('fetchProductos error:', error);
         return [];
@@ -56,7 +65,16 @@ async function fetchProductoById(id) {
         });
         if (!response.ok) throw new Error('Error al obtener el producto');
         const data = await response.json();
-        return data.length > 0 ? data[0] : null;
+        
+        if (data.length > 0) {
+            const p = data[0];
+            const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/productos/`;
+            if (p.imagen_url && !p.imagen_url.startsWith('http')) {
+                p.imagen_url = STORAGE_BASE + p.imagen_url;
+            }
+            return p;
+        }
+        return null;
     } catch (error) {
         console.error('fetchProductoById error:', error);
         return null;
@@ -192,7 +210,16 @@ async function obtenerItemsCarrito(idCarrito) {
         const res = await fetch(`${SUPABASE_URL}/carrito_detalle?id_carrito=eq.${idCarrito}&select=*,productos(*),producto_variantes(*)`, {
             headers: HEADERS
         });
-        return await res.json();
+        const items = await res.json();
+        
+        // Add full URL to image_url for cart items
+        const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/productos/`;
+        return items.map(item => {
+            if (item.productos && item.productos.imagen_url && !item.productos.imagen_url.startsWith('http')) {
+                item.productos.imagen_url = STORAGE_BASE + item.productos.imagen_url;
+            }
+            return item;
+        });
     } catch (e) {
         console.error('obtenerItemsCarrito error:', e);
         return [];
@@ -271,11 +298,11 @@ async function registrarCliente(datosCliente) {
 }
 
 /**
- * Inicia sesión buscando email y contraseña exactos
+ * Inicia sesión buscando correo y contraseña exactos
  */
 async function loginCliente(email, password) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/clientes?select=*&email=eq.${encodeURIComponent(email)}&password=eq.${encodeURIComponent(password)}&limit=1`, {
+        const response = await fetch(`${SUPABASE_URL}/clientes?select=*&correo=eq.${encodeURIComponent(email)}&password=eq.${encodeURIComponent(password)}&limit=1`, {
             method: 'GET',
             headers: HEADERS
         });
@@ -286,6 +313,29 @@ async function loginCliente(email, password) {
         return data.length > 0 ? data[0] : null;
     } catch (error) {
         console.error('loginCliente error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Actualiza los datos de un cliente existente
+ */
+async function actualizarCliente(idCliente, datosActualizados) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/clientes?id_cliente=eq.${idCliente}`, {
+            method: 'PATCH',
+            headers: HEADERS,
+            body: JSON.stringify(datosActualizados)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al actualizar el cliente');
+        }
+
+        return true;
+    } catch (error) {
+        console.error('actualizarCliente error:', error);
         throw error;
     }
 }

@@ -164,10 +164,13 @@
                 
                 if (user) {
                     localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userEmail', user.email);
+                    localStorage.setItem('userEmail', user.correo);
                     localStorage.setItem('userId', user.id_cliente);
                     localStorage.setItem('userName', user.nombre);
-                    window.location.href = 'crear-pedido.html';
+                    
+                    const redirectUrl = localStorage.getItem('redirectAfterLogin') || 'crear-pedido.html';
+                    localStorage.removeItem('redirectAfterLogin'); // Limpiar para futuros usos
+                    window.location.href = redirectUrl;
                 } else {
                     alert('Correo electrónico o contraseña incorrectos.');
                     btn.textContent = 'Iniciar Sesión';

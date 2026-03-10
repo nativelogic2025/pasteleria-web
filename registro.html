@@ -117,15 +117,9 @@
 
             <form action="login.html" method="GET" id="registerForm">
 
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label" for="nombre">Nombre</label>
-                        <input type="text" id="nombre" class="form-control" placeholder="Nombre" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="apellidos">Apellidos</label>
-                        <input type="text" id="apellidos" class="form-control" placeholder="Apellidos" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label" for="nombre">Nombre Completo</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Ej. Juan Pérez" required>
                 </div>
 
                 <div class="form-group">
@@ -166,9 +160,8 @@
 
             const datosCliente = {
                 nombre: document.getElementById('nombre').value.trim(),
-                apellidos: document.getElementById('apellidos').value.trim(),
                 telefono: document.getElementById('telefono').value.trim(),
-                email: document.getElementById('email').value.trim(),
+                correo: document.getElementById('email').value.trim(),
                 password: document.getElementById('password').value
             };
 

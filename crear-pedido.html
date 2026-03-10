@@ -163,9 +163,17 @@
                 <form id="orderForm">
 
                     <h3 class="form-section-title">1. Datos de Entrega</h3>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label class="radio-card" style="display: inline-block; padding: 0.5rem 1rem; margin-right: 1rem;">
+                            <input type="checkbox" id="envioDomicilioCheckbox" style="display: inline-block; margin-right: 0.5rem; transform: scale(1.2);">
+                            Quiero Envío a Domicilio ($50 MXN)
+                        </label>
+                        <span style="color: var(--color-text-light); font-size: 0.9rem;">(Si no lo marcas, recogerás en sucursal)</span>
+                    </div>
+
                     <div class="grid-2">
                         <div class="form-group">
-                            <label class="form-label">Fecha de Entrega</label>
+                            <label class="form-label">Fecha de Entrega/Recolección</label>
                             <input type="date" id="fecha" class="form-control" required>
                         </div>
                         <div class="form-group">
@@ -173,10 +181,9 @@
                             <input type="time" id="hora" class="form-control" required>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group hidden" id="domicilioGroup">
                         <label class="form-label">Domicilio de Entrega (Añadir referencias)</label>
-                        <input type="text" id="domicilio" class="form-control" placeholder="Calle, Número, Colonia..."
-                            required>
+                        <input type="text" id="domicilio" class="form-control" placeholder="Calle, Número, Colonia...">
                     </div>
 
                     <h3 class="form-section-title">2. Selección de Producto</h3>
@@ -233,30 +240,32 @@
                         </div>
                     </div>
 
-                    <h3 class="form-section-title">3. Detalles del Sabor y Diseño</h3>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">Sabor / Especialidad</label>
-                            <select id="sabor" class="form-control" required>
-                                <option value="" disabled selected>-- Elige el sabor --</option>
-                                <option value="Chocolate Trufa">Chocolate Trufa</option>
-                                <option value="Zarzamora con Queso">Zarzamora con Queso</option>
-                                <option value="Fresa Natural">Fresa Natural</option>
-                                <option value="Vainilla Tradicional">Vainilla Tradicional</option>
-                                <option value="Tres Leches">Tres Leches Estandar</option>
-                                <option value="Zanahoria Nuez">Zanahoria con Nuez</option>
-                            </select>
+                    <div id="seccionSaborDiseno">
+                        <h3 class="form-section-title">3. Detalles del Sabor y Diseño</h3>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Sabor / Especialidad</label>
+                                <select id="sabor" class="form-control">
+                                    <option value="" disabled selected>-- Elige el sabor --</option>
+                                    <option value="Chocolate Trufa">Chocolate Trufa</option>
+                                    <option value="Zarzamora con Queso">Zarzamora con Queso</option>
+                                    <option value="Fresa Natural">Fresa Natural</option>
+                                    <option value="Vainilla Tradicional">Vainilla Tradicional</option>
+                                    <option value="Tres Leches">Tres Leches Estandar</option>
+                                    <option value="Zanahoria Nuez">Zanahoria con Nuez</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="dedicatoria">Mensaje o Dedicatoria Corta</label>
+                                <input type="text" id="dedicatoria" class="form-control"
+                                    placeholder="Ej. ¡Feliz Cumpleaños María!">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="dedicatoria">Mensaje o Dedicatoria Corta</label>
-                            <input type="text" id="dedicatoria" class="form-control"
-                                placeholder="Ej. ¡Feliz Cumpleaños María!">
+                            <label class="form-label" for="descripcion">Descripción de Decoración Adicional</label>
+                            <textarea id="descripcion" class="form-control" style="min-height: 80px;"
+                                placeholder="Describe colores, estilo, adornos extra..."></textarea>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="descripcion">Descripción de Decoración Adicional</label>
-                        <textarea id="descripcion" class="form-control" style="min-height: 80px;"
-                            placeholder="Describe colores, estilo, adornos extra..."></textarea>
                     </div>
 
                     <h3 class="form-section-title">4. Resumen y Cotización</h3>
@@ -268,7 +277,7 @@
                         </div>
                         <div class="price-row" style="color: var(--color-text-light);">
                             <span>Costo de Flete (Envío):</span>
-                            <span id="txtFlete">$50.00 MXN</span>
+                            <span id="txtFlete">$0.00 MXN</span>
                         </div>
                         <div class="price-row price-total">
                             <span>TOTAL A PAGAR:</span>
@@ -302,9 +311,20 @@
     <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
     <script>
-        // 1. Verificar Autenticación
-        if (localStorage.getItem('isLoggedIn')) {
-            document.getElementById('navAccountBtn').textContent = "Mi Perfil";
+        // 1. Verificar Autenticación Estricta
+        if (!localStorage.getItem('isLoggedIn') || !localStorage.getItem('userId')) {
+            alert("Debes iniciar sesión para poder crear y personalizar un pedido.");
+            // Store the current product so they return directly to it, if any
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('producto')) {
+                localStorage.setItem('redirectAfterLogin', `crear-pedido.html?producto=${params.get('producto')}`);
+            } else {
+                localStorage.setItem('redirectAfterLogin', 'crear-pedido.html');
+            }
+            window.location.href = 'login.html';
+        } else {
+            const btn = document.getElementById('navAccountBtn');
+            if (btn) btn.textContent = "Mi Perfil";
         }
 
         // Configurar fecha mínima al día de hoy
@@ -324,8 +344,26 @@
 
         // Valores de Precio
         let precioBase = 0;
-        const costoFlete = 50.00;
+        let costoFlete = 0.00;
         let dbProductos = [];
+
+        const envioCheckbox = document.getElementById('envioDomicilioCheckbox');
+        const domicilioGroup = document.getElementById('domicilioGroup');
+        const domicilioInput = document.getElementById('domicilio');
+
+        envioCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                domicilioGroup.classList.remove('hidden');
+                domicilioInput.required = true;
+                costoFlete = 50.00;
+            } else {
+                domicilioGroup.classList.add('hidden');
+                domicilioInput.required = false;
+                domicilioInput.value = '';
+                costoFlete = 0.00;
+            }
+            actualizarPrecios();
+        });
 
         // Fetch de productos desde Supabase
         document.addEventListener('DOMContentLoaded', async () => {
@@ -339,7 +377,9 @@
                         const option = document.createElement('option');
                         option.value = prod.id_producto;
                         option.textContent = prod.nombre;
-                        option.dataset.isPastel = prod.categorias?.nombre?.toLowerCase().includes('pastel') || prod.nombre.toLowerCase().includes('pastel');
+                        const catLower = prod.categorias?.nombre?.toLowerCase() || '';
+                        option.dataset.isPastel = catLower.includes('pastel') || prod.nombre.toLowerCase().includes('pastel');
+                        option.dataset.categoria = catLower;
                         selectProducto.appendChild(option);
                     });
                 } else {
@@ -371,11 +411,19 @@
             const selectedOption = this.options[this.selectedIndex];
             const productId = parseInt(this.value);
             const isPastel = selectedOption.dataset.isPastel === 'true';
+            const categoria = selectedOption.dataset.categoria;
 
             if (isPastel) {
                 opcionesPastel.classList.remove('hidden');
             } else {
                 opcionesPastel.classList.add('hidden');
+            }
+
+            const seccionSaborDiseno = document.getElementById('seccionSaborDiseno');
+            if (['velas', 'extras'].includes(categoria)) {
+                if (seccionSaborDiseno) seccionSaborDiseno.classList.add('hidden');
+            } else {
+                if (seccionSaborDiseno) seccionSaborDiseno.classList.remove('hidden');
             }
 
             // Find product and populate variants
@@ -384,7 +432,19 @@
                 producto.producto_variantes.forEach(v => {
                     const el = document.createElement('option');
                     el.value = v.id_variante; 
-                    el.textContent = v.tamaño + (v.porciones ? ` (${v.porciones} personas)` : '');
+                    
+                    let texto = `${v.tamaño}`;
+                    if (v.porciones) texto += ` (${v.porciones} personas)`;
+                    texto += ` - $${v.precio_venta} MXN`;
+                    if (v.stock !== null) {
+                        texto += ` (Stock: ${v.stock})`;
+                        if (v.stock === 0) {
+                            texto += ' [Agotado]';
+                            el.disabled = true;
+                        }
+                    }
+                    el.textContent = texto;
+                    
                     el.dataset.precio = v.precio_venta;
                     selectTamano.appendChild(el);
                 });
@@ -420,6 +480,7 @@
 
         function actualizarPrecios() {
             txtBase.textContent = `$${precioBase.toFixed(2)} MXN`;
+            txtFlete.textContent = `$${costoFlete.toFixed(2)} MXN`;
             const total = precioBase > 0 ? precioBase + costoFlete : 0;
             txtTotal.textContent = `$${total.toFixed(2)} MXN`;
 
@@ -436,6 +497,8 @@
 
             // Recolectar datos extra
             const orderData = {
+                envio_domicilio: document.getElementById('envioDomicilioCheckbox').checked,
+                costo_flete: document.getElementById('envioDomicilioCheckbox').checked ? 50.00 : 0.00,
                 fecha: document.getElementById('fecha').value,
                 hora: document.getElementById('hora').value,
                 domicilio: document.getElementById('domicilio').value,

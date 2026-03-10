@@ -14,12 +14,28 @@ class HeaderComponent extends HTMLElement {
                     <a href="ver-pedido.html">Ver Pedido</a>
                     <a href="contacto.html">Contáctanos</a>
                     <a href="carrito.html" class="nav-cart-btn" style="color: var(--color-primary); font-size: 1.2rem; margin-left: 0.5rem;" title="Mi Carrito"><i class="fas fa-shopping-cart"></i></a>
-                    <a href="login.html" class="btn btn-primary" style="padding: 0.4rem 1.2rem; margin-left:1rem;" id="navAccountBtn">Mi Cuenta</a>
+                    <a href="login.html" class="btn btn-primary" style="padding: 0.4rem 1.2rem; margin-left:1rem; min-width: 120px; text-align: center;" id="navAccountBtn">Mi Cuenta</a>
                 </nav>
                 <div class="mobile-menu-btn"><i class="fas fa-bars"></i></div>
             </div>
         </header>
         `;
+
+        // Lógica de usuario logueado en Navbar
+        setTimeout(() => {
+            const btn = document.getElementById('navAccountBtn');
+            if (btn && localStorage.getItem('isLoggedIn') === 'true') {
+                const userName = localStorage.getItem('userName') || 'Perfil';
+                // Mostrar solo el primer nombre si es muy largo
+                const shortName = userName.split(' ')[0];
+                btn.innerHTML = `<i class="fas fa-user-circle" style="margin-right:0.4rem; font-size: 1.1rem;"></i> Hola, ${shortName}`;
+                btn.href = 'perfil.html';
+                btn.style.backgroundColor = 'var(--color-bg)';
+                btn.style.color = 'var(--color-primary)';
+                btn.style.border = '1px solid var(--color-primary)';
+                btn.title = "Ir a mi perfil";
+            }
+        }, 50); // Small delay to let DOM render
     }
 }
 

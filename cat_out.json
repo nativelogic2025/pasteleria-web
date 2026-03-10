@@ -1,0 +1,50 @@
+﻿{
+    "value":  [
+                  {
+                      "id_categoria":  1,
+                      "nombre":  "pasteles",
+                      "descripcion":  null,
+                      "id_tipo":  null,
+                      "imagen_url":  null,
+                      "activo":  true,
+                      "creado_en":  "2026-02-27T19:40:42.396752"
+                  },
+                  {
+                      "id_categoria":  2,
+                      "nombre":  "postres",
+                      "descripcion":  null,
+                      "id_tipo":  null,
+                      "imagen_url":  null,
+                      "activo":  true,
+                      "creado_en":  "2026-02-27T21:21:14.15936"
+                  },
+                  {
+                      "id_categoria":  4,
+                      "nombre":  "extras",
+                      "descripcion":  null,
+                      "id_tipo":  null,
+                      "imagen_url":  null,
+                      "activo":  true,
+                      "creado_en":  "2026-02-27T21:22:34.219438"
+                  },
+                  {
+                      "id_categoria":  5,
+                      "nombre":  "velas",
+                      "descripcion":  null,
+                      "id_tipo":  null,
+                      "imagen_url":  null,
+                      "activo":  true,
+                      "creado_en":  "2026-02-27T21:38:16.026032"
+                  },
+                  {
+                      "id_categoria":  3,
+                      "nombre":  "repostería",
+                      "descripcion":  null,
+                      "id_tipo":  null,
+                      "imagen_url":  null,
+                      "activo":  true,
+                      "creado_en":  "2026-02-27T21:21:52.624416"
+                  }
+              ],
+    "Count":  5
+}
