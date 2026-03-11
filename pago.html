@@ -364,6 +364,11 @@
                     
                     // 4. Completar el carrito
                     await completarCarrito(idCarrito);
+                    
+                    // Asegurar que el carrito se limpie vaciándolo también y borrando sesión
+                    await vaciarCarrito(idCarrito);
+                    localStorage.removeItem('carritoActivo');
+                    cartItems = [];
                 }
 
                 // Preload logo

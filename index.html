@@ -27,11 +27,11 @@
     <!-- Hero Section -->
     <section class="hero">
         <video autoplay loop muted playsinline class="hero-video">
-            <source src="videos/pastel.mp4" type="video/mp4">
+            <source src="videos/video.mp4" type="video/mp4">
         </video>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <h1 class="hero-title">El Sabor de las Estrellas en cada Bocado</h1>
+            <h1 class="hero-title">El Sabor De Las Estrellas En Cada Bocado</h1>
             <p class="hero-subtitle">Pasteles artesanales, creados con pasión y los mejores ingredientes para tus
                 momentos especiales.</p>
             <div class="hero-buttons">
@@ -45,10 +45,11 @@
     <section class="section featured">
         <div class="container">
             <h2 class="section-title">Nuestras Especialidades</h2>
-            
+
             <div class="grid featured-grid" id="homepageCatalog">
                 <div style="text-align: center; grid-column: 1 / -1; padding: 2rem;">
-                    <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--color-primary); margin-bottom: 1rem;"></i>
+                    <i class="fas fa-spinner fa-spin fa-2x"
+                        style="color: var(--color-primary); margin-bottom: 1rem;"></i>
                     <p>Cargando nuestras especialidades...</p>
                 </div>
             </div>
@@ -96,12 +97,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const grid = document.getElementById('homepageCatalog');
-            
+
             try {
                 // Fetch first 3 products for homepage
                 const productos = await fetchProductos();
                 if (!grid) return;
-                
+
                 grid.innerHTML = '';
                 const displayLimit = 3;
                 let cardsRendered = 0;
@@ -112,8 +113,8 @@
                 }
 
                 productos.forEach(producto => {
-                    if(cardsRendered >= displayLimit) return;
-                    
+                    if (cardsRendered >= displayLimit) return;
+
                     let precioBase = 0;
                     if (producto.producto_variantes && producto.producto_variantes.length > 0) {
                         const precios = producto.producto_variantes.map(v => parseFloat(v.precio_venta));

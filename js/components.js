@@ -80,6 +80,7 @@ class FooterComponent extends HTMLElement {
                     <p><i class="fas fa-map-marker-alt"></i> Av, Boulevar Ejército Mexicano No.1, Centro, 43803 Tizayuca, Hgo.</p>
                     <p><i class="fas fa-phone"></i> +52 1 55 1572 3305</p>
                     <p><i class="fas fa-envelope"></i> pastlria.la.estrella@gmail.com</p>
+                    <p><i class="fas fa-clock"></i> Horario: Lunes a Domingo de 9 am a 9 pm</p>
                 </div>
             </div>
             <div class="footer-bottom">
