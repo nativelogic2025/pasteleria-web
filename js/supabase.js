@@ -190,6 +190,59 @@ async function actualizarEstadoPago(idPedido, nuevoEstadoPago) {
 }
 
 /**
+ * Upload receipt to Supabase Storage 'comprobantes' bucket
+ */
+async function subirComprobante(folio, file) {
+    try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${folio}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        // Uses the storage API
+        const response = await fetch(`${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/comprobantes/${filePath}`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                // No need to set Content-Type to application/json, it needs to be the file type
+                'Content-Type': file.type
+            },
+            body: file
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al subir el comprobante');
+        }
+
+        // Return the public URL
+        const publicUrlResponse = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/comprobantes/${filePath}`;
+        return publicUrlResponse;
+    } catch (error) {
+        console.error('subirComprobante error:', error);
+        return null;
+    }
+}
+
+/**
+ * Update the payment record with the receipt URL
+ */
+async function actualizarPagoConComprobante(idPago, comprobanteUrl) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/pagos?id_pago=eq.${idPago}`, {
+            method: 'PATCH',
+            headers: HEADERS,
+            body: JSON.stringify({ comprobante_url: comprobanteUrl, estado_pago: 'validacion_pendiente' })
+        });
+        if (!response.ok) throw new Error('Error al actualizar el pago con el comprobante');
+        return true;
+    } catch (error) {
+        console.error('actualizarPagoConComprobante error:', error);
+        return false;
+    }
+}
+
+/**
  * --- SHOPPING CART FUNCTIONS ---
  */
 

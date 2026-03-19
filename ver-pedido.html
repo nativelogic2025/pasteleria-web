@@ -254,6 +254,18 @@
                     </h3>
                     <iframe id="pdfViewer" class="pdf-viewer"></iframe>
                 </div>
+
+                <!-- Sección para subir comprobante de transferencia -->
+                <div id="uploadReceiptSection" style="display: none; margin-top: 2rem; background: #f9f6f0; padding: 2rem; border-radius: var(--border-radius); border-left: 4px solid var(--color-primary);">
+                    <h3 style="color: var(--color-primary); margin-bottom: 1rem;"><i class="fas fa-cloud-upload-alt"></i> Sube tu Comprobante de Pago</h3>
+                    <p style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--color-text-light);">Para validar tu pago por transferencia, por favor adjunta tu comprobante (imagen o PDF max 5MB).</p>
+                    
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <input type="file" id="receiptFile" accept="image/*,.pdf" style="font-family: inherit; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--border-radius); background: white; flex: 1; min-width: 200px;">
+                        <button id="btnUploadReceipt" class="btn btn-primary"><i class="fas fa-upload"></i> Subir Comprobante</button>
+                    </div>
+                    <div id="uploadStatusMsg" style="margin-top: 1rem; font-weight: 500; display: none;"></div>
+                </div>
             </div>
 
         </div>
@@ -265,6 +277,13 @@
     <script src="js/supabase.js"></script>
     <script src="js/pdf-generator.js"></script>
     <script src="js/main.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("thjPuoMDP3dKRlyi7");
+        })();
+    </script>
     <script>
         // Check Auth visual
         if (localStorage.getItem('isLoggedIn')) {
@@ -353,6 +372,19 @@
                          currentPdfDataUri = "";
                     }
 
+                    // Logica de comprobante
+                    const uploadSection = document.getElementById('uploadReceiptSection');
+                    if (pago && pago.metodo_pago === 'transferencia' && pago.estado_pago === 'pendiente') {
+                        uploadSection.style.display = 'block';
+                        uploadSection.dataset.idPago = pago.id_pago;
+                        uploadSection.dataset.folio = orderData.folio;
+                    } else if (pago && pago.metodo_pago === 'transferencia' && pago.estado_pago === 'validacion_pendiente') {
+                        uploadSection.style.display = 'block';
+                        uploadSection.innerHTML = '<div style="color: #10b981; font-weight: 500;"><i class="fas fa-info-circle"></i> Tu comprobante ya ha sido subido y está en validación por el equipo de Pastelería La Estrella.</div>';
+                    } else {
+                        uploadSection.style.display = 'none';
+                    }
+
                     orderResult.classList.add('active');
                 } else {
                     errorMsg.style.display = 'block';
@@ -381,6 +413,71 @@
                 alert("El PDF ya no se encuentra disponible.");
             }
         });
+
+        // Logica para subir el comprobante
+        const btnUploadReceipt = document.getElementById('btnUploadReceipt');
+        if(btnUploadReceipt) {
+            btnUploadReceipt.addEventListener('click', async () => {
+                const receiptFile = document.getElementById('receiptFile');
+                const uploadStatusMsg = document.getElementById('uploadStatusMsg');
+                
+                const file = receiptFile.files[0];
+                if (!file) {
+                    alert("Por favor selecciona un archivo.");
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("El archivo es demasiado grande. Máximo 5MB.");
+                    return;
+                }
+
+                const uploadSection = document.getElementById('uploadReceiptSection');
+                const idPago = uploadSection.dataset.idPago;
+                const folio = uploadSection.dataset.folio;
+
+                btnUploadReceipt.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+                btnUploadReceipt.disabled = true;
+                uploadStatusMsg.style.display = 'block';
+                uploadStatusMsg.style.color = 'var(--color-primary)';
+                uploadStatusMsg.textContent = 'Subiendo archivo a la nube...';
+
+                try {
+                    const urlComprobante = await subirComprobante(folio, file);
+                    if (!urlComprobante) throw new Error("Error en la subida a Storage");
+
+                    uploadStatusMsg.textContent = 'Actualizando registro del pago...';
+                    const successDB = await actualizarPagoConComprobante(idPago, urlComprobante);
+                    if(!successDB) throw new Error("Error al actualizar la base de datos");
+
+                    uploadStatusMsg.textContent = 'Notificando a la pastelería...';
+                    
+                    // Notificar via EmailJS
+                    const templateParams = {
+                        nombre: "Sistema web",
+                        correo: "notificaciones@pastelerialaestrella.com",
+                        asunto: `Comprobante de Pago Subido - Folio ${folio}`,
+                        mensaje: `El cliente ha subido un comprobante de pago para el folio ${folio}.\n\nPuedes verlo y descargarlo en el siguiente enlace:\n${urlComprobante}`
+                    };
+
+                    await emailjs.send('service_dr6spge', 'template_9uoe67d', templateParams);
+
+                    uploadStatusMsg.style.color = '#10b981';
+                    uploadStatusMsg.innerHTML = '<i class="fas fa-check-circle"></i> ¡Comprobante subido con éxito! Tu pago está en validación.';
+                    
+                    // Ocultar input y botón
+                    receiptFile.style.display = 'none';
+                    btnUploadReceipt.style.display = 'none';
+
+                } catch (error) {
+                    console.error("Error al subir comprobante", error);
+                    uploadStatusMsg.style.color = 'red';
+                    uploadStatusMsg.textContent = 'Ocurrió un error. Evita subir archivos muy grandes.';
+                    btnUploadReceipt.innerHTML = '<i class="fas fa-upload"></i> Subir Comprobante';
+                    btnUploadReceipt.disabled = false;
+                }
+            });
+        }
 
     </script>
 </body>
