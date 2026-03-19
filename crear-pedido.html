@@ -366,7 +366,17 @@
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-top: 2rem; text-align: center;">
+                    <div class="form-group" style="margin-top: 1.5rem; text-align: center;">
+                        <label class="form-label" style="display: inline-block; margin-right: 1rem; font-size: 1.1rem; color: var(--color-primary);">Cantidad:</label>
+                        <div style="display: inline-flex; align-items: center; border: 2px solid var(--color-border); border-radius: var(--border-radius); overflow: hidden; background: white; vertical-align: middle;">
+                            <button type="button" id="btnMinusQty" style="background: #fdfaf6; border: none; padding: 0.6rem 1.2rem; cursor: pointer; border-right: 1px solid var(--color-border); font-size: 1.1rem; color: var(--color-primary); transition: all 0.2s;"><i class="fas fa-minus"></i></button>
+                            <input type="number" id="cantidad" value="1" min="1" max="50" style="width: 70px; text-align: center; border: none; outline: none; font-size: 1.2rem; font-weight: bold; padding: 0.6rem 0; color: var(--color-text);">
+                            <button type="button" id="btnPlusQty" style="background: #fdfaf6; border: none; padding: 0.6rem 1.2rem; cursor: pointer; border-left: 1px solid var(--color-border); font-size: 1.1rem; color: var(--color-primary); transition: all 0.2s;"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <button type="button" id="btnResetForm" class="btn btn-outline" style="font-size: 1.1rem; padding: 1rem 2rem;"><i class="fas fa-eraser"></i> Limpiar Artículo</button>
                         <button type="submit" class="btn btn-primary"
                             style="font-size: 1.2rem; padding: 1rem 3rem;">Agregar al Carrito <i
                                 class="fas fa-shopping-cart" style="margin-left: 10px;"></i></button>
@@ -459,7 +469,51 @@
         // Valores de Precio
         let precioBase = 0;
         let costoFlete = 0.00;
+        let cantidadActual = 1;
         let dbProductos = [];
+
+        // Botones de Cantidad
+        const inputCantidad = document.getElementById('cantidad');
+        document.getElementById('btnMinusQty').addEventListener('click', () => {
+            if (inputCantidad.value > 1) {
+                inputCantidad.value = parseInt(inputCantidad.value) - 1;
+                cantidadActual = parseInt(inputCantidad.value);
+                actualizarPrecios();
+            }
+        });
+        document.getElementById('btnPlusQty').addEventListener('click', () => {
+            inputCantidad.value = parseInt(inputCantidad.value) + 1;
+            cantidadActual = parseInt(inputCantidad.value);
+            actualizarPrecios();
+        });
+        inputCantidad.addEventListener('change', (e) => {
+            if (e.target.value < 1) e.target.value = 1;
+            cantidadActual = parseInt(e.target.value);
+            actualizarPrecios();
+        });
+        
+        // Botón Reset
+        document.getElementById('btnResetForm').addEventListener('click', () => {
+            if(confirm('¿Deseas limpiar tu configuración actual de este artículo?')) {
+                document.getElementById('producto').value = "";
+                const evt = new Event('change');
+                document.getElementById('producto').dispatchEvent(evt);
+                
+                document.getElementById('sabor').value = "";
+                document.getElementById('dedicatoria').value = "";
+                document.getElementById('descripcion').value = "";
+                inputCantidad.value = "1";
+                cantidadActual = 1;
+                
+                const rSencillo = document.querySelector('input[name="armado"][value="Sencillo"]');
+                if(rSencillo) rSencillo.checked = true;
+                
+                document.getElementById('pisos').value = "1";
+                document.getElementById('diseno_pastel').value = "Normal Crema";
+                
+                actualizarPrecios();
+            }
+        });
 
         const envioCheckbox = document.getElementById('envioDomicilioCheckbox');
         const domicilioGroup = document.getElementById('domicilioGroup');
@@ -658,9 +712,16 @@
         });
 
         function actualizarPrecios() {
-            txtBase.textContent = `$${precioBase.toFixed(2)} MXN`;
+            let subtotalProductos = precioBase * cantidadActual;
+            
+            if(cantidadActual > 1 && precioBase > 0) {
+                txtBase.textContent = `$${subtotalProductos.toFixed(2)} MXN (x${cantidadActual})`;
+            } else {
+                txtBase.textContent = `$${precioBase.toFixed(2)} MXN`;
+            }
+            
             txtFlete.textContent = `$${costoFlete.toFixed(2)} MXN`;
-            const total = precioBase > 0 ? precioBase + costoFlete : 0;
+            const total = subtotalProductos > 0 ? subtotalProductos + costoFlete : 0;
             txtTotal.textContent = `$${total.toFixed(2)} MXN`;
 
             const deposito = total / 2;
@@ -706,7 +767,7 @@
                 const itemData = {
                     id_carrito: idCarrito,
                     id_variante: parseInt(selectTamano.value),
-                    cantidad: 1,
+                    cantidad: cantidadActual,
                     precio_unitario: precioBase,
                     fecha: orderData.fecha || null,
                     hora: orderData.hora || null,
@@ -756,6 +817,8 @@
                             document.getElementById('sabor').value = "";
                             document.getElementById('dedicatoria').value = "";
                             document.getElementById('descripcion').value = "";
+                            document.getElementById('cantidad').value = "1";
+                            cantidadActual = 1;
                             
                             const rSencillo = document.querySelector('input[name="armado"][value="Sencillo"]');
                             if(rSencillo) rSencillo.checked = true;
