@@ -18,6 +18,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Ribbon para los Más Vendidos */
+        .ribbon {
+            position: absolute;
+            top: 15px;
+            left: -8px;
+            background: linear-gradient(135deg, #FFD700, #FDB931);
+            color: #5c3a21;
+            padding: 6px 15px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            border-radius: 0 4px 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ribbon::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            border-top: 6px solid #b89b00;
+            border-left: 8px solid transparent;
+        }
+    </style>
 </head>
 
 <body>
@@ -41,10 +68,19 @@
         </div>
     </section>
 
-    <!-- Destacados -->
+    <!-- Destacados / Más Vendidos -->
     <section class="section featured">
         <div class="container">
-            <h2 class="section-title">Nuestras Especialidades</h2>
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <span
+                    style="color: var(--color-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;">Favoritos
+                    de nuestros clientes</span>
+                <h2 class="section-title" style="margin-bottom: 0px; border-bottom: none; padding-bottom: 0;">Los Más
+                    Vendidos <i class="fas fa-award" style="color: #FFD700; margin-left: 10px;"></i></h2>
+                <div
+                    style="width: 80px; height: 3px; background-color: var(--color-primary); margin: 0.5rem auto 0 auto; border-radius: 5px;">
+                </div>
+            </div>
 
             <div class="grid featured-grid" id="homepageCatalog">
                 <div style="text-align: center; grid-column: 1 / -1; padding: 2rem;">
@@ -71,7 +107,7 @@
                 <h2 class="section-title left">Tradición y Calidad desde 1999</h2>
                 <p>En Pastelería La Estrella, somos una pastelería tradicional fundada en 1999 con el firme propósito de
                     endulzar la vida de nuestras familias y clientes. Cada una de nuestras recetas está hecha con amor,
-                    tradición y los ingredientes de la mas alta calidad calidad.</p>
+                    tradición y los ingredientes de la mas alta calidad.</p>
                 <p>Nuestro compromiso no es solo crear pasteles que se vean increíbles, sino que su sabor se quede en tu
                     memoria para siempre.</p>
 
@@ -112,6 +148,8 @@
                     return;
                 }
 
+                let index = 0;
+
                 productos.forEach(producto => {
                     if (cardsRendered >= displayLimit) return;
 
@@ -121,9 +159,14 @@
                         precioBase = Math.min(...precios);
                     }
 
+                    // Simular que los primeros 2 son los más vendidos
+                    const isBestSeller = index < 2;
+
                     const card = document.createElement('div');
                     card.className = 'product-card';
+                    card.style.position = 'relative'; // Para que el ribbon funcione
                     card.innerHTML = `
+                        ${isBestSeller ? '<div class="ribbon"><i class="fas fa-fire"></i> MÁS VENDIDO</div>' : ''}
                         <div class="product-img-wrapper">
                             <img src="${producto.imagen_url || 'img/cake1-placeholder.png'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/cake1-placeholder.png'">
                             ${producto.categorias ? `<span class="badge">${producto.categorias.nombre || ''}</span>` : ''}
@@ -133,12 +176,13 @@
                             <p class="product-desc">${producto.descripcion || 'Delicioso pastel artesanal.'}</p>
                             <div class="product-footer">
                                 <span class="price">${precioBase > 0 ? `Desde $${precioBase} MXN` : 'Consultar'}</span>
-                                <a href="crear-pedido.html?producto=${producto.id_producto}" class="btn-icon" title="Pedir este"><i class="fas fa-cart-plus"></i></a>
+                                <a href="crear-pedido.html?producto=${producto.id_producto}" class="btn-icon" style="background: var(--color-secondary); color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" title="Pedir este"><i class="fas fa-cart-plus"></i></a>
                             </div>
                         </div>
                     `;
                     grid.appendChild(card);
                     cardsRendered++;
+                    index++;
                 });
 
             } catch (error) {
