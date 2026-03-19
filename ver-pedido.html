@@ -273,10 +273,10 @@
 
     <footer-component></footer-component>
 
-    <script src="js/components.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/pdf-generator.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/components.js?v=3"></script>
+    <script src="js/supabase.js?v=3"></script>
+    <script src="js/pdf-generator.js?v=3"></script>
+    <script src="js/main.js?v=3"></script>
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -472,7 +472,7 @@
                 } catch (error) {
                     console.error("Error al subir comprobante", error);
                     uploadStatusMsg.style.color = 'red';
-                    uploadStatusMsg.textContent = 'Ocurrió un error. Evita subir archivos muy grandes.';
+                    uploadStatusMsg.textContent = 'Ocurrió un error: ' + error.message;
                     btnUploadReceipt.innerHTML = '<i class="fas fa-upload"></i> Subir Comprobante';
                     btnUploadReceipt.disabled = false;
                 }
