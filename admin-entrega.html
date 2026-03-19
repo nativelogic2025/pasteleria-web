@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validar Entrega | Pastelería La Estrella</title>
+    <title>Panel de Administración | Pastelería La Estrella</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,13 +15,14 @@
     <link rel="stylesheet" href="css/styles.css">
 
     <style>
+        body { background-color: #fcf5ee; }
         .admin-box {
-            max-width: 600px;
+            max-width: 650px;
             margin: 4rem auto;
             background: var(--color-white);
-            padding: 3rem;
+            padding: 2.5rem;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-lg);
             text-align: center;
         }
 
@@ -34,38 +35,63 @@
             margin-bottom: 1.5rem;
         }
 
-        .status-pendiente {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
+        .status-pendiente { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .status-entregado { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 
-        .status-entregado {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .order-details {
+        .order-details, .payment-details {
             text-align: left;
             background-color: #f8f9fa;
             padding: 1.5rem;
             border-radius: var(--border-radius);
             border-left: 4px solid var(--color-primary);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .order-details p, .payment-details p { margin-bottom: 0.5rem; }
+        
+        .product-item {
+            border-bottom: 1px solid var(--color-border);
+            padding: 1rem 0;
+            text-align: left;
+        }
+        .product-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .product-item strong { color: var(--color-secondary); }
+        .custom-info {
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+            margin-top: 5px;
+            background: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px dashed #ccc;
         }
 
-        .order-details p {
-            margin-bottom: 0.5rem;
+        .hidden { display: none !important; }
+        
+        /* Login Overlay */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .hidden {
-            display: none !important;
+        .login-box {
+            background: white; padding: 2rem; border-radius: 10px; max-width: 400px; width: 90%; text-align: center;
         }
     </style>
 </head>
 
 <body>
+
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2 style="color: var(--color-primary); margin-bottom: 1rem;"><i class="fas fa-lock"></i> Acceso Admin</h2>
+            <p style="margin-bottom: 1rem;">Ingresa el PIN de administrador para escanear y modificar pedidos.</p>
+            <input type="password" id="adminPin" class="form-control" placeholder="Escribe el PIN" style="margin-bottom: 1rem; text-align: center; font-size: 1.2rem;">
+            <button id="btnLoginAdmin" class="btn btn-primary" style="width: 100%;">Ingresar</button>
+            <p id="loginError" style="color: red; margin-top: 10px; display: none;">PIN Incorrecto</p>
+        </div>
+    </div>
 
     <header-component></header-component>
 
@@ -74,26 +100,45 @@
             <div class="admin-box" id="loadingBox">
                 <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--color-primary); margin-bottom: 1rem;"></i>
                 <h2>Cargando Pedido...</h2>
-                <p>Por favor espera mientras validamos este código.</p>
+                <p>Abriendo los detalles de este folio.</p>
             </div>
 
             <div class="admin-box hidden" id="errorBox">
                 <i class="fas fa-times-circle fa-3x" style="color: #dc3545; margin-bottom: 1rem;"></i>
                 <h2 style="color: #dc3545;">Pedido No Encontrado</h2>
-                <p>El código QR o el folio proporcionado no es válido o no existe en la base de datos.</p>
+                <p>El código QR o el folio proporcionado no es válido o no existe.</p>
             </div>
 
             <div class="admin-box hidden" id="successBox">
                 <i class="fas fa-check-circle fa-3x" style="color: #28a745; margin-bottom: 1rem;" id="entregadoIcon"></i>
-                <h2 style="margin-bottom: 0.5rem;">Validación de Entrega</h2>
+                <h2 style="margin-bottom: 0.5rem;">Gestión de Pedido</h2>
                 <h3 style="color: var(--color-primary); margin-bottom: 1rem;">Folio: <span id="displayFolio"></span></h3>
                 
-                <div id="statusBadge" class="status-badge status-pendiente">Estado Actual: Pendiente</div>
+                <div id="statusBadge" class="status-badge status-pendiente">Estado: Pendiente</div>
 
                 <div class="order-details">
+                    <h4><i class="fas fa-user"></i> Datos del Cliente</h4>
                     <p><strong>Cliente:</strong> <span id="clienteNombre">Cargando...</span></p>
-                    <p><strong>Fecha Programada:</strong> <span id="fechaEntrega">Cargando...</span></p>
-                    <p><strong>Total pagado/restante:</strong> <span id="totalPedido">Cargando...</span></p>
+                    <p><strong>Teléfono:</strong> <span id="clienteTelefono">Cargando...</span></p>
+                    <p><strong>Fecha y Hora Programada:</strong> <span id="fechaEntrega">Cargando...</span></p>
+                    <p><strong>Total de la Nota:</strong> <span id="totalPedido">Cargando...</span></p>
+                </div>
+
+                <div class="payment-details">
+                    <h4><i class="fas fa-money-bill-wave"></i> Depósito y Pagos</h4>
+                    <p><strong>Estado del Pago:</strong> <span id="estadoPagoText" style="font-weight: bold;">Cargando...</span></p>
+                    <p><strong>Anticipo Registrado:</strong> <span id="montoAnticipo">Cargando...</span></p>
+                    <button id="btnConfirmarPago" class="btn btn-secondary hidden" style="width: 100%; margin-top: 0.5rem;">
+                        <i class="fas fa-hand-holding-usd"></i> Marcar Depósito/Pago como Completado
+                    </button>
+                </div>
+
+                <div class="order-details" style="border-left-color: var(--color-secondary);">
+                    <h4><i class="fas fa-shopping-bag"></i> Productos a Entregar</h4>
+                    <div id="productosLista" style="margin-top: 1rem;">
+                        <!-- JS fills this -->
+                        <p>Cargando productos...</p>
+                    </div>
                 </div>
 
                 <button id="btnEntregar" class="btn btn-primary" style="width: 100%; font-size: 1.2rem; padding: 1rem;">
@@ -111,10 +156,29 @@
     <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
     <script>
+        // Admin Login Logic
+        const overlay = document.getElementById('loginOverlay');
+        const adminPinInput = document.getElementById('adminPin');
+        const btnLoginAdmin = document.getElementById('btnLoginAdmin');
+        const loginError = document.getElementById('loginError');
+
+        // Check active session
+        if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+            overlay.classList.add('hidden');
+        }
+
+        btnLoginAdmin.addEventListener('click', () => {
+            const pin = adminPinInput.value.trim();
+            // PIN configurado: 1234
+            if (pin === '1234' || pin === 'estrella2024') {
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                overlay.classList.add('hidden');
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // Verify admin or user logic if needed here.
-            // For now, anyone with the link can "scan" it, but you should restrict this page for admins only ideally, or put a specialized password alert.
-            
             const params = new URLSearchParams(window.location.search);
             const folio = params.get('folio');
             
@@ -125,59 +189,144 @@
             }
 
             try {
+                // Fetch Master Order
                 const orderData = await buscarPedidoPorFolio(folio);
-                
                 if (!orderData) throw new Error("No existe");
 
                 document.getElementById('loadingBox').classList.add('hidden');
                 document.getElementById('successBox').classList.remove('hidden');
                 
                 document.getElementById('displayFolio').textContent = orderData.folio;
-                document.getElementById('fechaEntrega').textContent = orderData.fecha_entrega;
+                document.getElementById('fechaEntrega').textContent = orderData.fecha_entrega + (orderData.hora_entrega ? ` - ${orderData.hora_entrega}` : '');
                 document.getElementById('totalPedido').textContent = `$${orderData.total} MXN`;
 
-                // Try pulling client info if it exists
+                // Fetch Client
                 if (orderData.id_cliente) {
                     const cliente = await obtenerClientePorId(orderData.id_cliente);
                     if(cliente) {
                         document.getElementById('clienteNombre').textContent = `${cliente.nombre} ${cliente.apellidos || ''}`;
+                        document.getElementById('clienteTelefono').textContent = cliente.telefono || 'Sin registrar';
                     }
                 }
 
+                // Fetch Payment Data
+                const pago = await obtenerPagoPorPedido(orderData.id_pedido);
+                const estadoPagoText = document.getElementById('estadoPagoText');
+                const btnConfirmarPago = document.getElementById('btnConfirmarPago');
+                
+                if(pago) {
+                    document.getElementById('montoAnticipo').textContent = `$${pago.monto} MXN (Vía: ${pago.metodo_pago.replace('_', ' ')})`;
+                    
+                    if(pago.estado_pago === 'completado' || pago.estado_pago === 'pagado') {
+                        estadoPagoText.textContent = 'COMPLETADO ✅';
+                        estadoPagoText.style.color = 'green';
+                    } else {
+                        estadoPagoText.textContent = 'PENDIENTE DE VALIDAR ⏳';
+                        estadoPagoText.style.color = '#d35400';
+                        btnConfirmarPago.classList.remove('hidden');
+                    }
+
+                    btnConfirmarPago.addEventListener('click', async () => {
+                        if(confirm("¿Confirmas que recibiste o validaste el pago/depósito del anticipo (50%) de esta orden?")) {
+                            btnConfirmarPago.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                            const pOk = await actualizarEstadoPago(orderData.id_pedido, 'completado');
+                            if(pOk) {
+                                alert("Pago confirmado exitosamente.");
+                                window.location.reload();
+                            } else {
+                                alert("Error al confirmar el pago.");
+                                btnConfirmarPago.innerHTML = '<i class="fas fa-hand-holding-usd"></i> Marcar Depósito/Pago como Completado';
+                            }
+                        }
+                    });
+                } else {
+                    document.getElementById('montoAnticipo').textContent = "No hay registro de pago o anticipo en BD.";
+                    estadoPagoText.textContent = "N/A";
+                }
+
+                // Fetch Products and Custom Info
+                const detalles = await obtenerDetallesPorPedido(orderData.id_pedido);
+                const listaContenedor = document.getElementById('productosLista');
+                
+                if(detalles && detalles.length > 0) {
+                    listaContenedor.innerHTML = ''; // Limpiar
+                    detalles.forEach(item => {
+                        const prodName = item.productos ? item.productos.nombre : 'Producto Especial';
+                        let varName = 'Normal';
+                        if(item.producto_variantes) {
+                            varName = item.producto_variantes.tamaño;
+                            if(item.producto_variantes.porciones) varName += ` (${item.producto_variantes.porciones} pax)`;
+                        }
+
+                        let customBlock = '';
+                        if(item.observaciones || item.dedicatoria || item.sabor) {
+                            let obsObj = {};
+                            try { obsObj = JSON.parse(item.observaciones); } catch(e) { obsObj = { notas: item.observaciones }; }
+                            
+                            customBlock = `<div class="custom-info">`;
+                            if(item.sabor) customBlock += `<strong>Sabor:</strong> ${item.sabor}<br>`;
+                            if(obsObj.armado) customBlock += `<strong>Armado:</strong> ${obsObj.armado} | <strong>Pisos:</strong> ${obsObj.pisos} | <strong>Diseño:</strong> ${obsObj.diseno}<br>`;
+                            if(item.dedicatoria) customBlock += `<strong>Dedicatoria:</strong> "${item.dedicatoria}"<br>`;
+                            if(obsObj.descripcion && obsObj.descripcion.trim().length > 0) customBlock += `<strong>Extra:</strong> ${obsObj.descripcion}`;
+                            customBlock += `</div>`;
+                        }
+
+                        const pItem = document.createElement('div');
+                        pItem.className = 'product-item';
+                        pItem.innerHTML = `
+                            <div><strong>${item.cantidad}x</strong> ${prodName}</div>
+                            <div style="font-size: 0.9rem; color: #555;">Tamaño: ${varName}</div>
+                            ${customBlock}
+                        `;
+                        listaContenedor.appendChild(pItem);
+                    });
+                } else {
+                    listaContenedor.innerHTML = '<p>No se pudieron cargar los productos de la base de datos.</p>';
+                }
+
+
+                // Delivery Status Logic
                 const badge = document.getElementById('statusBadge');
                 const btn = document.getElementById('btnEntregar');
                 const icon = document.getElementById('entregadoIcon');
 
                 if (orderData.estado === 'entregado') {
-                    badge.textContent = "ESTADO: YA ENTREGADO";
+                    badge.textContent = "ESTADO DEL PEDIDO: YA ENTREGADO";
                     badge.className = "status-badge status-entregado";
                     btn.disabled = true;
-                    btn.textContent = "El pedido ya fue marcado como entregado";
+                    btn.textContent = "El pedido ya fue marcado como entregado al cliente";
                     btn.classList.replace('btn-primary', 'btn-outline');
                     icon.className = "fas fa-check-double fa-3x";
                 } else {
-                    badge.textContent = `Estado Actual: ${orderData.estado.toUpperCase()}`;
+                    badge.textContent = `Estado del Pedido: ${orderData.estado.toUpperCase()}`;
                     badge.className = "status-badge status-pendiente";
                 }
 
                 btn.addEventListener('click', async () => {
-                    if(confirm(`¿Estás seguro de marcar el folio ${folio} como ENTREGADO?`)) {
-                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-                        btn.disabled = true;
-
-                        const success = await actualizarEstadoPedido(orderData.id_pedido, 'entregado');
-                        if(success) {
-                            alert("¡Pedido entregado exitosamente!");
-                            window.location.reload();
-                        } else {
-                            alert("Ocurrió un error al actualizar la base de datos.");
-                            btn.innerHTML = '<i class="fas fa-box-open" style="margin-right: 10px;"></i> Marcar como ENTREGADO';
-                            btn.disabled = false;
+                    if(pago && pago.estado_pago !== 'completado' && pago.estado_pago !== 'pagado') {
+                        if(!confirm("CUIDADO: El depósito del 50% NO ha sido validado. ¿Estás seguro de entregar el pedido de todas formas sin validarlo primero?")) {
+                            return;
                         }
+                    } else {
+                        if(!confirm(`¿Confirmas que el cliente ya liquidó el total y recibió el folio ${folio}?`)) return;
+                    }
+
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+                    btn.disabled = true;
+
+                    const success = await actualizarEstadoPedido(orderData.id_pedido, 'entregado');
+                    if(success) {
+                        alert("¡Pedido archivado como entregado exitosamente!");
+                        window.location.reload();
+                    } else {
+                        alert("Ocurrió un error al actualizar la base de datos.");
+                        btn.innerHTML = '<i class="fas fa-box-open" style="margin-right: 10px;"></i> Marcar como ENTREGADO';
+                        btn.disabled = false;
                     }
                 });
 
             } catch(e) {
+                console.error(e);
                 document.getElementById('loadingBox').classList.add('hidden');
                 document.getElementById('errorBox').classList.remove('hidden');
             }

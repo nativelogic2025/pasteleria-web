@@ -172,6 +172,24 @@ async function actualizarEstadoPedido(idPedido, nuevoEstado) {
 }
 
 /**
+ * Update the payment state
+ */
+async function actualizarEstadoPago(idPedido, nuevoEstadoPago) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/pagos_pedido_online?id_pedido=eq.${idPedido}`, {
+            method: 'PATCH',
+            headers: HEADERS,
+            body: JSON.stringify({ estado_pago: nuevoEstadoPago })
+        });
+        if (!response.ok) throw new Error('Error al actualizar el pago');
+        return true;
+    } catch (error) {
+        console.error('actualizarEstadoPago error:', error);
+        return false;
+    }
+}
+
+/**
  * --- SHOPPING CART FUNCTIONS ---
  */
 
