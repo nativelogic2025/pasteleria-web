@@ -13,7 +13,10 @@ class HeaderComponent extends HTMLElement {
                     <a href="crear-pedido.html">Crear Pedido</a>
                     <a href="ver-pedido.html">Ver Pedido</a>
                     <a href="contacto.html">Contáctanos</a>
-                    <a href="carrito.html" class="nav-cart-btn" style="color: var(--color-primary); font-size: 1.2rem; margin-left: 0.5rem;" title="Mi Carrito"><i class="fas fa-shopping-cart"></i></a>
+                    <a href="carrito.html" class="nav-cart-btn" style="color: var(--color-primary); font-size: 1.2rem; margin-left: 0.5rem; position: relative;" title="Mi Carrito">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="navCartCount" style="position: absolute; top: -8px; right: -12px; background-color: #e74c3c; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: none;">0</span>
+                    </a>
                     <a href="login.html" class="btn btn-primary" style="padding: 0.4rem 1.2rem; margin-left:1rem; min-width: 120px; text-align: center;" id="navAccountBtn">Mi Cuenta</a>
                 </nav>
                 <div class="mobile-menu-btn"><i class="fas fa-bars"></i></div>
@@ -35,7 +38,25 @@ class HeaderComponent extends HTMLElement {
                 btn.style.border = '1px solid var(--color-primary)';
                 btn.title = "Ir a mi perfil";
             }
-        }, 50); // Small delay to let DOM render
+            
+            // Lógica del contador del carrito
+            const navCartCount = document.getElementById('navCartCount');
+            const idCarrito = localStorage.getItem('carritoActivo');
+            
+            if (idCarrito && navCartCount && typeof window.obtenerItemsCarrito === 'function') {
+                window.obtenerItemsCarrito(idCarrito).then(items => {
+                    if (items && items.length > 0) {
+                        let totalQty = 0;
+                        items.forEach(i => totalQty += parseInt(i.cantidad || 1));
+                        if(totalQty > 0) {
+                            navCartCount.textContent = totalQty;
+                            navCartCount.style.display = 'inline-block';
+                        }
+                    }
+                }).catch(e => console.error("Error al cargar contador del carrito", e));
+            }
+
+        }, 500); // Small delay to let DOM render
     }
 }
 
