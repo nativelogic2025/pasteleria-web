@@ -154,6 +154,24 @@ async function buscarPedidoPorFolio(folio) {
 }
 
 /**
+ * Update the state of an order
+ */
+async function actualizarEstadoPedido(idPedido, nuevoEstado) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/pedidos_online?id_pedido=eq.${idPedido}`, {
+            method: 'PATCH',
+            headers: HEADERS,
+            body: JSON.stringify({ estado: nuevoEstado })
+        });
+        if (!response.ok) throw new Error('Error al actualizar estado del pedido');
+        return true;
+    } catch (error) {
+        console.error('actualizarEstadoPedido error:', error);
+        return false;
+    }
+}
+
+/**
  * --- SHOPPING CART FUNCTIONS ---
  */
 
@@ -353,3 +371,71 @@ async function actualizarCliente(idCliente, datosActualizados) {
         throw error;
     }
 }
+
+/**
+ * --- READ FUNCTIONS FOR PDF GENERATION ---
+ */
+
+async function obtenerClientePorId(idCliente) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/clientes?select=*&id_cliente=eq.${idCliente}&limit=1`, {
+            method: 'GET',
+            headers: HEADERS
+        });
+        if (!response.ok) throw new Error('Error al obtener el cliente');
+        const data = await response.json();
+        return data.length > 0 ? data[0] : null;
+    } catch (error) {
+        console.error('obtenerClientePorId error:', error);
+        return null;
+    }
+}
+
+async function obtenerDetallesPorPedido(idPedido) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/detalle_pedido_online?id_pedido=eq.${idPedido}&select=*`, {
+            method: 'GET',
+            headers: HEADERS
+        });
+        if (!response.ok) throw new Error('Error al obtener los detalles del pedido');
+        
+        const detalles = await response.json();
+        
+        // Manual join to bypass Supabase native foreign-key relation errors
+        for (let item of detalles) {
+            if (item.id_producto) {
+                const prod = await fetchProductoById(item.id_producto);
+                if (prod) {
+                    item.productos = prod;
+                    if (item.id_variante && prod.producto_variantes) {
+                        const variante = prod.producto_variantes.find(v => v.id_variante === item.id_variante);
+                        if (variante) {
+                            item.producto_variantes = variante;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return detalles;
+    } catch (error) {
+        console.error('obtenerDetallesPorPedido error:', error);
+        return [];
+    }
+}
+
+async function obtenerPagoPorPedido(idPedido) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/pagos_pedido_online?id_pedido=eq.${idPedido}&limit=1`, {
+            method: 'GET',
+            headers: HEADERS
+        });
+        if (!response.ok) throw new Error('Error al obtener el pago del pedido');
+        const data = await response.json();
+        return data.length > 0 ? data[0] : null;
+    } catch (error) {
+        console.error('obtenerPagoPorPedido error:', error);
+        return null;
+    }
+}
+

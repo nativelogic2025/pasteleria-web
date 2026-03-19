@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
 
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         .search-container {
             max-width: 600px;
@@ -260,6 +263,7 @@
 
     <script src="js/components.js"></script>
     <script src="js/supabase.js"></script>
+    <script src="js/pdf-generator.js"></script>
     <script src="js/main.js"></script>
     <script>
         // Check Auth visual
@@ -321,20 +325,29 @@
                         steps[0].classList.add('done');
                         steps[1].classList.add('done'); // Preparando
                         steps[2].classList.add('done'); // Finalizado
-                        steps[3].classList.add('active'); // En Entrega
+                        steps[3].classList.add('active'); // Listo
+                    } else if(orderData.estado === 'entregado') {
+                        steps[0].classList.add('done');
+                        steps[1].classList.add('done'); 
+                        steps[2].classList.add('done'); 
+                        steps[3].classList.add('done'); // Entregado (all green)
                     } else {
                         // Generic intermediate logic for UI
                          steps[0].classList.add('done');
                          steps[1].classList.add('active');
                     }
 
-                    // For the PDF, since we don't store it in the DB yet, we look for a local fallback
-                    const localOrders = JSON.parse(localStorage.getItem('ordersList')) || [];
-                    const localMatch = localOrders.find(o => o.folio === folio);
-                    if (localMatch && localMatch.pdf) {
-                        pdfViewer.src = localMatch.pdf;
+                    // Generate PDF dynamically from DB data
+                    const detalles = await obtenerDetallesPorPedido(orderData.id_pedido);
+                    const cliente = orderData.id_cliente ? await obtenerClientePorId(orderData.id_cliente) : null;
+                    const pago = await obtenerPagoPorPedido(orderData.id_pedido);
+                    
+                    const pdfDataUri = await generarPDFDocumento(orderData, detalles, cliente, pago);
+                    
+                    if (pdfDataUri) {
+                        pdfViewer.src = pdfDataUri;
                         pdfViewer.style.display = 'block';
-                        currentPdfDataUri = localMatch.pdf;
+                        currentPdfDataUri = pdfDataUri;
                     } else {
                          pdfViewer.style.display = 'none';
                          currentPdfDataUri = "";
