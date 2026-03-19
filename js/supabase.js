@@ -88,7 +88,7 @@ async function crearPedidoOnline(datosPedido) {
     try {
         const response = await fetch(`${SUPABASE_URL}/pedidos`, {
             method: 'POST',
-            headers: HEADERS,
+            headers: { ...HEADERS, 'Prefer': 'return=representation' },
             body: JSON.stringify(datosPedido)
         });
         if (!response.ok) throw new Error('Error al crear el pedido');
@@ -106,7 +106,7 @@ async function crearDetallePedidoOnline(datosExtra) {
     try {
         const response = await fetch(`${SUPABASE_URL}/detalle_pedido`, {
             method: 'POST',
-            headers: HEADERS,
+            headers: { ...HEADERS, 'Prefer': 'return=representation' },
             body: JSON.stringify(datosExtra) // Can be an array for bulk insert
         });
         if (!response.ok) throw new Error('Error al crear el detalle del pedido');
@@ -124,7 +124,7 @@ async function crearPagoPedidoOnline(datosPago) {
     try {
         const response = await fetch(`${SUPABASE_URL}/pagos`, {
             method: 'POST',
-            headers: HEADERS,
+            headers: { ...HEADERS, 'Prefer': 'return=representation' },
             body: JSON.stringify(datosPago)
         });
         if (!response.ok) throw new Error('Error al guardar el pago del pedido');
