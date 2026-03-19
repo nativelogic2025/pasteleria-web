@@ -266,6 +266,15 @@
                     </div>
                     <div id="uploadStatusMsg" style="margin-top: 1rem; font-weight: 500; display: none;"></div>
                 </div>
+
+                <!-- Formulario Oculto para EmailJS -->
+                <form id="hiddenReceiptForm" style="display:none;">
+                    <input type="text" name="nombre" value="Sistema Web">
+                    <input type="email" name="correo" value="contacto@pastelerialaestrella.com">
+                    <input type="text" name="asunto" id="hidden_asunto">
+                    <textarea name="mensaje" id="hidden_mensaje"></textarea>
+                </form>
+
             </div>
 
         </div>
@@ -452,15 +461,12 @@
 
                     uploadStatusMsg.textContent = 'Notificando a la pastelería...';
                     
-                    // Notificar via EmailJS
-                    const templateParams = {
-                        nombre: "Sistema web",
-                        correo: "notificaciones@pastelerialaestrella.com",
-                        asunto: `Comprobante de Pago Subido - Folio ${folio}`,
-                        mensaje: `El cliente ha subido un comprobante de pago para el folio ${folio}.\n\nPuedes verlo y descargarlo en el siguiente enlace:\n${urlComprobante}`
-                    };
-
-                    await emailjs.send('service_dr6spge', 'template_9uoe67d', templateParams);
+                    // Notificar via EmailJS (Usando sendForm igual que en contacto.html)
+                    document.getElementById('hidden_asunto').value = `Comprobante de Pago Subido - Folio ${folio}`;
+                    document.getElementById('hidden_mensaje').value = `El cliente ha subido un comprobante de pago para el folio ${folio}.\n\nPuedes verlo y descargarlo en el siguiente enlace:\n${urlComprobante}`;
+                    
+                    const hiddenForm = document.getElementById('hiddenReceiptForm');
+                    await emailjs.sendForm('service_dr6spge', 'template_9uoe67d', hiddenForm);
 
                     uploadStatusMsg.style.color = '#10b981';
                     uploadStatusMsg.innerHTML = '<i class="fas fa-check-circle"></i> ¡Comprobante subido con éxito! Tu pago está en validación.';

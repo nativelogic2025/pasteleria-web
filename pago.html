@@ -249,11 +249,11 @@
                     const itemTotal = parseFloat(item.cantidad) * parseFloat(item.precio_unitario);
                     subtotal += itemTotal;
                     
-                    // Inherit delivery info from first item that has it
-                    if(!primaryDeliveryInfo.domicilio && item.domicilio) {
-                        primaryDeliveryInfo.domicilio = item.domicilio;
+                    // Inherit delivery info from first item that has it (checking fecha instead of domicilio)
+                    if(!primaryDeliveryInfo.fecha && item.fecha) {
+                        primaryDeliveryInfo.domicilio = item.domicilio || '';
                         primaryDeliveryInfo.fecha = item.fecha;
-                        primaryDeliveryInfo.hora = item.hora;
+                        primaryDeliveryInfo.hora = item.hora || '';
                     }
 
                     itemsHTML += `
