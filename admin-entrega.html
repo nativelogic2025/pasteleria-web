@@ -229,7 +229,7 @@
                     btnConfirmarPago.addEventListener('click', async () => {
                         if(confirm("¿Confirmas que recibiste o validaste el pago/depósito del anticipo (50%) de esta orden?")) {
                             btnConfirmarPago.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-                            const pOk = await actualizarEstadoPago(orderData.id_pedido, 'completado');
+                            const pOk = await actualizarEstadoPago(orderData.id_pedido, 'pagado');
                             if(pOk) {
                                 alert("Pago confirmado exitosamente.");
                                 window.location.reload();
