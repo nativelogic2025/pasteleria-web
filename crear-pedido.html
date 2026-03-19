@@ -228,6 +228,10 @@
                 <form id="orderForm">
 
                     <h3 class="form-section-title">1. Datos de Entrega</h3>
+                    <div id="cartLockedWarning" class="hidden" style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #ffeeba; font-size: 0.95rem;">
+                        <i class="fas fa-lock"></i> <strong>Tu pedido ya tiene una fecha asignada.</strong><br>
+                        Como ya tienes productos en el carrito, estos datos aplican para toda la orden. Si deseas una fecha distinta, finaliza primero tu compra actual.
+                    </div>
                     <div class="form-group" style="margin-bottom: 1.5rem;">
                         <label class="radio-card"
                             style="display: inline-block; padding: 0.5rem 1rem; margin-right: 1rem;">
@@ -398,6 +402,23 @@
         </div>
     </div>
 
+    <!-- Modal Éxito - Producto Agregado -->
+    <div id="addSuccessModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header" style="background: var(--color-secondary);">
+                <i class="fas fa-check-circle modal-icon" style="color: white; font-size: 3.5rem;"></i>
+                <h2 style="margin-top: 0.5rem; font-size: 1.6rem; font-family: var(--font-heading);">¡Agregado con Éxito!</h2>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem 2rem;">
+                <p style="font-size: 1.1rem; color: var(--color-text); margin-bottom: 1.5rem;">Tu producto se ha añadido de manera satisfactoria.</p>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button id="btnKeepShopping" type="button" class="btn btn-outline" style="width: 100%; font-size: 1rem;"><i class="fas fa-plus"></i> Seguir Comprando</button>
+                    <a href="carrito.html" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1rem; text-decoration: none;"><i class="fas fa-shopping-cart"></i> Ir al Carrito / Pagar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer-component></footer-component>
 
     <script src="js/components.js"></script>
@@ -473,6 +494,56 @@
                 closeModalBtn.addEventListener('click', () => {
                     paymentModal.classList.remove('show');
                 });
+            }
+            
+            // Revisar si el carrito ya tiene items para bloquear las fechas
+            const idCarritoActivo = localStorage.getItem('carritoActivo');
+            if (idCarritoActivo) {
+                try {
+                    const cartItems = await obtenerItemsCarrito(idCarritoActivo);
+                    if (cartItems && cartItems.length > 0) {
+                        const firstItem = cartItems[0];
+                        if (firstItem.fecha) {
+                            const envioCheckbox = document.getElementById('envioDomicilioCheckbox');
+                            const fechaInput = document.getElementById('fecha');
+                            const horaInput = document.getElementById('hora');
+                            const domicilioGroup = document.getElementById('domicilioGroup');
+                            const domicilioInput = document.getElementById('domicilio');
+                            
+                            // Llenar valores
+                            fechaInput.value = firstItem.fecha;
+                            horaInput.value = firstItem.hora || '';
+                            
+                            if (firstItem.domicilio && firstItem.domicilio.trim() !== '') {
+                                envioCheckbox.checked = true;
+                                domicilioGroup.classList.remove('hidden');
+                                domicilioInput.value = firstItem.domicilio;
+                                costoFlete = 50.00;
+                            } else {
+                                envioCheckbox.checked = false;
+                                domicilioGroup.classList.add('hidden');
+                                domicilioInput.value = '';
+                                costoFlete = 0.00;
+                            }
+                            
+                            // Bloquear inputs para no crear confictos de fecha
+                            envioCheckbox.addEventListener('click', (e) => e.preventDefault()); // Prevent clicking
+                            fechaInput.setAttribute('readonly', 'true');
+                            fechaInput.style.backgroundColor = "#eee";
+                            horaInput.setAttribute('readonly', 'true');
+                            horaInput.style.backgroundColor = "#eee";
+                            domicilioInput.setAttribute('readonly', 'true');
+                            domicilioInput.style.backgroundColor = "#eee";
+                            
+                            actualizarPrecios();
+                            
+                            // Mostrar mensaje de advertencia
+                            document.getElementById('cartLockedWarning').classList.remove('hidden');
+                        }
+                    }
+                } catch(e) {
+                    console.error("Error validando items del carrito:", e);
+                }
             }
 
             try {
@@ -648,11 +719,53 @@
                 const res = await agregarItemCarrito(itemData);
 
                 if (res) {
-                    // Update button temporarily to show success
-                    btnSubmit.innerHTML = '<i class="fas fa-check"></i> ¡Agregado!';
-                    setTimeout(() => {
-                        window.location.href = 'carrito.html'; // Redirect to cart
-                    }, 500);
+                    // Cierra el spinner
+                    btnSubmit.innerHTML = 'Agregar al Carrito <i class="fas fa-shopping-cart" style="margin-left: 10px;"></i>';
+                    btnSubmit.disabled = false;
+                    
+                    // Mostrar modal de éxito
+                    const successModal = document.getElementById('addSuccessModal');
+                    if(successModal) successModal.classList.add('show');
+                    
+                    // Handler para seguir comprando
+                    const btnKeepShopping = document.getElementById('btnKeepShopping');
+                    if (btnKeepShopping) {
+                        btnKeepShopping.onclick = () => {
+                            successModal.classList.remove('show');
+                            
+                            // Bloquear fechas por si era su primer producto
+                            const envioCheckbox = document.getElementById('envioDomicilioCheckbox');
+                            const fechaInput = document.getElementById('fecha');
+                            const horaInput = document.getElementById('hora');
+                            const domicilioInput = document.getElementById('domicilio');
+                            
+                            envioCheckbox.addEventListener('click', (e) => e.preventDefault());
+                            fechaInput.setAttribute('readonly', 'true');
+                            fechaInput.style.backgroundColor = "#eee";
+                            horaInput.setAttribute('readonly', 'true');
+                            horaInput.style.backgroundColor = "#eee";
+                            domicilioInput.setAttribute('readonly', 'true');
+                            domicilioInput.style.backgroundColor = "#eee";
+                            document.getElementById('cartLockedWarning').classList.remove('hidden');
+
+                            // Reset product fields
+                            document.getElementById('producto').value = "";
+                            const evt = new Event('change');
+                            document.getElementById('producto').dispatchEvent(evt);
+                            
+                            document.getElementById('sabor').value = "";
+                            document.getElementById('dedicatoria').value = "";
+                            document.getElementById('descripcion').value = "";
+                            
+                            const rSencillo = document.querySelector('input[name="armado"][value="Sencillo"]');
+                            if(rSencillo) rSencillo.checked = true;
+                            
+                            document.getElementById('pisos').value = "1";
+                            document.getElementById('diseno_pastel').value = "Normal Crema";
+                            
+                            window.scrollTo({ top: document.querySelector('.form-container').offsetTop - 20, behavior: 'smooth' });
+                        };
+                    }
                 } else {
                     throw new Error("Error en DB");
                 }
