@@ -86,7 +86,7 @@ async function fetchProductoById(id) {
  */
 async function crearPedidoOnline(datosPedido) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/pedidos_online`, {
+        const response = await fetch(`${SUPABASE_URL}/pedidos`, {
             method: 'POST',
             headers: HEADERS,
             body: JSON.stringify(datosPedido)
@@ -104,7 +104,7 @@ async function crearPedidoOnline(datosPedido) {
  */
 async function crearDetallePedidoOnline(datosExtra) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/detalle_pedido_online`, {
+        const response = await fetch(`${SUPABASE_URL}/detalle_pedido`, {
             method: 'POST',
             headers: HEADERS,
             body: JSON.stringify(datosExtra) // Can be an array for bulk insert
@@ -122,7 +122,7 @@ async function crearDetallePedidoOnline(datosExtra) {
  */
 async function crearPagoPedidoOnline(datosPago) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/pagos_pedido_online`, {
+        const response = await fetch(`${SUPABASE_URL}/pagos`, {
             method: 'POST',
             headers: HEADERS,
             body: JSON.stringify(datosPago)
@@ -140,7 +140,7 @@ async function crearPagoPedidoOnline(datosPago) {
  */
 async function buscarPedidoPorFolio(folio) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/pedidos_online?folio=eq.${folio}&limit=1`, {
+        const response = await fetch(`${SUPABASE_URL}/pedidos?folio=eq.${folio}&limit=1`, {
             method: 'GET',
             headers: HEADERS
         });
@@ -158,7 +158,7 @@ async function buscarPedidoPorFolio(folio) {
  */
 async function actualizarEstadoPedido(idPedido, nuevoEstado) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/pedidos_online?id_pedido=eq.${idPedido}`, {
+        const response = await fetch(`${SUPABASE_URL}/pedidos?id_pedido=eq.${idPedido}`, {
             method: 'PATCH',
             headers: HEADERS,
             body: JSON.stringify({ estado: nuevoEstado })
@@ -176,7 +176,7 @@ async function actualizarEstadoPedido(idPedido, nuevoEstado) {
  */
 async function actualizarEstadoPago(idPedido, nuevoEstadoPago) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/pagos_pedido_online?id_pedido=eq.${idPedido}`, {
+        const response = await fetch(`${SUPABASE_URL}/pagos?id_pedido=eq.${idPedido}`, {
             method: 'PATCH',
             headers: HEADERS,
             body: JSON.stringify({ estado_pago: nuevoEstadoPago })
@@ -411,7 +411,7 @@ async function obtenerClientePorId(idCliente) {
 
 async function obtenerDetallesPorPedido(idPedido) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/detalle_pedido_online?id_pedido=eq.${idPedido}&select=*`, {
+        const response = await fetch(`${SUPABASE_URL}/detalle_pedido?id_pedido=eq.${idPedido}&select=*`, {
             method: 'GET',
             headers: HEADERS
         });
@@ -444,7 +444,7 @@ async function obtenerDetallesPorPedido(idPedido) {
 
 async function obtenerPagoPorPedido(idPedido) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/pagos_pedido_online?id_pedido=eq.${idPedido}&limit=1`, {
+        const response = await fetch(`${SUPABASE_URL}/pagos?id_pedido=eq.${idPedido}&limit=1`, {
             method: 'GET',
             headers: HEADERS
         });

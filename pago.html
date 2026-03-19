@@ -312,8 +312,12 @@
                     hora_entrega: primaryDeliveryInfo.hora || null,
                     tipo_entrega: shipping > 0 ? 'domicilio' : 'sucursal',
                     estado: 'pendiente',
+                    subtotal: subtotal,
                     total: grandTotal,
-                    observaciones: `Domicilio: ${primaryDeliveryInfo.domicilio || 'Sucursal'}`
+                    anticipo: deposit,
+                    restante: grandTotal - deposit,
+                    observaciones: `Domicilio: ${primaryDeliveryInfo.domicilio || 'Sucursal'}`,
+                    origen: 'web'
                 };
 
                 const pedidoGuardado = await crearPedidoOnline(datosPedidoBase);
@@ -327,6 +331,7 @@
                             id_producto: item.id_producto || item.producto_variantes?.id_producto,
                             id_variante: item.id_variante,
                             cantidad: item.cantidad,
+                            precio: item.precio_unitario,
                             precio_unitario: item.precio_unitario,
                             sabor: item.sabor,
                             dedicatoria: item.dedicatoria,
@@ -338,7 +343,8 @@
                     // 3. Insertar Pago (Anticipo)
                     const pagoData = {
                         id_pedido: idPedido,
-                        metodo_pago: method === 'transferencia' ? 'transferencia' : 'efectivo_sucursal',
+                        tipo_pago: 'anticipo',
+                        metodo_pago: method,
                         estado_pago: 'pendiente',
                         monto: deposit
                     };
