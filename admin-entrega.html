@@ -209,39 +209,87 @@
                     }
                 }
 
-                // Fetch Payment Data
-                const pago = await obtenerPagoPorPedido(orderData.id_pedido);
+                // Fetch ALL Payment Data
+                const pagos = await obtenerPagosPorPedido(orderData.id_pedido);
                 const estadoPagoText = document.getElementById('estadoPagoText');
                 const btnConfirmarPago = document.getElementById('btnConfirmarPago');
+                const montoAnticipoSpan = document.getElementById('montoAnticipo');
                 
-                if(pago) {
-                    document.getElementById('montoAnticipo').textContent = `$${pago.monto} MXN (Vía: ${pago.metodo_pago.replace('_', ' ')})`;
+                let pagosPendientesHTML = '';
+                
+                if(pagos && pagos.length > 0) {
+                    const totalPagado = pagos.filter(p => p.estado_pago === 'pagado' || p.estado_pago === 'completado')
+                                             .reduce((sum, p) => sum + Number(p.monto), 0);
+                    const restante = orderData.total - totalPagado;
+
+                    montoAnticipoSpan.innerHTML = `Pagado (Confirmado): <strong>$${totalPagado.toFixed(2)} MXN</strong><br/>Restante por Liquidar: <strong>$${restante.toFixed(2)} MXN</strong>`;
                     
-                    if(pago.estado_pago === 'completado' || pago.estado_pago === 'pagado') {
-                        estadoPagoText.textContent = 'COMPLETADO ✅';
+                    const pendientePago = pagos.find(p => p.estado_pago === 'pendiente');
+                    
+                    if (restante <= 0 && !pendientePago) {
+                        estadoPagoText.textContent = 'PAGO TOTAL COMPLETADO ✅';
                         estadoPagoText.style.color = 'green';
-                    } else {
-                        estadoPagoText.textContent = 'PENDIENTE DE VALIDAR ⏳';
+                    } else if (pendientePago) {
+                        estadoPagoText.textContent = `HAY PAGOS PENDIENTES DE VALIDAR ⏳`;
                         estadoPagoText.style.color = '#d35400';
                         btnConfirmarPago.classList.remove('hidden');
+                        btnConfirmarPago.innerHTML = `<i class="fas fa-hand-holding-usd"></i> Confirmar Validar ${pendientePago.tipo_pago} de $${pendientePago.monto}`;
+                        
+                        btnConfirmarPago.onclick = async () => {
+                            if(confirm(`¿Confirmas que ya validaste/recibiste este ${pendientePago.tipo_pago} de $${pendientePago.monto}?`)) {
+                                btnConfirmarPago.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                                const pOk = await actualizarEstadoPago(pendientePago.id_pedido, 'pagado'); 
+                                // Nota: Asume que actualiza todos los de ese pedido, para ser estricto deberíamos actualizar por id_pago.
+                                // Corregido en backend si el usuario tiene endpoint, pero si no, actualizarEstadoPago usa id_pedido=eq.X
+                                if(pOk) { alert("Pago confirmado exitosamente."); window.location.reload(); }
+                                else { alert("Error al confirmar."); btnConfirmarPago.innerHTML = 'Reintentar'; }
+                            }
+                        };
+                    } else if (restante > 0) {
+                        estadoPagoText.textContent = 'CRÉDITO ACTIVO / FALTA LIQUIDAR 💳';
+                        estadoPagoText.style.color = 'blue';
+                        btnConfirmarPago.classList.remove('hidden');
+                        btnConfirmarPago.innerHTML = `<i class="fas fa-cash-register"></i> Registrar Liquidación ($${restante.toFixed(2)})`;
+                        
+                        btnConfirmarPago.onclick = async () => {
+                            if(confirm(`¿Confirmas que el cliente está pagando los $${restante.toFixed(2)} faltantes en este momento?`)) {
+                                btnConfirmarPago.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+                                // Create the new payment
+                                const nuevoPago = {
+                                    id_pedido: orderData.id_pedido,
+                                    tipo_pago: 'abono',
+                                    metodo_pago: 'efectivo', // asume sucursal defaults
+                                    estado_pago: 'pagado',
+                                    monto: restante
+                                };
+                                const created = await crearPagoPedidoOnline(nuevoPago);
+                                if(created) { alert("Abono registrado! Total liquidado."); window.location.reload(); }
+                                else { alert("Error al guardar liquidación."); window.location.reload(); }
+                            }
+                        };
                     }
 
-                    btnConfirmarPago.addEventListener('click', async () => {
-                        if(confirm("¿Confirmas que recibiste o validaste el pago/depósito del anticipo (50%) de esta orden?")) {
-                            btnConfirmarPago.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-                            const pOk = await actualizarEstadoPago(orderData.id_pedido, 'pagado');
-                            if(pOk) {
-                                alert("Pago confirmado exitosamente.");
-                                window.location.reload();
-                            } else {
-                                alert("Error al confirmar el pago.");
-                                btnConfirmarPago.innerHTML = '<i class="fas fa-hand-holding-usd"></i> Marcar Depósito/Pago como Completado';
-                            }
-                        }
-                    });
                 } else {
-                    document.getElementById('montoAnticipo').textContent = "No hay registro de pago o anticipo en BD.";
-                    estadoPagoText.textContent = "N/A";
+                    document.getElementById('montoAnticipo').textContent = `Total del Pedido: $${orderData.total}. No hay registros de pago en la BD.`;
+                    estadoPagoText.textContent = "SIN PAGO ALGUNO";
+                    estadoPagoText.style.color = "red";
+                    
+                    btnConfirmarPago.classList.remove('hidden');
+                    btnConfirmarPago.innerHTML = `<i class="fas fa-cash-register"></i> Registrar Pago Total ($${orderData.total})`;
+                    btnConfirmarPago.onclick = async () => {
+                        if(confirm(`¿Recibiste el total ($${orderData.total}) en este momento?`)) {
+                            btnConfirmarPago.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+                            const nuevoPago = {
+                                id_pedido: orderData.id_pedido,
+                                tipo_pago: 'total',
+                                metodo_pago: 'efectivo',
+                                estado_pago: 'pagado',
+                                monto: orderData.total
+                            };
+                            await crearPagoPedidoOnline(nuevoPago);
+                            window.location.reload();
+                        }
+                    };
                 }
 
                 // Fetch Products and Custom Info

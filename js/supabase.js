@@ -448,12 +448,25 @@ async function obtenerPagoPorPedido(idPedido) {
             method: 'GET',
             headers: HEADERS
         });
-        if (!response.ok) throw new Error('Error al obtener el pago del pedido');
+        if (!response.ok) return null;
         const data = await response.json();
-        return data.length > 0 ? data[0] : null;
+        return data && data.length > 0 ? data[0] : null;
     } catch (error) {
         console.error('obtenerPagoPorPedido error:', error);
         return null;
     }
 }
 
+async function obtenerPagosPorPedido(idPedido) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/pagos?id_pedido=eq.${idPedido}&order=id_pago.asc`, {
+            method: 'GET',
+            headers: HEADERS
+        });
+        if (!response.ok) return [];
+        return await response.json();
+    } catch (error) {
+        console.error('obtenerPagosPorPedido error:', error);
+        return [];
+    }
+}
