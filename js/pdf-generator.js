@@ -8,12 +8,17 @@ function getBase64ImageFromURL(url) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
-            resolve(canvas.toDataURL("image/jpeg"));
+            try {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL("image/jpeg"));
+            } catch (err) {
+                console.warn("Canvas tainting error prevented image conversion:", err);
+                resolve(null);
+            }
         };
         img.onerror = () => resolve(null); // Fallback to null if image fails
         img.crossOrigin = "Anonymous";
@@ -323,5 +328,5 @@ async function generarPDFDocumento(orderData, detalles, cliente, pago) {
         doc.text("www.pastelerialaestrella.com", 105, 292, null, null, "center");
     }
 
-    return doc.output('datauristring');
+    return doc.output('bloburl');
 }
