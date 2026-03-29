@@ -237,7 +237,7 @@
                             style="display: inline-block; padding: 0.5rem 1rem; margin-right: 1rem;">
                             <input type="checkbox" id="envioDomicilioCheckbox"
                                 style="display: inline-block; margin-right: 0.5rem; transform: scale(1.2);">
-                            Quiero Envío a Domicilio ($50 MXN)
+                            Quiero Envío a Domicilio (<span id="txtCostoEnvioLabel">$75 MXN</span>)
                         </label>
                         <span style="color: var(--color-text-light); font-size: 0.9rem;">(Si no lo marcas, recogerás en
                             sucursal)</span>
@@ -250,7 +250,9 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Hora Aproximada</label>
-                            <input type="time" id="hora" class="form-control" required>
+                            <select id="hora" class="form-control" required>
+                                <option value="" disabled selected>-- Elige una hora --</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group hidden" id="domicilioGroup">
@@ -455,6 +457,75 @@
         const hoy = new Date().toISOString().split('T')[0];
         document.getElementById('fecha').setAttribute('min', hoy);
 
+        function actualizarOpcionesFechaYHora() {
+            const isEnvio = document.getElementById('envioDomicilioCheckbox').checked;
+            const selectTamano = document.getElementById('tamano');
+            const selectProducto = document.getElementById('producto');
+            const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
+            const porciones = parseInt(selectTamano.options[selectTamano.selectedIndex]?.dataset.porciones || 0);
+
+            // 1. Días de anticipación
+            let minDias = 0;
+            if (isPastel && porciones >= 25) {
+                minDias = 3;
+            }
+
+            const fechaInput = document.getElementById('fecha');
+            const fechaActual = new Date();
+            fechaActual.setDate(fechaActual.getDate() + minDias);
+            const minFechaIso = fechaActual.toISOString().split('T')[0];
+            fechaInput.setAttribute('min', minFechaIso);
+
+            if (fechaInput.value && fechaInput.value < minFechaIso) {
+                fechaInput.value = '';
+            }
+
+            // 2. Bloquear Domingos si es Envío a Domicilio
+            if (fechaInput.value) {
+                const dateObj = new Date(fechaInput.value + 'T12:00:00');
+                if (isEnvio && dateObj.getDay() === 0) {
+                    alert("Los envíos a domicilio no están disponibles los días Domingo. Por favor selecciona otra fecha o recoge en sucursal.");
+                    fechaInput.value = '';
+                }
+            }
+
+            // 3. Generar Opciones de Hora
+            const horaSelect = document.getElementById('hora');
+            const horaActualSeleccionada = horaSelect.value;
+            horaSelect.innerHTML = '<option value="" disabled selected>-- Elige una hora --</option>';
+
+            const startHour = isEnvio ? 10 : 9;
+            const endHour = isEnvio ? 20 : 21;
+
+            for (let h = startHour; h < endHour; h++) {
+                let hourStr = h.toString().padStart(2, '0');
+                let ampm1 = h >= 12 ? 'PM' : 'AM';
+                let displayH1 = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+                
+                let option1 = document.createElement('option');
+                option1.value = `${hourStr}:00`;
+                option1.textContent = `${displayH1}:00 ${ampm1}`;
+                horaSelect.appendChild(option1);
+
+                let option2 = document.createElement('option');
+                option2.value = `${hourStr}:30`;
+                option2.textContent = `${displayH1}:30 ${ampm1}`;
+                horaSelect.appendChild(option2);
+            }
+            
+            if (horaActualSeleccionada) {
+                const parts = horaActualSeleccionada.split(':');
+                if (parts.length === 2) {
+                    const prevHour = parseInt(parts[0]);
+                    if (prevHour >= startHour && prevHour < endHour) {
+                        horaSelect.value = horaActualSeleccionada;
+                    }
+                }
+            }
+        }
+
+        document.getElementById('fecha').addEventListener('change', actualizarOpcionesFechaYHora);
+
         // Referencias a elementos
         const selectProducto = document.getElementById('producto');
         const selectTamano = document.getElementById('tamano');
@@ -521,16 +592,16 @@
 
         envioCheckbox.addEventListener('change', function () {
             if (this.checked) {
+                document.getElementById('fecha').dispatchEvent(new Event('change')); // validar si tiene domingo seleccionado
                 domicilioGroup.classList.remove('hidden');
                 domicilioInput.required = true;
-                costoFlete = 50.00;
             } else {
                 domicilioGroup.classList.add('hidden');
                 domicilioInput.required = false;
                 domicilioInput.value = '';
-                costoFlete = 0.00;
             }
             actualizarPrecios();
+            actualizarOpcionesFechaYHora();
         });
 
         // Fetch de productos desde Supabase
@@ -572,20 +643,25 @@
                                 envioCheckbox.checked = true;
                                 domicilioGroup.classList.remove('hidden');
                                 domicilioInput.value = firstItem.domicilio;
-                                costoFlete = 50.00;
                             } else {
                                 envioCheckbox.checked = false;
                                 domicilioGroup.classList.add('hidden');
                                 domicilioInput.value = '';
-                                costoFlete = 0.00;
                             }
+                            
+                            // Load options after filling
+                            actualizarOpcionesFechaYHora();
+                            horaInput.value = firstItem.hora || '';
                             
                             // Bloquear inputs para no crear confictos de fecha
                             envioCheckbox.addEventListener('click', (e) => e.preventDefault()); // Prevent clicking
                             fechaInput.setAttribute('readonly', 'true');
                             fechaInput.style.backgroundColor = "#eee";
+                            fechaInput.style.pointerEvents = "none";
+                            
                             horaInput.setAttribute('readonly', 'true');
                             horaInput.style.backgroundColor = "#eee";
+                            horaInput.style.pointerEvents = "none";
                             domicilioInput.setAttribute('readonly', 'true');
                             domicilioInput.style.backgroundColor = "#eee";
                             
@@ -679,6 +755,8 @@
                     el.textContent = texto;
 
                     el.dataset.precio = v.precio_venta;
+                    el.dataset.porciones = v.porciones || 0;
+                    el.dataset.stock = v.stock;
                     selectTamano.appendChild(el);
                 });
             }
@@ -689,6 +767,22 @@
             precioBase = parseFloat(selectedOpt.dataset.precio || 0);
 
             const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
+            
+            const stockValue = selectedOpt.dataset.stock;
+            const envioCheckbox = document.getElementById('envioDomicilioCheckbox');
+            
+            if (stockValue && stockValue !== 'null' && parseInt(stockValue) >= 0) {
+                envioCheckbox.checked = false;
+                envioCheckbox.disabled = true;
+                document.getElementById('domicilioGroup').classList.add('hidden');
+                document.getElementById('domicilio').required = false;
+                if (document.getElementById('txtCostoEnvioLabel')) {
+                     document.getElementById('txtCostoEnvioLabel').textContent = "Solo Sucursal (En Stock)";
+                     document.getElementById('txtCostoEnvioLabel').style.color = "red";
+                }
+            } else {
+                envioCheckbox.disabled = false;
+            }
 
             if (isPastel) {
                 const esDoble = document.querySelector('input[name="armado"]:checked').value === 'Doble';
@@ -699,6 +793,7 @@
             }
 
             actualizarPrecios();
+            actualizarOpcionesFechaYHora();
         });
 
         // Eventos extra si cambian opciones del pastel para recalcular precio
@@ -712,6 +807,31 @@
         });
 
         function actualizarPrecios() {
+            const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
+            const porciones = parseInt(selectTamano.options[selectTamano.selectedIndex]?.dataset.porciones || 0);
+
+            if (document.getElementById('envioDomicilioCheckbox').checked) {
+                if (isPastel && porciones >= 80) {
+                    costoFlete = 0.00;
+                    document.getElementById('txtCostoEnvioLabel').textContent = "GRATIS 80+ personas";
+                    document.getElementById('txtCostoEnvioLabel').style.color = "var(--color-primary)";
+                    document.getElementById('txtCostoEnvioLabel').style.fontWeight = "bold";
+                } else {
+                    costoFlete = 75.00;
+                    document.getElementById('txtCostoEnvioLabel').textContent = "$75 MXN";
+                    document.getElementById('txtCostoEnvioLabel').style.color = "inherit";
+                    document.getElementById('txtCostoEnvioLabel').style.fontWeight = "normal";
+                }
+            } else {
+                costoFlete = 0.00;
+                // Dejar preparado la etiqueta text por si se checkea después
+                if (document.getElementById('txtCostoEnvioLabel')) {
+                    document.getElementById('txtCostoEnvioLabel').textContent = (isPastel && porciones >= 80) ? "GRATIS 80+ personas" : "$75 MXN";
+                    document.getElementById('txtCostoEnvioLabel').style.color = (isPastel && porciones >= 80) ? "var(--color-primary)" : "inherit";
+                    document.getElementById('txtCostoEnvioLabel').style.fontWeight = (isPastel && porciones >= 80) ? "bold" : "normal";
+                }
+            }
+
             let subtotalProductos = precioBase * cantidadActual;
             
             if(cantidadActual > 1 && precioBase > 0) {
@@ -724,9 +844,12 @@
             const total = subtotalProductos > 0 ? subtotalProductos + costoFlete : 0;
             txtTotal.textContent = `$${total.toFixed(2)} MXN`;
 
-            const deposito = total / 2;
+            const checkedEnvio = document.getElementById('envioDomicilioCheckbox').checked;
+            const deposito = (checkedEnvio && total > 0) ? total : (total / 2);
+            const restante = total - deposito;
+            
             txtDeposito.textContent = `$${deposito.toFixed(2)} MXN`;
-            txtRestante.textContent = `$${deposito.toFixed(2)} MXN`;
+            txtRestante.textContent = `$${restante.toFixed(2)} MXN`;
         }
 
         // Form Submit
@@ -738,7 +861,7 @@
             // Recolectar datos extra
             const orderData = {
                 envio_domicilio: document.getElementById('envioDomicilioCheckbox').checked,
-                costo_flete: document.getElementById('envioDomicilioCheckbox').checked ? 50.00 : 0.00,
+                costo_flete: document.getElementById('envioDomicilioCheckbox').checked ? costoFlete : 0.00,
                 fecha: document.getElementById('fecha').value,
                 hora: document.getElementById('hora').value,
                 domicilio: document.getElementById('domicilio').value,

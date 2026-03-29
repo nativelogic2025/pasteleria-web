@@ -172,8 +172,7 @@
                     <p style="margin-bottom: 0.3rem;"><strong>Titular:</strong> Pastelería La Estrella S.A de C.V</p>
                     <p style="margin-bottom: 0.3rem;"><strong>Cuenta:</strong> 0123456789</p>
                     <p style="margin-bottom: 0.5rem;"><strong>CLABE:</strong> 012 345 6789 0123 4567</p>
-                    <p style="font-size: 0.85rem; color: var(--color-text-light);">Realiza el pago por el "Anticipo
-                        Requerido". <strong style="color: var(--color-primary); display:block; margin-top: 5px;">IMPORTANTE: Una vez confirmado tu pedido, deberás subir tu comprobante en la página de Seguimiento para que podamos validar tu pago.</strong></p>
+                    <p style="font-size: 0.85rem; color: var(--color-text-light);">Realiza el pago por el monto requerido como "Anticipo a pagar hoy". <strong style="color: var(--color-primary); display:block; margin-top: 5px;">IMPORTANTE: Los pedidos a domicilio deben pagarse al 100% por adelantado. Una vez confirmado tu pedido, deberás subir tu comprobante en la página de Seguimiento para que podamos validar tu pago.</strong></p>
                 </div>
 
                 <button id="btnConfirmar" class="btn btn-primary"
@@ -264,10 +263,19 @@
                     `;
                 });
 
-                // Assume $50 mxn for shipping if the user has requested home delivery in their items
-                shipping = primaryDeliveryInfo.domicilio && primaryDeliveryInfo.domicilio.length > 5 ? 50 : 0;
+                let tienePastelGrande = false;
+                cartItems.forEach(item => {
+                    const isPastel = item.productos?.categorias?.nombre?.toLowerCase().includes('pastel') || item.productos?.nombre?.toLowerCase().includes('pastel');
+                    const _porciones = parseInt(item.producto_variantes?.porciones || 0);
+                    if (isPastel && _porciones >= 80) {
+                        tienePastelGrande = true;
+                    }
+                });
+                
+                // Assume $75 mxn for shipping unless there is an 80+ portions cake.
+                shipping = primaryDeliveryInfo.domicilio && primaryDeliveryInfo.domicilio.length > 5 ? (tienePastelGrande ? 0 : 75) : 0;
                 grandTotal = subtotal + shipping;
-                deposit = grandTotal / 2;
+                deposit = shipping > 0 ? grandTotal : grandTotal / 2;
 
                 let summaryHTML = `
                     <div style="margin-bottom: 1rem;"><strong>Entrega:</strong> ${primaryDeliveryInfo.domicilio ? `${primaryDeliveryInfo.fecha} ${primaryDeliveryInfo.hora} - ${primaryDeliveryInfo.domicilio}` : 'Recoger en sucursal'}</div>
