@@ -1,0 +1,66 @@
+ID 101 - Pastel Tres Chocolates
+   Sabores distintos: {'Único'}
+   Total tamaños: 9
+ID 38 - Pastel Choco Moca
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 39 - Pastel de Crema Irlandesa
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 40 - Pastel de Cajeta
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 41 - Pastel Choco Fresa
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 42 - Pastel Choco Nuez
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 43 - Pastel Choco Nutella
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 44 - Pastel Choco Oreo
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 45 - Pastel Choco Zarzamora
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 46 - Pastel de Durazno
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 47 - Pastel de Durazno con Mango
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 48 - Pastel de Durazno con Nuez
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 49 - Pastel de Fresa
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 50 - Pastel de Fresa con Nuez
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 51 - Pastel de Limón
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 52 - Pastel Moka
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 53 - Pastel de Nutella
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 55 - Pastel de Queso con Zarzamora
+   Sabores distintos: {'Único'}
+   Total tamaños: 10
+ID 56 - Queso Horneado
+   Sabores distintos: {'Único'}
+   Total tamaños: 9
+ID 54 - Pastel Piña Colada (Piña y Coco)
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 57 - Pastel de Rompope con Nuez
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84
+ID 58 - Pastel de Zarzamora
+   Sabores distintos: {'Tipo Panqué', 'Tres Leches'}
+   Total tamaños: 84

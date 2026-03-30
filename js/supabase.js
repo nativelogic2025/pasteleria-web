@@ -46,7 +46,7 @@ async function fetchCategorias() {
             method: 'GET',
             headers: HEADERS
         });
-        if (!response.ok) throw new Error('Error al obtener categorías');
+        if (!response.ok) throw new Error('Error al obtener categorÃ­as');
         return await response.json();
     } catch (error) {
         console.error('fetchCategorias error:', error);
@@ -394,6 +394,8 @@ async function registrarCliente(datosCliente) {
         }
 
         return true;
+
+
     } catch (error) {
         console.error('registrarCliente error:', error);
         throw error;
@@ -474,16 +476,21 @@ async function obtenerDetallesPorPedido(idPedido) {
         
         // Manual join to bypass Supabase native foreign-key relation errors
         for (let item of detalles) {
-            if (item.id_producto) {
-                const prod = await fetchProductoById(item.id_producto);
-                if (prod) {
-                    item.productos = prod;
-                    if (item.id_variante && prod.producto_variantes) {
-                        const variante = prod.producto_variantes.find(v => v.id_variante === item.id_variante);
-                        if (variante) {
-                            item.producto_variantes = variante;
+            if (item.id_variante) {
+                try {
+                    const varRes = await fetch(`${SUPABASE_URL}/producto_variantes?id_variante=eq.${item.id_variante}&select=*,productos(*)`, {
+                        method: 'GET',
+                        headers: HEADERS
+                    });
+                    if (varRes.ok) {
+                        const varData = await varRes.json();
+                        if (varData && varData.length > 0) {
+                            item.producto_variantes = varData[0];
+                            item.productos = varData[0].productos;
                         }
                     }
+                } catch (e) {
+                    console.error('Error fetching JOIN variante:', e);
                 }
             }
         }

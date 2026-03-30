@@ -16,13 +16,50 @@
     <link rel="stylesheet" href="css/styles.css">
 
     <style>
-        .form-container {
-            max-width: 900px;
+        .page-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            max-width: 1200px;
             margin: 0 auto;
-            background: var(--color-white);
-            padding: 3rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
+        }
+
+        @media (min-width: 992px) {
+            .page-layout {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            .form-main-column {
+                flex: 1;
+                background: var(--color-white);
+                padding: 3rem;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow-md);
+            }
+            .form-sidebar-column {
+                width: 380px;
+                position: sticky;
+                top: 100px;
+                background: var(--color-white);
+                padding: 2.5rem;
+                border-radius: var(--border-radius);
+                box-shadow: 0 10px 40px rgba(140, 85, 53, 0.15);
+                border: 2px solid #fcf5ee;
+                z-index: 10;
+            }
+        }
+        
+        @media (max-width: 991px) {
+            .form-main-column, .form-sidebar-column {
+                background: var(--color-white);
+                padding: 2rem;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow-md);
+            }
+        }
+
+        .form-container {
+            width: 100%;
         }
 
         .form-section-title {
@@ -142,6 +179,260 @@
             }
         }
 
+        /* Custom Select */
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .custom-select-trigger {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: white;
+            color: var(--color-text);
+            transition: all 0.2s;
+        }
+        .custom-select-trigger:hover {
+            border-color: #e5ccb3;
+        }
+        .custom-select-trigger.selected {
+            font-weight: 600;
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+            background-color: #fdfaf6;
+        }
+        .custom-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--color-primary);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: 0 10px 25px rgba(140,85,53,0.15);
+            z-index: 100;
+            margin-top: -2px;
+            max-height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+        .custom-select-search {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fdfaf6;
+        }
+        .custom-select-search input {
+            border: none;
+            outline: none;
+            width: 100%;
+            background: transparent;
+            font-size: 1.05rem;
+            font-family: var(--font-body);
+            color: var(--color-text);
+        }
+        .custom-select-options {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .custom-select-option {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #fae8d4;
+            transition: background 0.2s;
+            font-size: 1.05rem;
+        }
+        .custom-select-option:hover {
+            background: #fcf5ee;
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+        .custom-select-option.no-results {
+            color: var(--color-text-light);
+            text-align: center;
+            cursor: default;
+            background: white !important;
+            font-style: italic;
+        }
+
+        /* Wizard UI */
+        .wizard-step {
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            background: white;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .wizard-step.active {
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 15px rgba(140, 85, 53, 0.1);
+        }
+        .wizard-step.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+            background: #fdfaf6;
+            border-color: transparent;
+        }
+        .wizard-step.completed {
+            border-color: #e5ccb3;
+            background: #fdfaf6;
+        }
+        .wizard-header {
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid transparent;
+        }
+        .wizard-step.active .wizard-header {
+            border-bottom: 1px solid var(--color-border);
+            background: #fcf5ee;
+        }
+        .step-num {
+            background: var(--color-border);
+            color: var(--color-text);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        .wizard-step.active .step-num {
+            background: var(--color-primary);
+            color: white;
+        }
+        .wizard-step.completed .step-num {
+            background: var(--color-secondary);
+            color: white;
+        }
+        .step-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0;
+            transition: all 0.3s;
+        }
+        .wizard-step.active .step-title, .wizard-step.completed .step-title {
+            color: var(--color-primary);
+        }
+        .wizard-body {
+            padding: 1.5rem;
+            animation: fadeIn 0.4s ease;
+        }
+        .wizard-summary {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fcf5ee;
+            border-top: 1px solid #fae8d4;
+        }
+        .summary-text {
+            font-weight: 600;
+            color: var(--color-text);
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .summary-text i {
+            color: var(--color-secondary);
+            font-size: 1.2rem;
+        }
+        .btn-change {
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .btn-change:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pills Container */
+        .pills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+        .pill-card {
+            display: block;
+            cursor: pointer;
+            height: 100%;
+        }
+        .pill-card input[type="radio"] {
+            display: none;
+        }
+        .pill-content {
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .pill-content:hover {
+            border-color: #e5ccb3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(140, 85, 53, 0.08);
+        }
+        .pill-card input:checked + .pill-content {
+            border-color: var(--color-primary);
+            background: #fcf5ee;
+            box-shadow: 0 4px 15px rgba(140, 85, 53, 0.15);
+            transform: scale(1.02);
+        }
+        .pill-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--color-text);
+            line-height: 1.2;
+        }
+        .pill-card input:checked + .pill-content .pill-title {
+            color: var(--color-primary);
+        }
+        .pill-price {
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            font-weight: bold;
+        }
+        .pill-stock {
+            font-size: 0.8rem;
+            color: #d35400;
+            background: #fff3cd;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
         /* Estilos del Modal */
         .modal-overlay {
             position: fixed;
@@ -225,163 +516,232 @@
     <section class="section">
         <div class="container">
             <div class="form-container">
-                <form id="orderForm">
+                <form id="orderForm" class="page-layout">
 
-                    <h3 class="form-section-title">1. Datos de Entrega</h3>
-                    <div id="cartLockedWarning" class="hidden" style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #ffeeba; font-size: 0.95rem;">
-                        <i class="fas fa-lock"></i> <strong>Tu pedido ya tiene una fecha asignada.</strong><br>
-                        Como ya tienes productos en el carrito, estos datos aplican para toda la orden. Si deseas una fecha distinta, finaliza primero tu compra actual.
-                    </div>
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label class="radio-card"
-                            style="display: inline-block; padding: 0.5rem 1rem; margin-right: 1rem;">
-                            <input type="checkbox" id="envioDomicilioCheckbox"
-                                style="display: inline-block; margin-right: 0.5rem; transform: scale(1.2);">
-                            Quiero Envío a Domicilio (<span id="txtCostoEnvioLabel">$75 MXN</span>)
-                        </label>
-                        <span style="color: var(--color-text-light); font-size: 0.9rem;">(Si no lo marcas, recogerás en
-                            sucursal)</span>
-                    </div>
-
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">Fecha de Entrega/Recolección</label>
-                            <input type="date" id="fecha" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Hora Aproximada</label>
-                            <select id="hora" class="form-control" required>
-                                <option value="" disabled selected>-- Elige una hora --</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group hidden" id="domicilioGroup">
-                        <label class="form-label">Domicilio de Entrega (Añadir referencias)</label>
-                        <input type="text" id="domicilio" class="form-control" placeholder="Calle, Número, Colonia...">
-                    </div>
-
-                    <h3 class="form-section-title">2. Selección de Producto</h3>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">Tipo de Producto</label>
-                            <select id="producto" class="form-control" required>
-                                <option value="" disabled selected>-- Cargando productos... --</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Tamaño</label>
-                            <!-- Se llena dinámicamente con JS -->
-                            <select id="tamano" class="form-control" required disabled>
-                                <option value="" disabled selected>-- Primero selecciona producto --</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- SECCIÓN EXCLUSIVA DE PASTELES -->
-                    <div id="opcionesPastel" class="hidden"
-                        style="background: #fdfaf6; padding: 1.5rem; border: 1px dashed var(--color-secondary); margin-bottom: 1.5rem; border-radius: var(--border-radius);">
-                        <h4 style="margin-bottom: 1rem; color: var(--color-primary);">Configuración Exclusiva del Pastel
-                        </h4>
-
-                        <div class="grid-3">
-                            <div class="form-group">
-                                <label class="form-label">Armado</label>
-                                <div class="radio-group" style="flex-direction: column; gap:0.5rem;">
-                                    <label class="radio-card"><input type="radio" name="armado" value="Sencillo"
-                                            checked> Sencillo</label>
-                                    <label class="radio-card"><input type="radio" name="armado" value="Doble">
-                                        Doble</label>
+                    <div class="form-main-column">
+                        <!-- WIZARD UI -->
+                        <h3 class="form-section-title" style="margin-top: 0;">1. Configura tu Pedido Paso a Paso</h3>
+                        
+                        <div id="step1-container" class="wizard-step active">
+                            <div class="wizard-header">
+                                <span class="step-num">1</span>
+                                <h4 class="step-title">¿Qué tipo de antojo buscas hoy?</h4>
+                            </div>
+                            <div class="wizard-body">
+                                <div id="categoriaOptions" class="pills-container">
+                                    <div style="text-align: center; padding: 2rem; color: var(--color-text-light); grid-column: 1/-1;">Cargando categorías...</div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Pisos</label>
-                                <select id="pisos" class="form-control">
-                                    <option value="1">1 Piso</option>
-                                    <option value="2">2 Pisos</option>
-                                    <option value="3">3 Pisos</option>
-                                    <option value="4">4 Pisos</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Diseño Principal</label>
-                                <select id="diseno_pastel" class="form-control">
-                                    <option value="Normal Crema">Normal (Crema/Betún)</option>
-                                    <option value="Oblea">Con Oblea Comestible</option>
-                                    <option value="Sin Oblea">Sin Oblea (Básico)</option>
-                                </select>
+                            <div class="wizard-summary hidden" id="summary-categoria">
+                                <span class="summary-text" id="lblSelectedCategoria"><i class="fas fa-check-circle"></i> Categoría</span>
+                                <button type="button" class="btn-change" onclick="resetToStep(1)">Cambiar</button>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="seccionSaborDiseno">
-                        <h3 class="form-section-title">3. Detalles del Sabor y Diseño</h3>
-                        <div class="grid-2">
+                        <div id="step2-container" class="wizard-step disabled">
+                            <div class="wizard-header">
+                                <span class="step-num">2</span>
+                                <h4 class="step-title">Elige tu Producto</h4>
+                            </div>
+                            <div class="wizard-body hidden">
+                                <div id="productoOptions" class="pills-container"></div>
+                            </div>
+                            <div class="wizard-summary hidden" id="summary-producto">
+                                <span class="summary-text" id="lblSelectedProduct"><i class="fas fa-check-circle"></i> Producto seleccionado</span>
+                                <button type="button" class="btn-change" onclick="resetToStep(2)">Cambiar</button>
+                            </div>
+                        </div>
+
+                        <div id="step3-container" class="wizard-step disabled">
+                            <div class="wizard-header">
+                                <span class="step-num">3</span>
+                                <h4 class="step-title">Elige el Tipo de Pan</h4>
+                            </div>
+                            <div class="wizard-body hidden">
+                                <div id="saborOptions" class="pills-container"></div>
+                            </div>
+                            <div class="wizard-summary hidden" id="summary-sabor">
+                                <span class="summary-text" id="lblSelectedSabor"><i class="fas fa-check-circle"></i> Tipo de pan seleccionado</span>
+                                <button type="button" class="btn-change" onclick="resetToStep(3)">Cambiar</button>
+                            </div>
+                        </div>
+
+                        <div id="step4-container" class="wizard-step disabled">
+                            <div class="wizard-header">
+                                <span class="step-num">4</span>
+                                <h4 class="step-title">¿De qué tamaño será?</h4>
+                            </div>
+                            <div class="wizard-body hidden">
+                                <div id="tamañoFilter" class="radio-group" style="margin-bottom: 1.5rem; justify-content: center; display: none;">
+                                    <label class="radio-card" style="flex:0; min-width:150px;"><input type="radio" name="filtroExtra" value="normal" checked> Tamaños Normales</label>
+                                    <label class="radio-card" style="flex:0; min-width:150px;"><input type="radio" name="filtroExtra" value="extra"> Con Ingrediente Extra</label>
+                                </div>
+                                <div id="tamanoOptions" class="pills-container"></div>
+                            </div>
+                            <div class="wizard-summary hidden" id="summary-tamano">
+                                <span class="summary-text" id="lblSelectedTamano"><i class="fas fa-check-circle"></i> Tamaño seleccionado</span>
+                                <button type="button" class="btn-change" onclick="resetToStep(4)">Cambiar</button>
+                            </div>
+                        </div>
+
+                        <!-- Ocultos para mantener compatibilidad -->
+                        <input type="hidden" id="categoria_seleccionada" value="">
+                        <input type="hidden" id="sabor_seleccionado" value="">
+                        <select id="producto" class="hidden" required></select>
+                        <select id="tamano" class="hidden" required></select>
+                        <!-- FIN WIZARD UI -->
+
+                        <!-- SECCIÓN EXCLUSIVA DE PASTELES -->
+                        <div id="opcionesPastel" class="hidden"
+                            style="background: #fdfaf6; padding: 1.5rem; border: 1px dashed var(--color-secondary); margin-bottom: 1.5rem; border-radius: var(--border-radius);">
+                            <h4 style="margin-bottom: 1rem; color: var(--color-primary);">Configuración Exclusiva del Pastel
+                            </h4>
+
+                            <div class="grid-3">
+                                <div class="form-group">
+                                    <label class="form-label">Armado</label>
+                                    <div class="radio-group" style="flex-direction: column; gap:0.5rem;">
+                                        <label class="radio-card"><input type="radio" name="armado" value="Sencillo"
+                                                checked> Sencillo</label>
+                                        <label class="radio-card"><input type="radio" name="armado" value="Doble">
+                                            Doble</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Pisos</label>
+                                    <select id="pisos" class="form-control">
+                                        <option value="1">1 Piso</option>
+                                        <option value="2">2 Pisos</option>
+                                        <option value="3">3 Pisos</option>
+                                        <option value="4">4 Pisos</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Diseño Principal</label>
+                                    <select id="diseno_pastel" class="form-control">
+                                        <option value="Normal Crema">Normal (Crema/Betún)</option>
+                                        <option value="Oblea">Con Oblea Comestible</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label class="form-label" for="imagen_pastel" style="font-weight: 600;">Sube fotos de inspiración (Máximo 3, Opcional)</label>
+                                <input type="file" id="imagen_pastel" class="form-control" accept="image/*" multiple style="padding-top: 10px;">
+                                <small style="color:var(--color-text-light);">Sube tu referencia gráfica. (Ej. ideas de Pinterest o Instagram).</small>
+                                <div id="preview_pastel_container" style="display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap;"></div>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN EXCLUSIVA DE OBLEAS Y TRANSFERS -->
+                        <div id="opcionesObleaTransfer" class="hidden" style="background: #fdfaf6; padding: 1.5rem; border: 1px dashed var(--color-secondary); margin-bottom: 1.5rem; border-radius: var(--border-radius);">
+                            <h4 style="margin-bottom: 1rem; color: var(--color-primary);">Detalles de tu Diseño</h4>
                             <div class="form-group">
-                                <label class="form-label">Sabor / Especialidad</label>
-                                <select id="sabor" class="form-control">
-                                    <option value="" disabled selected>-- Elige el sabor --</option>
-                                    <option value="Chocolate Trufa">Chocolate Trufa</option>
-                                    <option value="Zarzamora con Queso">Zarzamora con Queso</option>
-                                    <option value="Fresa Natural">Fresa Natural</option>
-                                    <option value="Vainilla Tradicional">Vainilla Tradicional</option>
-                                    <option value="Tres Leches">Tres Leches Estandar</option>
-                                    <option value="Zanahoria Nuez">Zanahoria con Nuez</option>
-                                </select>
+                                <label class="form-label" for="instrucciones_oblea">¿Qué diseño o temática deseas? (Obligatorio)</label>
+                                <input type="text" id="instrucciones_oblea" class="form-control" placeholder="Ej. De la Paw Patrol, con el nombre 'Santi'...">
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="dedicatoria">Mensaje o Dedicatoria Corta</label>
+                                <label class="form-label" for="imagen_oblea">Sube fotos de referencia (Máximo 3, Opcional)</label>
+                                <input type="file" id="imagen_oblea" class="form-control" accept="image/*" multiple style="padding-top: 10px;">
+                                <small style="color:var(--color-text-light);">Puedes seleccionar hasta 3 imágenes guía.</small>
+                                <div id="preview_oblea_container" style="display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap;"></div>
+                            </div>
+                        </div>
+
+                        <div id="seccionSaborDiseno">
+                            <h3 class="form-section-title">2. Mensaje y Decoración</h3>
+                            <div class="form-group">
+                                <label class="form-label" for="dedicatoria">Mensaje o Dedicatoria Corta (Opcional)</label>
                                 <input type="text" id="dedicatoria" class="form-control"
                                     placeholder="Ej. ¡Feliz Cumpleaños María!">
                             </div>
+                            <div class="form-group">
+                                <label class="form-label" for="descripcion">Notas / Instrucciones Adicionales (Opcional)</label>
+                                <textarea id="descripcion" class="form-control" style="min-height: 80px;"
+                                    placeholder="Instrucciones para el decorado, detalles especiales..."></textarea>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label" for="descripcion">Descripción de Decoración Adicional</label>
-                            <textarea id="descripcion" class="form-control" style="min-height: 80px;"
-                                placeholder="Describe colores, estilo, adornos extra..."></textarea>
+
+                        <h3 class="form-section-title">3. Datos de Entrega</h3>
+                        <div id="cartLockedWarning" class="hidden" style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #ffeeba; font-size: 0.95rem;">
+                            <i class="fas fa-lock"></i> <strong>Tu pedido ya tiene una fecha asignada.</strong><br>
+                            Como ya tienes productos en el carrito, estos datos aplican para toda la orden. Si deseas una fecha distinta, finaliza primero tu compra actual.
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="radio-card"
+                                style="display: inline-block; padding: 0.5rem 1rem; margin-right: 1rem;">
+                                <input type="checkbox" id="envioDomicilioCheckbox"
+                                    style="display: inline-block; margin-right: 0.5rem; transform: scale(1.2);">
+                                Quiero Envío a Domicilio (<span id="txtCostoEnvioLabel">$75 MXN</span>)
+                            </label>
+                            <span style="color: var(--color-text-light); font-size: 0.9rem;">(Si no lo marcas, recogerás en
+                                sucursal)</span>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Fecha de Entrega/Recolección</label>
+                                <input type="date" id="fecha" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hora Aproximada</label>
+                                <select id="hora" class="form-control" required>
+                                    <option value="" disabled selected>-- Elige una hora --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group hidden" id="domicilioGroup">
+                            <label class="form-label">Domicilio de Entrega (Añadir referencias)</label>
+                            <input type="text" id="domicilio" class="form-control" placeholder="Calle, Número, Colonia...">
                         </div>
                     </div>
 
-                    <h3 class="form-section-title">4. Resumen y Cotización</h3>
+                    <div class="form-sidebar-column">
+                        <h3 style="margin-top:0; margin-bottom:1.5rem; font-family: var(--font-heading); font-size: 1.6rem; color: var(--color-primary); text-align: center; border-bottom: 2px solid #fcf5ee; padding-bottom: 1rem;">Resumen de tu Pedido</h3>
+    
+                        <div class="price-summary" style="margin-top:0; padding:0; background:none; border-left:none;">
+                            <div class="price-row" style="margin-bottom: 0.8rem;">
+                                <span style="font-size: 1rem; color: var(--color-text-light);">Subtotal Producto:</span>
+                                <span id="txtBase" style="font-weight: 500;">$0.00 MXN</span>
+                            </div>
+                            <div class="price-row">
+                                <span style="font-size: 1rem; color: var(--color-text-light);">Envío:</span>
+                                <span id="txtFlete" style="font-weight: 500;">$0.00 MXN</span>
+                            </div>
+                            
+                            <div style="background-color: #fcf5ee; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; text-align: center; border: 1px solid #fae8d4;">
+                                <span style="display: block; font-size: 0.9rem; color: var(--color-text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Costo Total</span>
+                                <span id="txtTotal" style="display: block; font-size: 2.2rem; font-weight: bold; color: var(--color-primary); line-height: 1;">$0.00 MXN</span>
+                            </div>
 
-                    <div class="price-summary">
-                        <div class="price-row">
-                            <span>Cotización Base del Producto:</span>
-                            <span id="txtBase">$0.00 MXN</span>
+                            <div class="price-row" style="margin-top: 1.5rem; font-size: 0.95rem; color: #d35400;">
+                                <span><i class="fas fa-money-check-alt"></i> Depósito 50%:</span>
+                                <span id="txtDeposito" style="font-weight: bold;">$0.00 MXN</span>
+                            </div>
+                            <div class="price-row" style="margin-top: 0.5rem; font-size: 0.95rem; color: var(--color-text-light);">
+                                <span>Restante a la entrega:</span>
+                                <span id="txtRestante">$0.00 MXN</span>
+                            </div>
                         </div>
-                        <div class="price-row" style="color: var(--color-text-light);">
-                            <span>Costo de Flete (Envío):</span>
-                            <span id="txtFlete">$0.00 MXN</span>
-                        </div>
-                        <div class="price-row price-total">
-                            <span>TOTAL A PAGAR:</span>
-                            <span id="txtTotal">$0.00 MXN</span>
-                        </div>
-                        <div class="price-row" style="margin-top: 1rem; color: #d35400; font-weight: bold;">
-                            <span>Depósito Inicial Requerido (50%):</span>
-                            <span id="txtDeposito">$0.00 MXN</span>
-                        </div>
-                        <div class="price-row"
-                            style="color: var(--color-text-light); border-top: 1px dashed var(--color-border); padding-top: 5px; margin-top:5px;">
-                            <span>Restante a Pagar a la Entrega:</span>
-                            <span id="txtRestante">$0.00 MXN</span>
-                        </div>
-                    </div>
 
-                    <div class="form-group" style="margin-top: 1.5rem; text-align: center;">
-                        <label class="form-label" style="display: inline-block; margin-right: 1rem; font-size: 1.1rem; color: var(--color-primary);">Cantidad:</label>
-                        <div style="display: inline-flex; align-items: center; border: 2px solid var(--color-border); border-radius: var(--border-radius); overflow: hidden; background: white; vertical-align: middle;">
-                            <button type="button" id="btnMinusQty" style="background: #fdfaf6; border: none; padding: 0.6rem 1.2rem; cursor: pointer; border-right: 1px solid var(--color-border); font-size: 1.1rem; color: var(--color-primary); transition: all 0.2s;"><i class="fas fa-minus"></i></button>
-                            <input type="number" id="cantidad" value="1" min="1" max="50" style="width: 70px; text-align: center; border: none; outline: none; font-size: 1.2rem; font-weight: bold; padding: 0.6rem 0; color: var(--color-text);">
-                            <button type="button" id="btnPlusQty" style="background: #fdfaf6; border: none; padding: 0.6rem 1.2rem; cursor: pointer; border-left: 1px solid var(--color-border); font-size: 1.1rem; color: var(--color-primary); transition: all 0.2s;"><i class="fas fa-plus"></i></button>
-                        </div>
-                    </div>
+                        <hr style="border: none; border-top: 1px dashed var(--color-border); margin: 2rem 0;">
 
-                    <div class="form-group" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                        <button type="button" id="btnResetForm" class="btn btn-outline" style="font-size: 1.1rem; padding: 1rem 2rem;"><i class="fas fa-eraser"></i> Limpiar Artículo</button>
-                        <button type="submit" class="btn btn-primary"
-                            style="font-size: 1.2rem; padding: 1rem 3rem;">Agregar al Carrito <i
-                                class="fas fa-shopping-cart" style="margin-left: 10px;"></i></button>
+                        <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
+                            <label class="form-label" style="display: block; margin-bottom: 0.8rem; font-size: 1rem; color: var(--color-text-light); text-transform: uppercase; letter-spacing: 1px;">Cantidad a comprar</label>
+                            <div style="display: inline-flex; align-items: center; border: 2px solid var(--color-primary); border-radius: 50px; overflow: hidden; background: white; vertical-align: middle; box-shadow: 0 4px 10px rgba(140, 85, 53, 0.1);">
+                                <button type="button" id="btnMinusQty" style="background: transparent; border: none; padding: 0.8rem 1.5rem; cursor: pointer; font-size: 1.2rem; color: var(--color-primary); transition: all 0.2s;"><i class="fas fa-minus"></i></button>
+                                <input type="number" id="cantidad" value="1" min="1" max="50" style="width: 50px; text-align: center; border: none; outline: none; font-size: 1.3rem; font-weight: bold; padding: 0; color: var(--color-text);">
+                                <button type="button" id="btnPlusQty" style="background: transparent; border: none; padding: 0.8rem 1.5rem; cursor: pointer; font-size: 1.2rem; color: var(--color-primary); transition: all 0.2s;"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.2rem; border-radius: 50px; box-shadow: 0 5px 15px rgba(140, 85, 53, 0.3); transition: all 0.3s transform;">
+                                Agregar al Carrito <i class="fas fa-shopping-cart" style="margin-left: 10px;"></i>
+                            </button>
+                            <button type="button" id="btnResetForm" class="btn btn-outline" style="font-size: 1rem; padding: 1rem; border-radius: 50px; border: 1px solid var(--color-border);">
+                                <i class="fas fa-eraser"></i> Limpiar Campos
+                            </button>
+                        </div>
                     </div>
 
                 </form>
@@ -566,22 +926,11 @@
         // Botón Reset
         document.getElementById('btnResetForm').addEventListener('click', () => {
             if(confirm('¿Deseas limpiar tu configuración actual de este artículo?')) {
-                document.getElementById('producto').value = "";
-                const evt = new Event('change');
-                document.getElementById('producto').dispatchEvent(evt);
-                
-                document.getElementById('sabor').value = "";
+                resetToStep(1, false);
                 document.getElementById('dedicatoria').value = "";
                 document.getElementById('descripcion').value = "";
                 inputCantidad.value = "1";
                 cantidadActual = 1;
-                
-                const rSencillo = document.querySelector('input[name="armado"][value="Sencillo"]');
-                if(rSencillo) rSencillo.checked = true;
-                
-                document.getElementById('pisos').value = "1";
-                document.getElementById('diseno_pastel').value = "Normal Crema";
-                
                 actualizarPrecios();
             }
         });
@@ -678,38 +1027,340 @@
 
             try {
                 dbProductos = await fetchProductos();
+                window.productosCache = dbProductos;
 
-                selectProducto.innerHTML = '<option value="" disabled selected>-- Selecciona un producto --</option>';
+                const selectP = document.getElementById('producto');
+                selectP.innerHTML = '<option value="" disabled selected>-- Selecciona un producto --</option>';
 
                 if (dbProductos && dbProductos.length > 0) {
+                    const categoriasMap = new Map();
+                    
                     dbProductos.forEach(prod => {
+                        const catNombre = prod.categorias ? prod.categorias.nombre : 'General';
+                        if(!categoriasMap.has(catNombre)) {
+                            categoriasMap.set(catNombre, []);
+                        }
+                        categoriasMap.get(catNombre).push(prod);
+                        
+                        // Populate hidden select for compatibility
                         const option = document.createElement('option');
                         option.value = prod.id_producto;
                         option.textContent = prod.nombre;
-                        const catLower = prod.categorias?.nombre?.toLowerCase() || '';
+                        const catLower = catNombre.toLowerCase();
                         option.dataset.isPastel = catLower.includes('pastel') || prod.nombre.toLowerCase().includes('pastel');
                         option.dataset.categoria = catLower;
-                        selectProducto.appendChild(option);
+                        selectP.appendChild(option);
+                    });
+                    
+                    // Render Category Pills
+                    let catHTML = '';
+                    categoriasMap.forEach((productosLista, catNombre) => {
+                        catHTML += `<label class="pill-card">
+                            <input type="radio" name="catRadio" value="${catNombre}">
+                            <div class="pill-content" style="padding: 1.5rem 1rem;">
+                                <i class="fas ${getIconForCat(catNombre)}" style="font-size: 2.5rem; margin-bottom: 10px; color: var(--color-secondary);"></i>
+                                <span class="pill-title" style="font-size: 1.15rem;">${catNombre}</span>
+                                <span style="font-size: 0.85rem; color: var(--color-text-light); margin-top: 5px;">${productosLista.length} opciones</span>
+                            </div>
+                        </label>`;
+                    });
+                    document.getElementById('categoriaOptions').innerHTML = catHTML;
+                    
+                    // Add Listeners to Categories
+                    document.querySelectorAll('input[name="catRadio"]').forEach(radio => {
+                        radio.addEventListener('change', function() {
+                            seleccionarCategoria(this.value, categoriasMap.get(this.value));
+                        });
                     });
                 } else {
-                    selectProducto.innerHTML = '<option value="" disabled selected>-- No hay productos --</option>';
+                    document.getElementById('categoriaOptions').innerHTML = '<div style="color:red; text-align:center; grid-column:1/-1;">No hay productos disponibles</div>';
                 }
 
+                document.querySelectorAll('input[name="filtroExtra"]').forEach(r => {
+                    r.addEventListener('change', () => {
+                       renderTamanosFiltrados();
+                       document.getElementById('tamano').value = '';
+                       document.getElementById('tamano').dispatchEvent(new Event('change'));
+                       document.getElementById('summary-tamano').classList.add('hidden');
+                    });
+                });
 
                 // Auto-select product from URL if exists
                 const urlParams = new URLSearchParams(window.location.search);
                 const queryProduct = urlParams.get('producto');
                 if (queryProduct) {
-                    selectProducto.value = queryProduct;
-                    // Trigger change event to load variants
-                    const event = new Event('change');
-                    selectProducto.dispatchEvent(event);
+                    // Not fully compatible with wizard jumping, but sets value
+                    selectP.value = queryProduct;
+                    selectP.dispatchEvent(new Event('change'));
                 }
 
             } catch (error) {
                 console.error('Error fetching products:', error);
             }
         });
+
+        // WIZARD HELPER FUNCTIONS
+        function getIconForCat(nombre) {
+            const n = nombre.toLowerCase();
+            if(n.includes('pastel')) return 'fa-birthday-cake';
+            if(n.includes('cupcake') || n.includes('muffin')) return 'fa-muffin';
+            if(n.includes('gelatina')) return 'fa-circle-notch';
+            if(n.includes('galleta')) return 'fa-cookie';
+            if(n.includes('vela')) return 'fa-fire';
+            if(n.includes('postre')) return 'fa-ice-cream';
+            return 'fa-utensils';
+        }
+
+        function seleccionarCategoria(catNombre, productosData) {
+            document.getElementById('categoria_seleccionada').value = catNombre;
+            
+            let prodHTML = '';
+            productosData.forEach(p => {
+                prodHTML += `<label class="pill-card">
+                    <input type="radio" name="prodRadio" value="${p.id_producto}" data-nombre="${p.nombre}">
+                    <div class="pill-content" style="padding: 1.2rem; justify-content: flex-start; text-align: left; align-items: flex-start;">
+                        <span class="pill-title" style="font-size: 1.1rem; border-bottom: 2px solid #fae8d4; padding-bottom: 5px; width:100%; margin-bottom: 5px;">${p.nombre}</span>
+                        <span style="font-size: 0.9rem; color: var(--color-text-light);"><i class="fas fa-layer-group"></i> ${p.producto_variantes ? p.producto_variantes.length : 0} opciones</span>
+                    </div>
+                </label>`;
+            });
+            document.getElementById('productoOptions').innerHTML = prodHTML;
+            
+            document.querySelectorAll('input[name="prodRadio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    seleccionarProducto(this.value, this.dataset.nombre);
+                });
+            });
+
+            document.getElementById('step1-container').classList.remove('active');
+            document.getElementById('step1-container').classList.add('completed');
+            document.querySelector('#step1-container .wizard-body').classList.add('hidden');
+            
+            const summaryCat = document.getElementById('summary-categoria');
+            summaryCat.classList.remove('hidden');
+            document.getElementById('lblSelectedCategoria').innerHTML = `<i class="fas fa-check-circle"></i> Categoría: ${catNombre}`;
+
+            document.getElementById('step2-container').classList.remove('disabled');
+            document.getElementById('step2-container').classList.add('active');
+            document.querySelector('#step2-container .wizard-body').classList.remove('hidden');
+            
+            resetToStep(2, true);
+        }
+
+        function seleccionarProducto(idProd, nombreProd) {
+            const selectP = document.getElementById('producto');
+            selectP.value = idProd;
+            const op = selectP.options[selectP.selectedIndex];
+            const isPastel = op ? op.dataset.isPastel === 'true' : false;
+            
+            // Precargar variantes sincrónicamente de cache para tenerlas disponibles inmediatamente antes del DOM
+            const productoObj = window.productosCache.find(p => p.id_producto === parseInt(idProd));
+            window.variantesActuales = productoObj ? productoObj.producto_variantes : [];
+
+            document.getElementById('step2-container').classList.remove('active');
+            document.getElementById('step2-container').classList.add('completed');
+            document.querySelector('#step2-container .wizard-body').classList.add('hidden');
+            
+            const summaryProd = document.getElementById('summary-producto');
+            summaryProd.classList.remove('hidden');
+            document.getElementById('lblSelectedProduct').innerHTML = `<i class="fas fa-check-circle"></i> ${nombreProd}`;
+
+            const opcionesPastel = document.getElementById('opcionesPastel');
+
+            if (isPastel) {
+                if(opcionesPastel) opcionesPastel.classList.remove('hidden');
+                document.getElementById('step3-container').style.display = 'block';
+                document.querySelector('#step4-container .step-title').textContent = '¿De qué tamaño será?';
+
+            // Agrupar Sabores
+            const saboresMap = new Set();
+            if (window.variantesActuales && window.variantesActuales.length > 0) {
+                window.variantesActuales.forEach(v => {
+                    const s = v.sabor ? v.sabor : "Tradicional";
+                    saboresMap.add(s);
+                });
+            } else {
+                saboresMap.add("Único");
+            }
+            
+            // Auto-fallback: Si el saborActual guardado no está en este producto, vaciarlo
+            if (window.saborActual && !saboresMap.has(window.saborActual)) {
+                window.saborActual = null;
+            }
+            
+            // Optimización: Si SOLO hay 'Único' como sabor, saltar el paso 3 automáticamente para los Pasteles "Especiales"
+            if (saboresMap.size === 1 && saboresMap.has('Único')) {
+                document.getElementById('step3-container').style.display = 'none';
+                window.saborActual = 'Único';
+                document.getElementById('step4-container').classList.remove('disabled');
+                document.getElementById('step4-container').classList.add('active');
+                document.querySelector('#step4-container .wizard-body').classList.remove('hidden');
+            } else {
+                let saborHTML = '';
+                saboresMap.forEach(sabor => {
+                    saborHTML += `<label class="pill-card">
+                        <input type="radio" name="saborRadio" value="${sabor}">
+                        <div class="pill-content">
+                            <span class="pill-title" style="font-size:1.1rem; padding: 0.5rem 0;">${sabor}</span>
+                        </div>
+                    </label>`;
+                });
+                document.getElementById('saborOptions').innerHTML = saborHTML;
+                
+                document.querySelectorAll('input[name="saborRadio"]').forEach(r => {
+                    r.addEventListener('change', function() {
+                        seleccionarSabor(this.value);
+                    });
+                });
+
+                document.getElementById('step3-container').classList.remove('disabled');
+                document.getElementById('step3-container').classList.add('active');
+                document.querySelector('#step3-container .wizard-body').classList.remove('hidden');
+            }
+        } else {
+                if(opcionesPastel) opcionesPastel.classList.add('hidden');
+                // Si no es pastel, saltar el paso 3 y cambiar el nombre del paso 4
+                document.getElementById('step3-container').style.display = 'none';
+                document.querySelector('#step4-container .step-title').textContent = 'Precio / Opción';
+                
+                window.saborActual = 'Único';
+                
+                document.getElementById('step4-container').classList.remove('disabled');
+                document.getElementById('step4-container').classList.add('active');
+                document.querySelector('#step4-container .wizard-body').classList.remove('hidden');
+            }            
+
+            // Llama al listener para refrescar la validación de Extras y renderTamanosFiltrados
+            selectP.dispatchEvent(new Event('change'));
+        }
+
+        function seleccionarSabor(sabor) {
+            document.getElementById('sabor_seleccionado').value = sabor;
+            window.saborActual = sabor;
+            
+            document.getElementById('step3-container').classList.remove('active');
+            document.getElementById('step3-container').classList.add('completed');
+            document.querySelector('#step3-container .wizard-body').classList.add('hidden');
+            
+            const summarySabor = document.getElementById('summary-sabor');
+            summarySabor.classList.remove('hidden');
+            document.getElementById('lblSelectedSabor').innerHTML = `<i class="fas fa-check-circle"></i> Tipo de Pan: ${sabor}`;
+
+            document.getElementById('step4-container').classList.remove('disabled');
+            document.getElementById('step4-container').classList.add('active');
+            document.querySelector('#step4-container .wizard-body').classList.remove('hidden');
+            
+            renderTamanosFiltrados();
+        }
+
+        function resetToStep(step, isSilent = false) {
+            for(let i=1; i<=4; i++) {
+                const container = document.getElementById(`step${i}-container`);
+                const summary = document.getElementById(`summary-${i===1?'categoria':(i===2?'producto':(i===3?'sabor':'tamano'))}`);
+                
+                if(!container) continue;
+
+                if (i === step) {
+                    container.classList.add('active');
+                    container.classList.remove('completed', 'disabled');
+                    const body = container.querySelector('.wizard-body');
+                    if(body) body.classList.remove('hidden');
+                    if (summary) summary.classList.add('hidden');
+                } else if (i > step) {
+                    container.classList.add('disabled');
+                    container.classList.remove('active', 'completed');
+                    const body = container.querySelector('.wizard-body');
+                    if(body) body.classList.add('hidden');
+                    if (summary) summary.classList.add('hidden');
+                }
+            }
+
+            if (!isSilent) {
+                if (step <= 1) {
+                    document.querySelectorAll('input[name="catRadio"]').forEach(r => r.checked = false);
+                    document.getElementById('producto').value = '';
+                }
+                if (step <= 2) {
+                    document.querySelectorAll('input[name="prodRadio"]').forEach(r => r.checked = false);
+                    document.getElementById('sabor_seleccionado').value = '';
+                }
+                if (step <= 3) {
+                    document.querySelectorAll('input[name="saborRadio"]').forEach(r => r.checked = false);
+                    document.getElementById('tamano').value = '';
+                    document.getElementById('tamano').dispatchEvent(new Event('change'));
+                }
+                if (step <= 4) {
+                    document.querySelectorAll('input[name="tamanoRadio"]').forEach(r => r.checked = false);
+                }
+            }
+        }
+        
+        function renderTamanosFiltrados() {
+            if(!window.variantesActuales || window.variantesActuales.length === 0) return;
+            
+            const radioFiltro = document.querySelector('input[name="filtroExtra"]:checked');
+            const showExtra = radioFiltro ? radioFiltro.value === 'extra' : false;
+            
+            let html = '';
+            let countRendered = 0;
+            const selectTamano = document.getElementById('tamano');
+            selectTamano.innerHTML = '<option value="" disabled selected>-- Primero selecciona producto --</option>'; 
+            
+            window.variantesActuales.forEach(v => {
+                const s = v.sabor ? v.sabor : "Tradicional";
+                if (s !== window.saborActual && window.saborActual !== "Único") return;
+
+                const nombreL = v.tamaño ? v.tamaño.toLowerCase() : '';
+                const isExtra = nombreL.includes('extra') || nombreL.includes('ingrediente') || nombreL.includes('especial');
+                
+                if((showExtra && isExtra) || (!showExtra && !isExtra)) {
+                    const el = document.createElement('option');
+                    el.value = v.id_variante;
+                    el.dataset.precio = v.precio_venta;
+                    el.dataset.porciones = v.porciones || 0;
+                    el.dataset.stock = v.stock;
+                    
+                    let outOfStock = (v.stock !== null && v.stock === 0);
+                    if (outOfStock) el.disabled = true;
+                    selectTamano.appendChild(el);
+                    
+                    const stockText = v.stock !== null ? (outOfStock ? 'Agotado' : `Quedan ${v.stock}`) : '';
+                    const stockClass = outOfStock ? 'style="opacity:0.5; filter:grayscale(1);"' : '';
+                    
+                    html += `<label class="pill-card" ${stockClass}>
+                        <input type="radio" name="tamanoRadio" value="${v.id_variante}" ${outOfStock ? 'disabled' : ''} data-nombre="${v.tamaño}">
+                        <div class="pill-content">
+                            <span class="pill-title">${v.tamaño} ${v.porciones ? '<br><small style="font-weight:normal; color:#666;">('+v.porciones+' px)</small>' : ''}</span>
+                            <span class="pill-price">$${v.precio_venta}</span>
+                            ${stockText ? `<span class="pill-stock">${stockText}</span>` : ''}
+                        </div>
+                    </label>`;
+                    countRendered++;
+                }
+            });
+            
+            if (countRendered === 0) {
+                 html = `<div style="color:var(--color-text-light); text-align:center; padding:1.5rem; grid-column:1/-1;">No hay tamaños bajo este filtro para este producto.</div>`;
+            }
+            
+            document.getElementById('tamanoOptions').innerHTML = html;
+            
+            document.querySelectorAll('input[name="tamanoRadio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const selectT = document.getElementById('tamano');
+                    selectT.value = this.value;
+                    selectT.dispatchEvent(new Event('change'));
+                    
+                    document.getElementById('step4-container').classList.remove('active');
+                    document.getElementById('step4-container').classList.add('completed');
+                    document.querySelector('#step4-container .wizard-body').classList.add('hidden');
+                    
+                    const summaryTamano = document.getElementById('summary-tamano');
+                    summaryTamano.classList.remove('hidden');
+                    document.getElementById('lblSelectedTamano').innerHTML = `<i class="fas fa-check-circle"></i> Tamaño: ${this.dataset.nombre}`;
+                });
+            });
+        }
 
         selectProducto.addEventListener('change', function () {
             selectTamano.innerHTML = '<option value="" disabled selected>-- Selecciona un tamaño --</option>';
@@ -722,48 +1373,55 @@
             const isPastel = selectedOption.dataset.isPastel === 'true';
             const categoria = selectedOption.dataset.categoria;
 
-            if (isPastel) {
-                opcionesPastel.classList.remove('hidden');
-            } else {
-                opcionesPastel.classList.add('hidden');
+
+            
+            const opcionesObleaTransfer = document.getElementById('opcionesObleaTransfer');
+            if (opcionesObleaTransfer) {
+                if (productId === 16 || productId === 18) {
+                    opcionesObleaTransfer.classList.remove('hidden');
+                    document.getElementById('instrucciones_oblea').required = true;
+                } else {
+                    opcionesObleaTransfer.classList.add('hidden');
+                    document.getElementById('instrucciones_oblea').required = false;
+                }
             }
 
             const seccionSaborDiseno = document.getElementById('seccionSaborDiseno');
+
             if (['velas', 'extras'].includes(categoria)) {
                 if (seccionSaborDiseno) seccionSaborDiseno.classList.add('hidden');
             } else {
                 if (seccionSaborDiseno) seccionSaborDiseno.classList.remove('hidden');
             }
 
-            // Find product and populate variants
-            const producto = dbProductos.find(p => p.id_producto === productId);
+            const producto = window.productosCache.find(p => p.id_producto === productId);
             if (producto && producto.producto_variantes) {
-                producto.producto_variantes.forEach(v => {
-                    const el = document.createElement('option');
-                    el.value = v.id_variante;
-
-                    let texto = `${v.tamaño}`;
-                    if (v.porciones) texto += ` (${v.porciones} personas)`;
-                    texto += ` - $${v.precio_venta} MXN`;
-                    if (v.stock !== null) {
-                        texto += ` (Stock: ${v.stock})`;
-                        if (v.stock === 0) {
-                            texto += ' [Agotado]';
-                            el.disabled = true;
-                        }
-                    }
-                    el.textContent = texto;
-
-                    el.dataset.precio = v.precio_venta;
-                    el.dataset.porciones = v.porciones || 0;
-                    el.dataset.stock = v.stock;
-                    selectTamano.appendChild(el);
+                window.variantesActuales = producto.producto_variantes;
+                const hasExtra = window.variantesActuales.some(v => {
+                    const l = v.tamaño ? v.tamaño.toLowerCase() : '';
+                    return l.includes('extra') || l.includes('ingrediente') || l.includes('especial');
                 });
+                
+                const filterCont = document.getElementById('tamañoFilter');
+                if (hasExtra) {
+                    filterCont.style.display = 'flex';
+                } else {
+                    filterCont.style.display = 'none';
+                    const normalR = document.querySelector('input[name="filtroExtra"][value="normal"]');
+                    if(normalR) normalR.checked = true;
+                }
+                
+                renderTamanosFiltrados();
+            } else {
+                if (document.getElementById('tamanoOptions')) {
+                    document.getElementById('tamanoOptions').innerHTML = '<div style="color:var(--color-secondary); font-weight:bold; text-align:center; padding:1.5rem; grid-column:1/-1;">No hay variantes disponibles para este producto.</div>';
+                }
             }
         });
 
         selectTamano.addEventListener('change', function () {
             const selectedOpt = this.options[this.selectedIndex];
+            if (!selectedOpt) return;
             precioBase = parseFloat(selectedOpt.dataset.precio || 0);
 
             const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
@@ -771,13 +1429,13 @@
             const stockValue = selectedOpt.dataset.stock;
             const envioCheckbox = document.getElementById('envioDomicilioCheckbox');
             
-            if (stockValue && stockValue !== 'null' && parseInt(stockValue) >= 0) {
+            if (stockValue !== null && parseInt(stockValue) === 0) {
                 envioCheckbox.checked = false;
                 envioCheckbox.disabled = true;
                 document.getElementById('domicilioGroup').classList.add('hidden');
                 document.getElementById('domicilio').required = false;
                 if (document.getElementById('txtCostoEnvioLabel')) {
-                     document.getElementById('txtCostoEnvioLabel').textContent = "Solo Sucursal (En Stock)";
+                     document.getElementById('txtCostoEnvioLabel').textContent = "Agotado";
                      document.getElementById('txtCostoEnvioLabel').style.color = "red";
                 }
             } else {
@@ -808,7 +1466,15 @@
 
         function actualizarPrecios() {
             const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
-            const porciones = parseInt(selectTamano.options[selectTamano.selectedIndex]?.dataset.porciones || 0);
+            
+            const opSelected = selectTamano.options[selectTamano.selectedIndex];
+            let porciones = parseInt(opSelected?.dataset.porciones || 0);
+            
+            if (porciones === 0 && opSelected) {
+                const nombreTamano = opSelected.textContent || "";
+                const match = nombreTamano.match(/\d+/);
+                if (match) porciones = parseInt(match[0]);
+            }
 
             if (document.getElementById('envioDomicilioCheckbox').checked) {
                 if (isPastel && porciones >= 80) {
@@ -852,11 +1518,84 @@
             txtRestante.textContent = `$${restante.toFixed(2)} MXN`;
         }
 
+        // Lector de Imagen múltiple para Oblea
+        const imgObleaInput = document.getElementById('imagen_oblea');
+        window.obleasArchivosSeleccionados = [];
+        
+        if (imgObleaInput) {
+            imgObleaInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                if (files.length > 3) {
+                    alert("Solo puedes subir un máximo de 3 imágenes. Si requieres enviar más, por favor contáctanos por WhatsApp o Gmail.");
+                    this.value = ''; // limpiar
+                    window.obleasArchivosSeleccionados = [];
+                    document.getElementById('preview_oblea_container').innerHTML = '';
+                    return;
+                }
+                
+                window.obleasArchivosSeleccionados = files;
+                const container = document.getElementById('preview_oblea_container');
+                container.innerHTML = '';
+                
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        const img = document.createElement('img');
+                        img.src = evt.target.result;
+                        img.style.width = '80px';
+                        img.style.height = '80px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '8px';
+                        img.style.border = '1px solid var(--color-border)';
+                        container.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
+        // Lector de Imagen múltiple para Pasteles
+        const imgPastelInput = document.getElementById('imagen_pastel');
+        window.pastelesArchivosSeleccionados = [];
+        
+        if (imgPastelInput) {
+            imgPastelInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                if (files.length > 3) {
+                    alert("Solo puedes subir un máximo de 3 imágenes de referencia para tu pastel. Si requieres opciones especiales, contáctanos por WhatsApp.");
+                    this.value = '';
+                    window.pastelesArchivosSeleccionados = [];
+                    document.getElementById('preview_pastel_container').innerHTML = '';
+                    return;
+                }
+                
+                window.pastelesArchivosSeleccionados = files;
+                const container = document.getElementById('preview_pastel_container');
+                container.innerHTML = '';
+                
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        const img = document.createElement('img');
+                        img.src = evt.target.result;
+                        img.style.width = '80px';
+                        img.style.height = '80px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '8px';
+                        img.style.border = '1px solid var(--color-border)';
+                        container.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
         // Form Submit
         document.getElementById('orderForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
+            const prodId = parseInt(document.getElementById('producto').value);
 
             // Recolectar datos extra
             const orderData = {
@@ -865,7 +1604,7 @@
                 fecha: document.getElementById('fecha').value,
                 hora: document.getElementById('hora').value,
                 domicilio: document.getElementById('domicilio').value,
-                sabor: document.getElementById('sabor').value,
+                sabor: window.saborActual || 'Único',
                 dedicatoria: document.getElementById('dedicatoria').value,
                 descripcion: document.getElementById('descripcion').value
             };
@@ -875,12 +1614,70 @@
                 orderData.pisos = document.getElementById('pisos').value;
                 orderData.diseno = document.getElementById('diseno_pastel').value;
             }
+            
+            if (prodId === 16 || prodId === 18) {
+                orderData.instrucciones_oblea = document.getElementById('instrucciones_oblea').value;
+            }
 
             try {
                 const btnSubmit = this.querySelector('button[type="submit"]');
                 const btnOriginalText = btnSubmit.innerHTML;
-                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
                 btnSubmit.disabled = true;
+
+                // Subir fotos a Supabase (REST API)
+                let filesToUpload = [];
+                
+                const opcionesPastelEl = document.getElementById('opcionesPastel');
+                if (opcionesPastelEl && !opcionesPastelEl.classList.contains('hidden') && window.pastelesArchivosSeleccionados && window.pastelesArchivosSeleccionados.length > 0) {
+                    filesToUpload = filesToUpload.concat(window.pastelesArchivosSeleccionados);
+                }
+                
+                const opcionesObleaEl = document.getElementById('opcionesObleaTransfer');
+                if ((prodId === 16 || prodId === 18) && opcionesObleaEl && !opcionesObleaEl.classList.contains('hidden') && window.obleasArchivosSeleccionados && window.obleasArchivosSeleccionados.length > 0) {
+                    filesToUpload = filesToUpload.concat(window.obleasArchivosSeleccionados);
+                }
+
+                if (filesToUpload.length > 0) {
+                    btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo Imágenes...';
+                    const supabaseUrl = 'https://wvogrcteltoljtjvneyv.supabase.co';
+                    const supabaseKey = 'sb_publishable_jTuZRwRohap9wJcfeJovlg_nzM2u-z-';
+                    let uploadedUrls = [];
+                    
+                    for (let i = 0; i < filesToUpload.length; i++) {
+                        const file = filesToUpload[i];
+                        const fileExt = file.name.split('.').pop() || 'png';
+                        // Reemplazar espacios por guiones para evitar errores al guardar
+                        const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+                        const fileName = `oblea_${Date.now()}_${i}_${safeName}`;
+                        
+                        try {
+                            const response = await fetch(`${supabaseUrl}/storage/v1/object/detalle_oblea_trans/${fileName}`, {
+                                method: 'POST',
+                                headers: {
+                                    'apikey': supabaseKey,
+                                    'Authorization': `Bearer ${supabaseKey}`,
+                                    'Content-Type': file.type || 'application/octet-stream'
+                                },
+                                body: file
+                            });
+                            
+                            if (response.ok) {
+                                const publicUrl = `${supabaseUrl}/storage/v1/object/public/detalle_oblea_trans/${fileName}`;
+                                uploadedUrls.push(publicUrl);
+                            } else {
+                                console.error('Error al subir a Supabase:', await response.text());
+                            }
+                        } catch (err) {
+                            console.error('Fetch error en subida:', err);
+                        }
+                    }
+                    if (uploadedUrls.length > 0) {
+                        orderData.imagenes_url = uploadedUrls;
+                    }
+                }
+
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
 
                 const idCliente = localStorage.getItem('userId') || null;
                 const idCarrito = await obtenerOCrearCarrito(idCliente);
@@ -894,7 +1691,7 @@
                     precio_unitario: precioBase,
                     fecha: orderData.fecha || null,
                     hora: orderData.hora || null,
-                    domicilio: orderData.domicilio || null,
+                    domicilio: orderData.envio_domicilio,
                     sabor: orderData.sabor || null,
                     dedicatoria: orderData.dedicatoria || null,
                     observaciones: JSON.stringify(orderData)
@@ -937,7 +1734,16 @@
                             const evt = new Event('change');
                             document.getElementById('producto').dispatchEvent(evt);
                             
-                            document.getElementById('sabor').value = "";
+                            // Limpiar visual picker
+                            const searchLbl = document.getElementById('productSearchLabel');
+                            if(searchLbl) {
+                                searchLbl.textContent = "-- Toca aquí para buscar o elegir... --";
+                                searchLbl.style.color = "var(--color-text-light)";
+                                document.getElementById('productSearchTrigger').classList.remove('selected');
+                            }
+                            
+                            document.getElementById('tamanoOptions').innerHTML = '<div style="color: var(--color-text-light); text-align: center; padding: 2.5rem; border: 2px dashed var(--color-border); border-radius: 12px; grid-column: 1 / -1; background: #fdfaf6;"><i class="fas fa-hand-pointer" style="font-size: 2.5rem; color: #eeddc8; margin-bottom: 1rem; display: block;"></i>Primero busca y selecciona tu producto arriba para ver sus variaciones disponibles</div>';
+                            
                             document.getElementById('dedicatoria').value = "";
                             document.getElementById('descripcion').value = "";
                             document.getElementById('cantidad').value = "1";

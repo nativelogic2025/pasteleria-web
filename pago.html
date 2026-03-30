@@ -336,10 +336,8 @@
                     for (const item of cartItems) {
                          const detalleData = {
                             id_pedido: idPedido,
-                            id_producto: item.id_producto || item.producto_variantes?.id_producto,
                             id_variante: item.id_variante,
                             cantidad: item.cantidad,
-                            precio: item.precio_unitario,
                             precio_unitario: item.precio_unitario,
                             sabor: item.sabor,
                             dedicatoria: item.dedicatoria,
