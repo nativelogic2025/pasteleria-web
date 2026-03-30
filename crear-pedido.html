@@ -637,7 +637,7 @@
                             <h4 style="margin-bottom: 1rem; color: var(--color-primary);">Detalles de tu Diseño</h4>
                             <div class="form-group">
                                 <label class="form-label" for="instrucciones_oblea">¿Qué diseño o temática deseas? (Obligatorio)</label>
-                                <input type="text" id="instrucciones_oblea" class="form-control" placeholder="Ej. De la Paw Patrol, con el nombre 'Santi'...">
+                                <input type="text" id="instrucciones_oblea" class="form-control" placeholder="Ej. De la Paw Patrol, con el nombre 'Santi'..." maxlength="150">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="imagen_oblea">Sube fotos de referencia (Máximo 3, Opcional)</label>
@@ -652,12 +652,12 @@
                             <div class="form-group">
                                 <label class="form-label" for="dedicatoria">Mensaje o Dedicatoria Corta (Opcional)</label>
                                 <input type="text" id="dedicatoria" class="form-control"
-                                    placeholder="Ej. ¡Feliz Cumpleaños María!">
+                                    placeholder="Ej. ¡Feliz Cumpleaños María!" maxlength="50">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="descripcion">Notas / Instrucciones Adicionales (Opcional)</label>
                                 <textarea id="descripcion" class="form-control" style="min-height: 80px;"
-                                    placeholder="Instrucciones para el decorado, detalles especiales..."></textarea>
+                                    placeholder="Instrucciones para el decorado, detalles especiales..." maxlength="500"></textarea>
                             </div>
                         </div>
 
@@ -689,9 +689,89 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group hidden" id="domicilioGroup">
-                            <label class="form-label">Domicilio de Entrega (Añadir referencias)</label>
-                            <input type="text" id="domicilio" class="form-control" placeholder="Calle, Número, Colonia...">
+                        <div class="form-group hidden" id="domicilioGroup" style="background: #fdfaf6; padding: 1.5rem; border: 1px dashed var(--color-secondary); border-radius: var(--border-radius); margin-bottom: 1.5rem;">
+                            <h4 style="margin-top:0; margin-bottom: 1rem; color: var(--color-primary);">Dirección Exacta en Tizayuca</h4>
+                            
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="domicilio_calle">Calle, Númeró Ext/Int *</label>
+                                    <input type="text" id="domicilio_calle" class="form-control" placeholder="Ej. Avenida Juárez #123" maxlength="150">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="domicilio_cp">Código Postal *</label>
+                                    <input type="text" id="domicilio_cp" class="form-control" placeholder="Ej. 43800" maxlength="5" pattern="[0-9]{5}" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                                    <small id="cpErrorMsj" style="color: #d35400; font-size: 0.85rem; margin-top: 5px; display: block;">* Solo área de Tizayuca (438xx)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="domicilio_colonia">Colonia / Fraccionamiento *</label>
+                                <select id="domicilio_colonia" class="form-control">
+                                    <option value="" disabled selected>-- Elige tu colonia --</option>
+                                    <optgroup label="Fraccionamientos">
+                                        <option value="Andalucía Residencial">Andalucía Residencial</option>
+                                        <option value="Arboledas">Arboledas</option>
+                                        <option value="Bicentenario">Bicentenario</option>
+                                        <option value="Bosques de Ibiza">Bosques de Ibiza</option>
+                                        <option value="Ciudad Natura">Ciudad Natura</option>
+                                        <option value="Don Carlos">Don Carlos</option>
+                                        <option value="El Carmen">El Carmen</option>
+                                        <option value="Expresidentes">Expresidentes</option>
+                                        <option value="Fuentes de Tizayuca">Fuentes de Tizayuca</option>
+                                        <option value="Geo Villas">Geo Villas</option>
+                                        <option value="Hacienda de Guadalupe">Hacienda de Guadalupe</option>
+                                        <option value="Hacienda las Torres">Hacienda las Torres</option>
+                                        <option value="Haciendas de Tizayuca">Haciendas de Tizayuca</option>
+                                        <option value="Jardines de Tizayuca">Jardines de Tizayuca</option>
+                                        <option value="La Cañada">La Cañada</option>
+                                        <option value="Los Almendros">Los Almendros</option>
+                                        <option value="Los Héroes Tizayuca">Los Héroes Tizayuca</option>
+                                        <option value="Pedregal de Tizayuca">Pedregal de Tizayuca</option>
+                                        <option value="Rancho Don Antonio">Rancho Don Antonio (Pueblos)</option>
+                                        <option value="San Ángel">San Ángel</option>
+                                        <option value="Unidad Deportiva">Unidad Deportiva</option>
+                                    </optgroup>
+                                    <optgroup label="Colonias, Pueblos y Barrios">
+                                        <option value="Atempa">Atempa (Barrio)</option>
+                                        <option value="C.T.M.">C.T.M.</option>
+                                        <option value="Campestre">Campestre</option>
+                                        <option value="Ciudad de los Niños">Ciudad de los Niños</option>
+                                        <option value="Cuenca Lechera">Cuenca Lechera</option>
+                                        <option value="Cuztitla">Cuztitla (Barrio)</option>
+                                        <option value="El Arenal">El Arenal</option>
+                                        <option value="El Pedregal">El Pedregal</option>
+                                        <option value="El Sitio">El Sitio</option>
+                                        <option value="Emiliano Zapata">Emiliano Zapata</option>
+                                        <option value="Felipe Reyes">Felipe Reyes</option>
+                                        <option value="Huicalco">Huicalco (Barrio)</option>
+                                        <option value="Huitzila">Huitzila (Pueblo)</option>
+                                        <option value="Javier Rojo Gómez">Javier Rojo Gómez</option>
+                                        <option value="Joyas de Tizayuca">Joyas de Tizayuca</option>
+                                        <option value="Lázaro Cárdenas">Lázaro Cárdenas</option>
+                                        <option value="Lomas de Tizayuca">Lomas de Tizayuca</option>
+                                        <option value="La Posta">La Posta (Pueblo)</option>
+                                        <option value="Mogotes">Mogotes (Pueblo)</option>
+                                        <option value="Nacozari">Nacozari (Barrio)</option>
+                                        <option value="Nuevo Tizayuca">Nuevo Tizayuca</option>
+                                        <option value="Olmos">Olmos (Pueblo)</option>
+                                        <option value="San Antonio">San Antonio</option>
+                                        <option value="San Jerónimo">San Jerónimo</option>
+                                        <option value="San José">San José</option>
+                                        <option value="Tepeyac">Tepeyac</option>
+                                        <option value="Tizayuca Centro">Tizayuca Centro</option>
+                                        <option value="Zona Industrial">Zona Industrial</option>
+                                        <option value="Otra / Aledaña">Otra colonia aledaña de Tizayuca (C.P. 438xx)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="domicilio_referencias">Referencias del domicilio (Opcional)</label>
+                                <input type="text" id="domicilio_referencias" class="form-control" placeholder="Ej. Casa verde, techo de lámina, junto al parque..." maxlength="150">
+                            </div>
+                            
+                            <!-- Input Oculto para preservar compatibilidad con bd -->
+                            <input type="hidden" id="domicilio" value="">
                         </div>
                     </div>
 
@@ -940,13 +1020,28 @@
         const domicilioInput = document.getElementById('domicilio');
 
         envioCheckbox.addEventListener('change', function () {
+            const calleInput = document.getElementById('domicilio_calle');
+            const cpInput = document.getElementById('domicilio_cp');
+            const coloniaInput = document.getElementById('domicilio_colonia');
+            
             if (this.checked) {
                 document.getElementById('fecha').dispatchEvent(new Event('change')); // validar si tiene domingo seleccionado
                 domicilioGroup.classList.remove('hidden');
+                calleInput.required = true;
+                cpInput.required = true;
+                coloniaInput.required = true;
                 domicilioInput.required = true;
             } else {
                 domicilioGroup.classList.add('hidden');
+                calleInput.required = false;
+                cpInput.required = false;
+                coloniaInput.required = false;
                 domicilioInput.required = false;
+                
+                calleInput.value = '';
+                cpInput.value = '';
+                coloniaInput.value = '';
+                document.getElementById('domicilio_referencias').value = '';
                 domicilioInput.value = '';
             }
             actualizarPrecios();
@@ -991,6 +1086,19 @@
                             if (firstItem.domicilio && firstItem.domicilio.trim() !== '') {
                                 envioCheckbox.checked = true;
                                 domicilioGroup.classList.remove('hidden');
+                                // Ya que es un string concatenado del carrito, lo mostramos completo en la calle y bloqueamos lo demás
+                                document.getElementById('domicilio_calle').value = firstItem.domicilio;
+                                document.getElementById('domicilio_calle').setAttribute('readonly', 'true');
+                                document.getElementById('domicilio_calle').style.backgroundColor = "#eee";
+                                
+                                document.getElementById('domicilio_cp').value = '43800';
+                                document.getElementById('domicilio_cp').setAttribute('readonly', 'true');
+                                document.getElementById('domicilio_cp').style.backgroundColor = "#eee";
+                                document.getElementById('domicilio_colonia').disabled = true;
+                                document.getElementById('domicilio_colonia').style.backgroundColor = "#eee";
+                                document.getElementById('domicilio_referencias').setAttribute('readonly', 'true');
+                                document.getElementById('domicilio_referencias').style.backgroundColor = "#eee";
+                                
                                 domicilioInput.value = firstItem.domicilio;
                             } else {
                                 envioCheckbox.checked = false;
@@ -1599,6 +1707,25 @@
 
             const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
             const prodId = parseInt(document.getElementById('producto').value);
+
+            // Validar restricción geográfica antes de armar la data
+            if (document.getElementById('envioDomicilioCheckbox').checked) {
+                const cp = document.getElementById('domicilio_cp').value.trim();
+                if (!cp.startsWith('438') || cp.length !== 5) {
+                    alert('ACCESO DENEGADO: El servicio a domicilio está restringido exclusivamente a zona Tizayuca (Códigos Postales que inician con 438xx).');
+                    document.getElementById('domicilio_cp').focus();
+                    return; // detiene el envío del form
+                }
+                
+                // Unir y formatear el domicilio
+                const calle = document.getElementById('domicilio_calle').value.trim();
+                const colonia = document.getElementById('domicilio_colonia').value;
+                const ref = document.getElementById('domicilio_referencias').value.trim();
+                const refText = ref ? `. Referencias: ${ref}` : '';
+                
+                const domicilioFormateado = `${calle}, Col. ${colonia}, C.P. ${cp}${refText}`;
+                document.getElementById('domicilio').value = domicilioFormateado;
+            }
 
             // Recolectar datos extra
             const orderData = {
