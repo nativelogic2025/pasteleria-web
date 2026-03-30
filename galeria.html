@@ -50,7 +50,7 @@
                 <!-- Producto 1 -->
                 <div class="product-card">
                     <div class="product-img-wrapper">
-                        <img src="img/cake1-placeholder.png" alt="Trufa Real" class="product-img">
+                        <img src="img/logo.jpeg" alt="Trufa Real" class="product-img">
                         <span class="badge">Más Vendido</span>
                     </div>
                     <div class="product-info">
@@ -68,7 +68,7 @@
                 <!-- Producto 2 -->
                 <div class="product-card">
                     <div class="product-img-wrapper">
-                        <img src="img/cake2-placeholder.png" alt="Fresa Elegancia" class="product-img">
+                        <img src="img/logo.jpeg" alt="Fresa Elegancia" class="product-img">
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">Fresa Elegancia</h3>
@@ -85,7 +85,7 @@
                 <!-- Producto 3 -->
                 <div class="product-card">
                     <div class="product-img-wrapper">
-                        <img src="img/cake3-placeholder.png" alt="Zanahoria Nuez" class="product-img">
+                        <img src="img/logo.jpeg" alt="Zanahoria Nuez" class="product-img">
                         <span class="badge badge-new">Nuevo</span>
                     </div>
                     <div class="product-info">
@@ -103,7 +103,7 @@
                 <!-- Producto 4 (Simulado, reusando img) -->
                 <div class="product-card">
                     <div class="product-img-wrapper">
-                        <img src="img/cake1-placeholder.png" alt="Selva Negra" class="product-img"
+                        <img src="img/logo.jpeg" alt="Selva Negra" class="product-img"
                             style="filter: hue-rotate(15deg);">
                     </div>
                     <div class="product-info">
@@ -120,7 +120,7 @@
                 <!-- Producto 5 (Simulado) -->
                 <div class="product-card">
                     <div class="product-img-wrapper">
-                        <img src="img/cake2-placeholder.png" alt="Durazno Imperial" class="product-img"
+                        <img src="img/logo.jpeg" alt="Durazno Imperial" class="product-img"
                             style="filter: hue-rotate(-30deg);">
                     </div>
                     <div class="product-info">
@@ -137,7 +137,7 @@
                 <!-- Producto 6 (Simulado) -->
                 <div class="product-card">
                     <div class="product-img-wrapper">
-                        <img src="img/cake3-placeholder.png" alt="Red Velvet" class="product-img"
+                        <img src="img/logo.jpeg" alt="Red Velvet" class="product-img"
                             style="filter: hue-rotate(300deg);">
                     </div>
                     <div class="product-info">
@@ -213,7 +213,7 @@
                         card.className = 'product-card';
                         card.innerHTML = `
                             <div class="product-img-wrapper">
-                                <img src="${producto.imagen_url || 'img/cake1-placeholder.png'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/cake1-placeholder.png'">
+                                <img src="${producto.imagen_url || 'img/logo.jpeg'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/logo.jpeg'">
                                 ${producto.categorias ? `<span class="badge">${producto.categorias.nombre || ''}</span>` : ''}
                             </div>
                             <div class="product-info">

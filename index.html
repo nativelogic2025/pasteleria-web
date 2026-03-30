@@ -168,7 +168,7 @@
                     card.innerHTML = `
                         ${isBestSeller ? '<div class="ribbon"><i class="fas fa-fire"></i> MÁS VENDIDO</div>' : ''}
                         <div class="product-img-wrapper">
-                            <img src="${producto.imagen_url || 'img/cake1-placeholder.png'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/cake1-placeholder.png'">
+                            <img src="${producto.imagen_url || 'img/logo.jpeg'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/logo.jpeg'">
                             ${producto.categorias ? `<span class="badge">${producto.categorias.nombre || ''}</span>` : ''}
                         </div>
                         <div class="product-info">

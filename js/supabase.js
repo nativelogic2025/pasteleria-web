@@ -12,23 +12,122 @@ const HEADERS = {
 };
 
 /**
+ * Mapeo estático temporal de nombres de productos a las fotos subidas recientemente
+ */
+const MAESTRO_IMAGENES = {
+    "Arroz con Leche": "arroz_con_leche_1.png",
+    "Chispas Grandes": "chispas_grandes_1.png",
+    "Chispas Pequeñas": "chispas_pequenas_1.png",
+    "Pastel Choco Zarzamora": "choco_zarzamora_1.png",
+    "Pastel de Durazno con Mango": "durazno_con_mango_1.png",
+    "Pastel de Durazno con Nuez": "durazno_con_nuez_1.png",
+    "Pastel de Durazno": "durazno_1.png",
+    "Ensalada de Manzana": "enzalada_de_manzana_1.png",
+    "Ensalada de Zanahoria": "enzalada_de_zanahoria_1.png",
+    "Flan": "flan_1.png",
+    "Fresas con Crema": "fresas_con_crema_1.png",
+    "Gelatina Artesanal": "gelatinas_1.png",
+    "Mousse Gourmet": "mousse_gourmet_1.png",
+    "Nata": "nata_1.png",
+    "Velas de Números Azules": "numeros_azul_1.png",
+    "Velas de Números Rosas": "numeros_rosa_1.png",
+    "Oblea": "obleas_1.png",
+    "Pan": "pan_1.png",
+    "Pastelitos Dulces": "panecitos_1.png",
+    "Pastel Choco Oreo": "pastel_choco_oreo_1.png",
+    "Pastel de Cajeta": "pastel_de_cajeta_1.png",
+    "Pastel Choco Fresa": "pastel_de_choco_fresa_1.png",
+    "Pastel Choco Nuez": "pastel_de_choco_nuez_1.png",
+    "Pastel Choco Nutella": "pastel_de_choco_nutella_1.png",
+    "Pastel de Crema Irlandesa": "pastel_de_crema_irlandesa_1.png",
+    "Pastel de Fresa con Nuez": "pastel_de_fresa_con_nuez_1.png",
+    "Pastel de Fresa": "pastel_de_fresa_1.png",
+    "Pastel de Limón": "pastel_de_limon_1.png",
+    "Pastel Moka": "pastel_de_moka_1.png",
+    "Pastel de Nutella": "pastel_de_nutella_1.png",
+    "Pastel de Queso con Zarzamora": "pastel_de_queso_con_zarzamora_1.png",
+    "Queso Horneado": "pastel_de_queso_1.png",
+    "Pastel de Rompope con Nuez": "pastel_de_rompope_y_nuez_1.png",
+    "Pastel de Zarzamora": "pastel_de_zarzamora_1.png",
+    "Pastel Imposible": "pastel_imposible_1.png",
+    "Pastel Choco Moca": "patel_choco_moka_1.png",
+    "Pay de Limón": "pay_de_limon_1.png",
+    "Pastel Piña Colada (Piña y Coco)": "pina_con_coco_1.png",
+    "Tiramisú": "tiramisu_1.png",
+    "Transfer Comestible": "transfer_comestible_1.png",
+    "Velas de Números Arcoíris": "vela_arcoiris_1.png",
+    "Vela \"Felicidades\"": "vela_felicidades_1.png",
+    "Velas Mágicas": "velas_magicas_1.png",
+    "Velas Personalizadas": "velas_personalizadas_1.png"
+};
+
+/**
+ * Helper to get full and correctly formatted Image URL
+ */
+function getProductoImageUrl(producto) {
+    if (!producto) return 'img/logo.jpeg';
+    
+    // Asumimos que las fotos se subieron a la raíz del bucket 'fotos'
+    const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/fotos/`;
+    
+    // 1. Mapeo estático a las fotos recién subidas
+    if (producto.nombre && MAESTRO_IMAGENES[producto.nombre]) {
+        let folder = '';
+        if (producto.categorias && producto.categorias.nombre) {
+            // Asegurar que la categoría sea minúscula y sin acentos (e.g. Repostería -> reposteria)
+            folder = producto.categorias.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + '/';
+        }
+        return `${STORAGE_BASE}${folder}${MAESTRO_IMAGENES[producto.nombre]}`;
+    }
+    
+    // 2. Prioridad: Buscar en la tabla producto_fotos (múltiples fotos)
+    if (producto.producto_fotos && producto.producto_fotos.length > 0) {
+        // Tomar la principal si existe, de lo contrario la primera
+        const principal = producto.producto_fotos.find(f => f.principal === true);
+        const imgPath = principal ? principal.imagen_url : producto.producto_fotos[0].imagen_url;
+        if (imgPath) {
+            let cleanPath = imgPath.startsWith('/') ? imgPath.substring(1) : imgPath;
+            if (cleanPath.startsWith('fotos/')) cleanPath = cleanPath.substring(6);
+            return cleanPath.startsWith('http') ? cleanPath : `${STORAGE_BASE}${cleanPath}`;
+        }
+    }
+    
+    // 3. Prioridad: Revisar el campo heredado imagen_url del producto
+    if (producto.imagen_url && !producto.imagen_url.includes('icon_')) {
+        let cleanPath = producto.imagen_url.startsWith('/') ? producto.imagen_url.substring(1) : producto.imagen_url;
+        if (cleanPath.startsWith('fotos/')) cleanPath = cleanPath.substring(6);
+        return cleanPath.startsWith('http') ? cleanPath : `${STORAGE_BASE}${cleanPath}`;
+    }
+
+    // 4. Fallback: Intentar adivinar la ruta (Categoria/nombre_producto.png)
+    if (producto.nombre && producto.categorias && producto.categorias.nombre) {
+        const cat = producto.categorias.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); 
+        const prodName = producto.nombre.toLowerCase(); 
+        return `${STORAGE_BASE}${cat}/${prodName}.png`;
+    }
+    
+    if (producto.nombre) {
+        return `${STORAGE_BASE}${producto.nombre.toLowerCase()}.png`;
+    }
+    
+    return 'img/logo.jpeg';
+}
+
+/**
  * Fetch all active products with their variants and categories
  */
 async function fetchProductos() {
     try {
-        const response = await fetch(`${SUPABASE_URL}/productos?select=*,producto_variantes(*),categorias(*)&activo=eq.true`, {
+        const response = await fetch(`${SUPABASE_URL}/productos?select=*,producto_variantes(*),categorias(*),producto_fotos(*)&activo=eq.true`, {
             method: 'GET',
             headers: HEADERS
         });
         if (!response.ok) throw new Error('Error al obtener productos');
         const productos = await response.json();
-        
-        // Add full URL to image_url
-        const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/productos/`;
+
+        // Add full URL to image_url using the bucket folder structure
         return productos.map(p => {
-            if (p.imagen_url && !p.imagen_url.startsWith('http')) {
-                p.imagen_url = STORAGE_BASE + p.imagen_url;
-            }
+            p.imagen_url = getProductoImageUrl(p);
             return p;
         });
     } catch (error) {
@@ -59,19 +158,17 @@ async function fetchCategorias() {
  */
 async function fetchProductoById(id) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/productos?select=*,producto_variantes(*)&id_producto=eq.${id}&limit=1`, {
+        const response = await fetch(`${SUPABASE_URL}/productos?select=*,producto_variantes(*),producto_fotos(*),categorias(*)&id_producto=eq.${id}&limit=1`, {
             method: 'GET',
             headers: HEADERS
         });
         if (!response.ok) throw new Error('Error al obtener el producto');
         const data = await response.json();
-        
+
         if (data.length > 0) {
             const p = data[0];
-            const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/productos/`;
-            if (p.imagen_url && !p.imagen_url.startsWith('http')) {
-                p.imagen_url = STORAGE_BASE + p.imagen_url;
-            }
+            p.imagen_url = getProductoImageUrl(p);
+            
             return p;
         }
         return null;
@@ -249,14 +346,14 @@ async function actualizarPagoConComprobante(idPago, comprobanteUrl) {
 async function obtenerOCrearCarrito(idCliente) {
 
     if (!idCliente) return null; // Requiere estar logueado como acordamos
-    
+
     // Buscar carrito activo del usuario
     try {
         const res = await fetch(`${SUPABASE_URL}/carrito?id_cliente=eq.${idCliente}&activo=eq.true&select=id`, {
             headers: HEADERS
         });
         const data = await res.json();
-    
+
         if (data && data.length > 0) {
             localStorage.setItem('carritoActivo', data[0].id);
             return data[0].id;
@@ -264,7 +361,7 @@ async function obtenerOCrearCarrito(idCliente) {
     } catch (e) {
         console.error("Error al buscar carrito:", e);
     }
-    
+
     // Si no tiene carrito activo, crear uno nuevo
     try {
         const crear = await fetch(`${SUPABASE_URL}/carrito`, {
@@ -275,9 +372,9 @@ async function obtenerOCrearCarrito(idCliente) {
                 activo: true
             })
         });
-    
+
         const nuevo = await crear.json();
-    
+
         if (nuevo && nuevo.length > 0) {
             localStorage.setItem('carritoActivo', nuevo[0].id);
             return nuevo[0].id;
@@ -305,21 +402,17 @@ async function agregarItemCarrito(itemData) {
 
 async function obtenerItemsCarrito(idCarrito) {
     try {
-        // Fetch cart details along with related product and variant info horizontally if possible
-        // But since REST relations can be tricky, we just fetch detalle first
-        const res = await fetch(`${SUPABASE_URL}/carrito_detalle?id_carrito=eq.${idCarrito}&select=*,producto_variantes(*,productos(*))`, {
+        // Fetch cart details along with related product, variant, and photo info
+        const res = await fetch(`${SUPABASE_URL}/carrito_detalle?id_carrito=eq.${idCarrito}&select=*,producto_variantes(*,productos(*,producto_fotos(*),categorias(*)))`, {
             headers: HEADERS
         });
         const items = await res.json();
-        
+
         // Add full URL to image_url for cart items
-        const STORAGE_BASE = `${SUPABASE_URL.replace('/rest/v1', '')}/storage/v1/object/public/productos/`;
         return items.map(item => {
             if (item.producto_variantes && item.producto_variantes.productos) {
                 const prod = item.producto_variantes.productos;
-                if (prod.imagen_url && !prod.imagen_url.startsWith('http')) {
-                    prod.imagen_url = STORAGE_BASE + prod.imagen_url;
-                }
+                prod.imagen_url = getProductoImageUrl(prod);
             }
             return item;
         });
@@ -471,14 +564,14 @@ async function obtenerDetallesPorPedido(idPedido) {
             headers: HEADERS
         });
         if (!response.ok) throw new Error('Error al obtener los detalles del pedido');
-        
+
         const detalles = await response.json();
-        
+
         // Manual join to bypass Supabase native foreign-key relation errors
         for (let item of detalles) {
             if (item.id_variante) {
                 try {
-                    const varRes = await fetch(`${SUPABASE_URL}/producto_variantes?id_variante=eq.${item.id_variante}&select=*,productos(*)`, {
+                    const varRes = await fetch(`${SUPABASE_URL}/producto_variantes?id_variante=eq.${item.id_variante}&select=*,productos(*,producto_fotos(*),categorias(*))`, {
                         method: 'GET',
                         headers: HEADERS
                     });
@@ -486,7 +579,9 @@ async function obtenerDetallesPorPedido(idPedido) {
                         const varData = await varRes.json();
                         if (varData && varData.length > 0) {
                             item.producto_variantes = varData[0];
-                            item.productos = varData[0].productos;
+                            const prod = varData[0].productos;
+                            prod.imagen_url = getProductoImageUrl(prod);
+                            item.productos = prod;
                         }
                     }
                 } catch (e) {
@@ -494,7 +589,7 @@ async function obtenerDetallesPorPedido(idPedido) {
                 }
             }
         }
-        
+
         return detalles;
     } catch (error) {
         console.error('obtenerDetallesPorPedido error:', error);
