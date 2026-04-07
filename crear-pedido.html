@@ -624,6 +624,22 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="form-group hidden" id="grupoIngredienteExtra" style="margin-top: 1rem; border: 1px solid var(--color-primary); padding: 1rem; border-radius: 8px; background: white;">
+                                <label class="form-label" for="ingrediente_extra" style="color:var(--color-primary);">Fruta / Ingrediente Extra *</label>
+                                <select id="ingrediente_extra" class="form-control">
+                                    <option value="" disabled selected>-- Elige tu ingrediente extra --</option>
+                                    <option value="Durazno">Durazno</option>
+                                    <option value="Fresa">Fresa</option>
+                                    <option value="Mango">Mango</option>
+                                    <option value="Frutos Rojos">Frutos Rojos</option>
+                                    <option value="Piña">Piña</option>
+                                    <option value="Mixto (Varias Frutas)">Mixto (Varias Frutas)</option>
+                                    <option value="Nuez">Nuez</option>
+                                    <option value="Almendra">Almendra</option>
+                                    <option value="Chispas de Chocolate">Chispas de Chocolate</option>
+                                    <option value="Otro (Especificar en notas)">Otro (Especificar en notas)</option>
+                                </select>
+                            </div>
                             <div class="form-group" style="margin-top: 1rem;">
                                 <label class="form-label" for="imagen_pastel" style="font-weight: 600;">Sube fotos de inspiración (Máximo 3, Opcional)</label>
                                 <input type="file" id="imagen_pastel" class="form-control" accept="image/*" multiple style="padding-top: 10px;">
@@ -1140,8 +1156,8 @@
                 const selectP = document.getElementById('producto');
                 selectP.innerHTML = '<option value="" disabled selected>-- Selecciona un producto --</option>';
 
+                let categoriasMap = new Map();
                 if (dbProductos && dbProductos.length > 0) {
-                    const categoriasMap = new Map();
                     
                     dbProductos.forEach(prod => {
                         const catNombre = prod.categorias ? prod.categorias.nombre : 'General';
@@ -1196,9 +1212,28 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const queryProduct = urlParams.get('producto');
                 if (queryProduct) {
-                    // Not fully compatible with wizard jumping, but sets value
-                    selectP.value = queryProduct;
-                    selectP.dispatchEvent(new Event('change'));
+                    const prodToSelect = dbProductos.find(p => p.id_producto == queryProduct);
+                    if (prodToSelect) {
+                        const catNombre = prodToSelect.categorias ? prodToSelect.categorias.nombre : 'General';
+                        
+                        // Seleccionar visualmente la categoría
+                        const catRadio = document.querySelector(`input[name="catRadio"][value="${catNombre}"]`);
+                        if (catRadio) catRadio.checked = true;
+                        
+                        // Disparar lógica de selección de categoría (llena productos de esa categoría y avanza de paso)
+                        seleccionarCategoria(catNombre, categoriasMap.get(catNombre));
+
+                        // Seleccionar visualmente el producto
+                        const prodRadio = document.querySelector(`input[name="prodRadio"][value="${prodToSelect.id_producto}"]`);
+                        if (prodRadio) prodRadio.checked = true;
+                        
+                        // Disparar lógica de selección de producto (avanza de paso)
+                        seleccionarProducto(prodToSelect.id_producto, prodToSelect.nombre);
+                    } else {
+                        // Fallback
+                        selectP.value = queryProduct;
+                        selectP.dispatchEvent(new Event('change'));
+                    }
                 }
 
             } catch (error) {
@@ -1430,6 +1465,7 @@
                     el.dataset.precio = v.precio_venta;
                     el.dataset.porciones = v.porciones || 0;
                     el.dataset.stock = v.stock;
+                    el.dataset.nombre = v.tamaño;
                     
                     let outOfStock = (v.stock !== null && v.stock === 0);
                     if (outOfStock) el.disabled = true;
@@ -1438,10 +1474,15 @@
                     const stockText = v.stock !== null ? (outOfStock ? 'Agotado' : `Quedan ${v.stock}`) : '';
                     const stockClass = outOfStock ? 'style="opacity:0.5; filter:grayscale(1);"' : '';
                     
+                    let tituloTamano = v.tamaño || '';
+                    if (!tituloTamano.toLowerCase().includes('persona') && /\d/.test(tituloTamano)) {
+                        tituloTamano += " personas";
+                    }
+                    
                     html += `<label class="pill-card" ${stockClass}>
                         <input type="radio" name="tamanoRadio" value="${v.id_variante}" ${outOfStock ? 'disabled' : ''} data-nombre="${v.tamaño}">
                         <div class="pill-content">
-                            <span class="pill-title">${v.tamaño} ${v.porciones ? '<br><small style="font-weight:normal; color:#666;">('+v.porciones+' px)</small>' : ''}</span>
+                            <span class="pill-title">${tituloTamano} ${v.porciones ? '<br><small style="font-weight:normal; color:#666;">('+v.porciones+' personas)</small>' : ''}</span>
                             <span class="pill-price">$${v.precio_venta}</span>
                             ${stockText ? `<span class="pill-stock">${stockText}</span>` : ''}
                         </div>
@@ -1537,6 +1578,22 @@
 
             const isPastel = selectProducto.options[selectProducto.selectedIndex]?.dataset.isPastel === 'true';
             
+            const nombreTamano = selectedOpt.dataset.nombre || '';
+            const isExtra = nombreTamano.toLowerCase().includes('extra') || nombreTamano.toLowerCase().includes('ingrediente') || nombreTamano.toLowerCase().includes('especial');
+            
+            const grupoExtra = document.getElementById('grupoIngredienteExtra');
+            const selectExtra = document.getElementById('ingrediente_extra');
+            if (isPastel && isExtra) {
+                if (grupoExtra) grupoExtra.classList.remove('hidden');
+                if (selectExtra) selectExtra.required = true;
+            } else {
+                if (grupoExtra) grupoExtra.classList.add('hidden');
+                if (selectExtra) {
+                    selectExtra.required = false;
+                    selectExtra.value = '';
+                }
+            }
+
             const stockValue = selectedOpt.dataset.stock;
             const envioCheckbox = document.getElementById('envioDomicilioCheckbox');
             
@@ -1743,6 +1800,15 @@
                 orderData.armado = document.querySelector('input[name="armado"]:checked').value;
                 orderData.pisos = document.getElementById('pisos').value;
                 orderData.diseno = document.getElementById('diseno_pastel').value;
+                
+                const selectExtra = document.getElementById('ingrediente_extra');
+                if (selectExtra && selectExtra.value && selectExtra.closest('.form-group') && !selectExtra.closest('.form-group').classList.contains('hidden')) {
+                    if(orderData.descripcion) {
+                        orderData.descripcion += ` | Fruta/Ingrediente Extra: ${selectExtra.value}`;
+                    } else {
+                        orderData.descripcion = `Fruta/Ingrediente Extra: ${selectExtra.value}`;
+                    }
+                }
             }
             
             if (prodId === 16 || prodId === 18) {

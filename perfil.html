@@ -92,6 +92,91 @@
             border-top: 1px solid var(--color-border);
             padding-top: 1.5rem;
         }
+
+        .orders-section {
+            background-color: #fdfaf6;
+            border-top: 1px solid var(--color-border);
+            padding: 2.5rem 2rem;
+        }
+
+        .orders-title {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            color: var(--color-text);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .order-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed var(--color-border);
+            padding-bottom: 0.8rem;
+        }
+
+        .order-folio {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--color-primary);
+            font-size: 1.1rem;
+        }
+
+        .order-date {
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+        }
+
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pendiente { background-color: #fef3c7; color: #d97706; }
+        .status-elaboracion { background-color: #dbeafe; color: #2563eb; }
+        .status-cancelado { background-color: #fee2e2; color: #dc2626; }
+        .status-completado, .status-entregado { background-color: #d1fae5; color: #059669; }
+
+        .empty-orders {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--color-text-light);
+            background: white;
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--color-border);
+        }
     </style>
 </head>
 
@@ -131,6 +216,17 @@
                     <button class="btn btn-outline" id="logoutBtn" style="color: #ef4444; border-color: #ef4444;"><i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Cerrar Sesión</button>
                 </div>
             </div>
+
+            <!-- Orders Section -->
+            <div class="orders-section">
+                <h2 class="orders-title"><i class="fas fa-shopping-bag" style="color: var(--color-primary);"></i> Mis Pedidos</h2>
+                <div id="ordersContainer">
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--color-primary);"></i>
+                        <p style="margin-top: 1rem; color: var(--color-text-light);">Cargando tu historial...</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -167,6 +263,56 @@
                 }
             } catch (e) {
                 console.error("Error cargando teléfono:", e);
+            }
+
+            // Cargar Historial de Pedidos
+            try {
+                const pedidos = await obtenerPedidosPorCliente(idCliente);
+                const container = document.getElementById('ordersContainer');
+                
+                if (!pedidos || pedidos.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-orders">
+                            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem; color: #d1d5db;"></i>
+                            <h3 style="font-family: var(--font-heading); color: var(--color-text);">Aún no tienes pedidos</h3>
+                            <p style="margin-top: 5px;">Cuando realices una compra, aparecerá aquí.</p>
+                            <a href="index.html" class="btn btn-primary" style="margin-top: 1.5rem; display: inline-block;">Ver Catálogo</a>
+                        </div>
+                    `;
+                } else {
+                    let html = '';
+                    pedidos.forEach(p => {
+                        const dateObj = new Date(p.created_at);
+                        const cleanDate = dateObj.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                        
+                        let badgeClass = 'status-pendiente';
+                        let estadoTexto = p.estado || 'Pendiente';
+                        
+                        if (estadoTexto.toLowerCase() === 'elaboracion' || estadoTexto.toLowerCase() === 'preparacion') badgeClass = 'status-elaboracion';
+                        if (estadoTexto.toLowerCase() === 'completado' || estadoTexto.toLowerCase() === 'entregado') badgeClass = 'status-completado';
+                        if (estadoTexto.toLowerCase() === 'cancelado') badgeClass = 'status-cancelado';
+
+                        html += `
+                            <a href="ver-pedido.html?folio=${p.folio}" class="order-card">
+                                <div class="order-header">
+                                    <div class="order-folio"><i class="fas fa-receipt" style="margin-right: 5px; color: var(--color-text-light);"></i> ${p.folio}</div>
+                                    <div class="status-badge ${badgeClass}">${estadoTexto}</div>
+                                </div>
+                                <div class="order-details">
+                                    <div class="order-date"><i class="far fa-calendar-alt" style="margin-right: 5px;"></i> ${cleanDate}</div>
+                                    <div style="font-weight: 600; color: var(--color-text);">Total: $${parseFloat(p.total).toFixed(2)}</div>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--color-primary); text-align: right; margin-top: 0.5rem; font-weight: 500;">
+                                    Ver Detalle <i class="fas fa-chevron-right" style="margin-left: 3px; font-size: 0.75rem;"></i>
+                                </div>
+                            </a>
+                        `;
+                    });
+                    container.innerHTML = html;
+                }
+            } catch(e) {
+                console.error("Error al cargar pedidos:", e);
+                document.getElementById('ordersContainer').innerHTML = "<p style='color:red;'>Ocurrió un error al cargar tu historial. Intenta nuevamente.</p>";
             }
         });
 

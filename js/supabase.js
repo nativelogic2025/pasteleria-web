@@ -251,6 +251,25 @@ async function buscarPedidoPorFolio(folio) {
 }
 
 /**
+ * Fetch all orders for a specific customer
+ */
+async function obtenerPedidosPorCliente(idCliente) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/pedidos?id_cliente=eq.${idCliente}`, {
+            method: 'GET',
+            headers: HEADERS
+        });
+        if (!response.ok) throw new Error('Error al buscar los pedidos del cliente');
+        const pedidosData = await response.json();
+        // Sort manually by ID (assuming higher ID is newer) if created_at is unreliable
+        return pedidosData.sort((a, b) => b.id_pedido - a.id_pedido);
+    } catch (error) {
+        console.error('obtenerPedidosPorCliente error:', error);
+        return [];
+    }
+}
+
+/**
  * Update the state of an order
  */
 async function actualizarEstadoPedido(idPedido, nuevoEstado) {

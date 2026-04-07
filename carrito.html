@@ -198,12 +198,17 @@
                             if(obs.diseno) detallesExtras.push(`Diseño: ${obs.diseno}`);
                             if(obs.descripcion) detallesExtras.push(`Notas: ${obs.descripcion}`);
                             if(detallesExtras.length > 0) extraHtml.push(`<strong>Extras:</strong> ${detallesExtras.join(', ')}`);
+                            
+                            // Extraer domicilio real del JSON
+                            if(item.domicilio && obs.domicilio) {
+                                item.realDomicilio = obs.domicilio;
+                            }
                         } catch(e) {
                             extraHtml.push(`<strong>Extras:</strong> ${item.observaciones}`);
                         }
                     }
                     if(item.fecha) extraHtml.push(`Para: ${item.fecha} a las ${item.hora || ''}`);
-                    if(item.domicilio) extraHtml.push(`Entrega en: ${item.domicilio}`);
+                    if(item.domicilio && item.realDomicilio) extraHtml.push(`Entrega en: ${item.realDomicilio}`);
 
                     const extraDetails = extraHtml.join('<br>');
 
@@ -230,15 +235,22 @@
                     `;
                 });
 
-                // Assume $50 mxn for shipping if the user has requested home delivery in their items
-                // This is a simplified approach. Usually shipping is calculated at checkout.
-                const hasDeliveryInfo = items.some(item => {
-                    return item.domicilio && item.domicilio.length > 5;
+                let tienePastelGrande = false;
+                items.forEach(item => {
+                    const isPastel = item.productos?.categorias?.nombre?.toLowerCase().includes('pastel') || item.productos?.nombre?.toLowerCase().includes('pastel');
+                    const _porciones = parseInt(item.producto_variantes?.porciones || 0);
+                    if (isPastel && _porciones >= 80) {
+                        tienePastelGrande = true;
+                    }
                 });
 
-                const flete = hasDeliveryInfo ? 50 : 0;
+                const hasDeliveryInfo = items.some(item => {
+                    return item.domicilio && item.realDomicilio && item.realDomicilio.length > 5;
+                });
+
+                const flete = hasDeliveryInfo ? (tienePastelGrande ? 0 : 75) : 0;
                 const grandTotal = subtotal + flete;
-                const deposito = grandTotal / 2;
+                const deposito = (subtotal / 2) + flete;
 
                 cartHTML += `
                     <div class="cart-summary">
