@@ -5,33 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo y Galería | Pastelería La Estrella</title>
-    <meta name="description"
-        content="Explora nuestra amplia variedad de pasteles. Deliciosos sabores y diseños únicos para cada ocasión.">
+    <meta name="description" content="Explora nuestra variedad de pasteles artesanales en Tizayuca. Deliciosos sabores y diseños únicos para cada ocasión.">
+    <link rel="icon" type="image/png" href="img/logo.png?v=8">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome for Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=8">
 </head>
 
 <body>
 
     <header-component></header-component>
 
-    <!-- Page Header -->
-    <section class="page-header"
-        style="background-color: var(--color-primary); color: white; padding: 4rem 0; text-align: center;">
+    <!-- Page Header Boutique -->
+    <section class="page-header">
         <div class="container">
-            <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Nuestro Catálogo</h1>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Descubre la magia en cada rebana. Pasteles perfectos para
-                celebrar la vida.</p>
+            <span class="section-eyebrow">Horneado Fresco Cada Día</span>
+            <h1 class="hero-title">Nuestro Catálogo</h1>
+            <p>Descubre nuestras especialidades artesanales listas para compartir en familia.</p>
         </div>
     </section>
 
@@ -40,165 +37,66 @@
         <div class="container">
 
             <!-- Filtros Dinámicos -->
-            <div class="catalog-filters" id="categoryFilters" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap;">
-                <button class="btn btn-primary filter-btn" data-cat="todos" style="padding: 0.5rem 1.5rem;">Cargando...</button>
+            <div class="catalog-filters" id="categoryFilters" style="display: flex; justify-content: center; gap: 0.65rem; margin-bottom: 2.2rem; flex-wrap: wrap;">
+                <button class="btn btn-primary filter-btn" data-cat="todos" style="padding: 0.45rem 1.25rem; font-size: 0.86rem;">Cargando...</button>
             </div>
 
             <!-- Grid de toda la galería -->
             <div class="grid featured-grid">
-
-                <!-- Producto 1 -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/logo.jpeg" alt="Trufa Real" class="product-img">
-                        <span class="badge">Más Vendido</span>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Trufa Real</h3>
-                        <p class="product-desc">Exquisito pan de chocolate bañado en tres leches con relleno de trufa.
-                        </p>
-                        <div class="product-footer">
-                            <span class="price">$450 MXN</span>
-                            <a href="crear-pedido.html?pastel=trufa" class="btn-icon" title="Pedir este"><i
-                                    class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
+                <div style="text-align: center; grid-column: 1 / -1; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--color-primary); margin-bottom: 0.8rem;"></i>
+                    <p style="color: var(--color-text-light); font-size: 0.92rem;">Cargando nuestro catálogo...</p>
                 </div>
-
-                <!-- Producto 2 -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/logo.jpeg" alt="Fresa Elegancia" class="product-img">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Fresa Elegancia</h3>
-                        <p class="product-desc">Pan vainilla suave, crema batida especial y fresas frescas
-                            seleccionadas.</p>
-                        <div class="product-footer">
-                            <span class="price">$380 MXN</span>
-                            <a href="crear-pedido.html?pastel=fresa" class="btn-icon" title="Pedir este"><i
-                                    class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Producto 3 -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/logo.jpeg" alt="Zanahoria Nuez" class="product-img">
-                        <span class="badge badge-new">Nuevo</span>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Zanahoria Nuez</h3>
-                        <p class="product-desc">Clásico pastel de zanahoria con betún de queso crema, nuez y un toque de
-                            canela.</p>
-                        <div class="product-footer">
-                            <span class="price">$420 MXN</span>
-                            <a href="crear-pedido.html?pastel=zanahoria" class="btn-icon" title="Pedir este"><i
-                                    class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Producto 4 (Simulado, reusando img) -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/logo.jpeg" alt="Selva Negra" class="product-img"
-                            style="filter: hue-rotate(15deg);">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Selva Negra</h3>
-                        <p class="product-desc">Bizcocho de chocolate al Kirsch, crema chantilly y cerezas amarenas.</p>
-                        <div class="product-footer">
-                            <span class="price">$480 MXN</span>
-                            <a href="crear-pedido.html?pastel=selvanegra" class="btn-icon" title="Pedir este"><i
-                                    class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Producto 5 (Simulado) -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/logo.jpeg" alt="Durazno Imperial" class="product-img"
-                            style="filter: hue-rotate(-30deg);">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Durazno Imperial</h3>
-                        <p class="product-desc">Pan esponja vainilla tres leches con trozos de durazno en almíbar.</p>
-                        <div class="product-footer">
-                            <span class="price">$350 MXN</span>
-                            <a href="crear-pedido.html?pastel=durazno" class="btn-icon" title="Pedir este"><i
-                                    class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Producto 6 (Simulado) -->
-                <div class="product-card">
-                    <div class="product-img-wrapper">
-                        <img src="img/logo.jpeg" alt="Red Velvet" class="product-img"
-                            style="filter: hue-rotate(300deg);">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Red Velvet</h3>
-                        <p class="product-desc">Suave pan de terciopelo rojo con el clásico y delicioso betún de queso
-                            original.</p>
-                        <div class="product-footer">
-                            <span class="price">$460 MXN</span>
-                            <a href="crear-pedido.html?pastel=redvelvet" class="btn-icon" title="Pedir este"><i
-                                    class="fas fa-cart-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="section" style="background-color: var(--color-bg); text-align: center;">
+    <!-- CTA Banner Boutique -->
+    <section class="section" style="padding-top: 0.5rem;">
         <div class="container">
-            <h2 class="section-title" style="margin-bottom: 1rem;">¿No encuentras lo que buscas?</h2>
-            <p style="margin-bottom: 2rem; color: var(--color-text-light);">Nosotros lo creamos para ti. Diseña tu
-                pastel desde cero eligiendo cada detalle.</p>
-            <a href="crear-pedido.html" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 3rem;">Crear
-                Mi Propio Diseño</a>
+            <div class="visit-banner">
+                <div>
+                    <h2>¿Buscas un pastel personalizado?</h2>
+                    <p>Diseña tu pastel paso a paso eligiendo sabor de pan, relleno, tamaño y dedicatoria especial.</p>
+                </div>
+                <div class="visit-actions">
+                    <a href="crear-pedido.html" class="btn btn-secondary">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <span>Personalizar Mi Pastel</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
     <footer-component></footer-component>
 
-    <script src="js/components.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/components.js?v=8"></script>
+    <script src="js/supabase.js?v=8"></script>
+    <script src="js/main.js?v=8"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const grid = document.querySelector('.featured-grid');
             const filtersContainer = document.getElementById('categoryFilters');
-            
-            if (grid) {
-                grid.innerHTML = '<div style="text-align: center; grid-column: 1 / -1; padding: 2rem;"><i class="fas fa-spinner fa-spin fa-2x" style="color: var(--color-primary); margin-bottom: 1rem;"></i><p>Cargando nuestro catálogo...</p></div>';
-            }
 
             try {
                 // 1. Fetch Categories
                 const categorias = await fetchCategorias();
                 if (filtersContainer && categorias) {
-                    filtersContainer.innerHTML = '<button class="btn btn-primary filter-btn" data-cat="todos" style="padding: 0.5rem 1.5rem;">Todos</button>';
+                    filtersContainer.innerHTML = '<button class="btn btn-primary filter-btn" data-cat="todos" style="padding: 0.45rem 1.25rem; font-size: 0.86rem;">Todos</button>';
                     categorias.forEach(cat => {
-                        filtersContainer.innerHTML += `<button class="btn btn-outline filter-btn" data-cat="${cat.id_categoria}" style="padding: 0.5rem 1.5rem;">${cat.nombre}</button>`;
+                        filtersContainer.innerHTML += `<button class="btn btn-outline filter-btn" data-cat="${cat.id_categoria}" style="padding: 0.45rem 1.25rem; font-size: 0.86rem;">${cat.nombre}</button>`;
                     });
                 }
 
                 // 2. Fetch Products
                 const productos = await fetchProductos();
                 if (!grid) return;
-                
+
                 function renderProducts(listaProductos) {
                     grid.innerHTML = '';
                     if (!listaProductos || listaProductos.length === 0) {
-                        grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No hay productos disponibles en esta categoría.</p>';
+                        grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-light);">No hay productos disponibles en esta categoría.</p>';
                         return;
                     }
 
@@ -209,19 +107,24 @@
                             precioBase = Math.min(...precios);
                         }
 
+                        const hasCustomImg = Boolean(producto.imagen_url && !producto.imagen_url.includes('logo'));
+                        const imgSrc = producto.imagen_url || 'img/logo-horizontal.png?v=8';
+                        const imgFit = hasCustomImg ? 'cover' : 'contain';
+                        const imgPad = hasCustomImg ? '0' : '2rem';
+
                         const card = document.createElement('div');
                         card.className = 'product-card';
                         card.innerHTML = `
                             <div class="product-img-wrapper">
-                                <img src="${producto.imagen_url || 'img/logo.jpeg'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/logo.jpeg'">
+                                <img src="${imgSrc}" alt="${producto.nombre}" class="product-img" style="object-fit: ${imgFit}; padding: ${imgPad};" onerror="this.src='img/logo-horizontal.png?v=8'; this.style.objectFit='contain'; this.style.padding='2rem';">
                                 ${producto.categorias ? `<span class="badge">${producto.categorias.nombre || ''}</span>` : ''}
                             </div>
                             <div class="product-info">
                                 <h3 class="product-title">${producto.nombre}</h3>
-                                <p class="product-desc">${producto.descripcion || 'Delicioso pastel artesanal.'}</p>
+                                <p class="product-desc">${producto.descripcion || 'Delicioso pastel artesanal preparado en casa.'}</p>
                                 <div class="product-footer">
                                     <span class="price">${precioBase > 0 ? `Desde $${precioBase} MXN` : 'Consultar'}</span>
-                                    <a href="crear-pedido.html?producto=${producto.id_producto}" class="btn-icon" title="Pedir este"><i class="fas fa-cart-plus"></i></a>
+                                    <a href="crear-pedido.html?producto=${producto.id_producto}" class="btn-icon" title="Pedir este pastel"><i class="fas fa-cart-plus"></i></a>
                                 </div>
                             </div>
                         `;
@@ -229,14 +132,12 @@
                     });
                 }
 
-                // Initial render of all products
                 renderProducts(productos);
 
                 // 3. Filter Logic
                 if (filtersContainer) {
                     filtersContainer.addEventListener('click', (e) => {
                         if (e.target.classList.contains('filter-btn')) {
-                            // Update visual state of buttons
                             document.querySelectorAll('.filter-btn').forEach(btn => {
                                 btn.classList.remove('btn-primary');
                                 btn.classList.add('btn-outline');
@@ -244,7 +145,6 @@
                             e.target.classList.remove('btn-outline');
                             e.target.classList.add('btn-primary');
 
-                            // Filter logic
                             const catId = e.target.dataset.cat;
                             if (catId === 'todos') {
                                 renderProducts(productos);
@@ -258,7 +158,7 @@
 
             } catch (error) {
                 console.error(error);
-                if (grid) grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red;">Hubo un error al cargar el catálogo.</p>';
+                if (grid) grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #b91c1c;">Hubo un error al cargar el catálogo.</p>';
             }
         });
     </script>

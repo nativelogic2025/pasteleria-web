@@ -5,57 +5,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto | Pastelería La Estrella</title>
-    <meta name="description" content="Ponte en contacto con Pastelería La Estrella.">
+    <meta name="description" content="Ponte en contacto con Pastelería La Estrella en Tizayuca, Hgo.">
+    <link rel="icon" type="image/png" href="img/logo.png?v=8">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=8">
 </head>
 
 <body>
 
     <header-component></header-component>
 
-    <!-- Page Header -->
-    <section class="page-header"
-        style="background-color: var(--color-primary); color: white; padding: 4rem 0; text-align: center;">
+    <!-- Page Header Boutique -->
+    <section class="page-header">
         <div class="container">
-            <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Estamos para servirte</h1>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Preguntas, cotizaciones para eventos grandes o solo saludar.</p>
+            <span class="section-eyebrow">Atención Cercana</span>
+            <h1 class="hero-title">Estamos para Servirte</h1>
+            <p>Cotizaciones para eventos especiales, dudas sobre tu pedido o atención directa en sucursal.</p>
         </div>
     </section>
 
-    <!-- Contact Content -->
+    <!-- Contact Content Boutique 2-Column -->
     <section class="section">
-        <div class="container" style="max-width: 600px; margin: 0 auto;">
+        <div class="container contact-grid">
 
-            <!-- Contact Form -->
-            <div
-                style="background-color: #fcf5ee; padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
-                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--color-primary); text-align: center;">Envíanos un Mensaje</h3>
+            <!-- Columna Izquierda: Información de Sucursal -->
+            <div class="contact-info-card">
+                <span class="subtitle">Sucursal Tizayuca</span>
+                <h2 style="font-size: 1.55rem; margin-bottom: 0.6rem;">Visítanos o Escríbenos</h2>
+                <p style="color: var(--color-text-light); font-size: 0.92rem;">
+                    Nos encanta atenderte personalmente. Pasa por nuestra vitrina del día o mándanos mensaje directo.
+                </p>
+
+                <div class="contact-detail-list">
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div>
+                            <strong style="display: block; font-size: 0.9rem;">Dirección</strong>
+                            <span style="font-size: 0.86rem; color: var(--color-text-light);">Av. Boulevar Ejército Mexicano No.1, Centro, 43803 Tizayuca, Hgo.</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <strong style="display: block; font-size: 0.9rem;">Horario de Atención</strong>
+                            <span style="font-size: 0.86rem; color: var(--color-text-light);">Lunes a Domingo de 9:00 am a 9:00 pm</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon"><i class="fab fa-whatsapp"></i></div>
+                        <div>
+                            <strong style="display: block; font-size: 0.9rem;">Teléfono y WhatsApp</strong>
+                            <a href="https://wa.me/5215515723305" target="_blank" rel="noopener" style="font-size: 0.88rem; color: var(--color-primary); font-weight: 600;">+52 1 55 1572 3305</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <strong style="display: block; font-size: 0.9rem;">Correo Electrónico</strong>
+                            <span style="font-size: 0.86rem; color: var(--color-text-light);">pastlria.la.estrella@gmail.com</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 175px; border-radius: 14px; overflow: hidden; border: 3px solid var(--color-bg-warm);">
+                    <img src="img/local.jpeg" alt="Sucursal Pastelería La Estrella" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Formulario -->
+            <div class="contact-form-card">
+                <span class="subtitle">Formulario Directo</span>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.2rem; color: var(--color-primary-dark);">Envíanos un Mensaje</h3>
                 <form id="contactForm">
 
                     <div style="margin-bottom: 1rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Nombre</label>
+                        <label style="display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem;">Nombre</label>
                         <input type="text" id="form-nombre" name="nombre"
-                            style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius);"
-                            placeholder="Tu nombre" required>
+                            style="width: 100%; padding: 0.75rem 0.95rem; border: 1px solid var(--color-border-strong); border-radius: 12px; font-family: var(--font-body); font-size: 0.94rem; background: var(--color-bg);"
+                            placeholder="Tu nombre completo" required>
                     </div>
 
                     <div style="margin-bottom: 1rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Correo Electrónico</label>
+                        <label style="display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem;">Correo Electrónico</label>
                         <input type="email" id="form-correo" name="correo"
-                            style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius);"
+                            style="width: 100%; padding: 0.75rem 0.95rem; border: 1px solid var(--color-border-strong); border-radius: 12px; font-family: var(--font-body); font-size: 0.94rem; background: var(--color-bg);"
                             placeholder="tu@correo.com" required>
                     </div>
 
                     <div style="margin-bottom: 1rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Asunto</label>
+                        <label style="display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem;">Asunto</label>
                         <select id="form-asunto" name="asunto"
-                            style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius);">
+                            style="width: 100%; padding: 0.75rem 0.95rem; border: 1px solid var(--color-border-strong); border-radius: 12px; font-family: var(--font-body); font-size: 0.94rem; background: var(--color-bg);">
                             <option value="Duda General">Duda General</option>
                             <option value="Cotización Evento Grande (Boda/XV años)">Cotización Evento Grande (Boda/XV años)</option>
                             <option value="Problema con Mi Pedido">Problema con Mi Pedido</option>
@@ -63,14 +110,17 @@
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Mensaje</label>
+                    <div style="margin-bottom: 1.4rem;">
+                        <label style="display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem;">Mensaje</label>
                         <textarea id="form-mensaje" name="mensaje"
-                            style="width: 100%; padding: 0.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius); min-height: 120px; resize: vertical;"
+                            style="width: 100%; padding: 0.75rem 0.95rem; border: 1px solid var(--color-border-strong); border-radius: 12px; min-height: 115px; resize: vertical; font-family: var(--font-body); font-size: 0.94rem; background: var(--color-bg);"
                             placeholder="¿En qué te podemos ayudar?" required></textarea>
                     </div>
 
-                    <button type="submit" id="btn-submit" class="btn btn-primary" style="width: 100%;">Enviar Mensaje</button>
+                    <button type="submit" id="btn-submit" class="btn btn-primary" style="width: 100%;">
+                        <span>Enviar Mensaje</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
 
                 </form>
 
@@ -85,17 +135,15 @@
         </div>
     </section>
 
-    <!-- Footer ... -->
     <footer-component></footer-component>
 
-    <script src="js/components.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/components.js?v=8"></script>
+    <script src="js/main.js?v=8"></script>
 
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // INSTRUCCIÓN: Sustituye 'TU_PUBLIC_KEY' con la Public Key que te dé EmailJS
             emailjs.init("thjPuoMDP3dKRlyi7");
         })();
 
@@ -106,23 +154,22 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
             btn.disabled = true;
 
-            // INSTRUCCIÓN: Sustituye estos dos valores con los de tu cuenta de EmailJS
-            const serviceID = 'service_dr6spge'; // O el service ID que hayas creado (Ej. 'service_xxxxxx')
-            const templateID = 'template_9uoe67d'; // Reemplazar (Ej. 'template_xxxxxx')
+            const serviceID = 'service_dr6spge';
+            const templateID = 'template_9uoe67d';
 
             emailjs.sendForm(serviceID, templateID, this)
                 .then(() => {
-                    // Éxito: Ocultar formulario y mostrar mensaje verde
                     document.getElementById('contactForm').style.display = 'none';
                     document.getElementById('success-message').style.display = 'block';
                 }, (err) => {
-                    // Error
                     btn.innerHTML = 'Enviar Mensaje';
                     btn.disabled = false;
-                    alert("Ocurrió un error al enviar el mensaje. Por favor intenta de nuevo. Error: " + JSON.stringify(err));
+                    alert('Hubo un error al enviar el mensaje. Intenta más tarde.');
+                    console.error('EmailJS Error:', err);
                 });
         });
     </script>
+
 </body>
 
 </html>

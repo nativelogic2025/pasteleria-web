@@ -4,45 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pastelería La Estrella | Inicio</title>
-    <meta name="description" content="Pastelería La Estrella - Los mejores pasteles en línea.">
+    <title>Pastelería La Estrella | Pasteles Artesanales en Tizayuca</title>
+    <meta name="description" content="Pastelería La Estrella - Pasteles artesanales hechos en casa desde 1999. Catálogo en línea, pasteles personalizados y entregas en Tizayuca, Hgo.">
+    <link rel="icon" type="image/png" href="img/logo.png?v=8">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome for Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=8">
     <style>
-        /* Ribbon para los Más Vendidos */
         .ribbon {
             position: absolute;
-            top: 15px;
-            left: -8px;
-            background: linear-gradient(135deg, #FFD700, #FDB931);
-            color: #5c3a21;
-            padding: 6px 15px;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #F6D365 0%, #D9A05B 100%);
+            color: #4A2C16;
+            padding: 4px 11px;
             font-weight: 700;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            font-size: 0.7rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
             z-index: 10;
-            border-radius: 0 4px 4px 0;
+            border-radius: 999px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .ribbon::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -6px;
-            border-top: 6px solid #b89b00;
-            border-left: 8px solid transparent;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
     </style>
 </head>
@@ -51,75 +43,219 @@
 
     <header-component></header-component>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <video autoplay loop muted playsinline class="hero-video">
-            <source src="videos/video.mp4" type="video/mp4">
-        </video>
-        <div class="hero-overlay"></div>
-        <div class="container hero-content">
-            <h1 class="hero-title">El Sabor De Las Estrellas En Cada Bocado</h1>
-            <p class="hero-subtitle">Pasteles artesanales, creados con pasión y los mejores ingredientes para tus
-                momentos especiales.</p>
-            <div class="hero-buttons">
-                <a href="galeria.html" class="btn btn-primary">Ver Catálogo</a>
-                <a href="crear-pedido.html" class="btn btn-secondary">Personalizar Pastel</a>
+    <!-- Hero Boutique Compacto y Cálido -->
+    <section class="hero-boutique">
+        <div class="container hero-boutique-grid">
+            <div>
+                <div class="hero-pill">
+                    <i class="fas fa-star" style="color: var(--color-secondary);"></i>
+                    <span>Pastelería Artesanal • Desde 1999</span>
+                </div>
+                <h1 class="hero-boutique-title">El Sabor de las Estrellas en Cada Bocado</h1>
+                <p class="hero-boutique-subtitle">
+                    Pasteles recién horneados con ingredientes naturales y receta familiar en Tizayuca. El toque cálido de hogar para celebrar a quienes más quieres.
+                </p>
+                <div class="hero-buttons">
+                    <a href="galeria.html" class="btn btn-primary">
+                        <span>Ver Catálogo</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="crear-pedido.html" class="btn btn-soft">
+                        <i class="fas fa-birthday-cake" style="color: var(--color-secondary);"></i>
+                        <span>Personalizar Pastel</span>
+                    </a>
+                </div>
+
+                <div class="hero-trust-strip">
+                    <div class="hero-trust-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Lun – Dom: 9:00 am a 9:00 pm</span>
+                    </div>
+                    <div class="hero-trust-item">
+                        <i class="fas fa-heart"></i>
+                        <span>Horneado diario</span>
+                    </div>
+                    <div class="hero-trust-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Centro, Tizayuca</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-video-showcase" style="max-width: 440px; width: 100%; margin: 0 auto;">
+                <div class="hero-video-frame" style="height: 290px; border-radius: 22px; overflow: hidden; position: relative;">
+                    <video autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <source src="videos/video.mp4" type="video/mp4">
+                    </video>
+                    <div class="hero-video-badge">
+                        <i class="fas fa-sparkles" style="color: var(--color-secondary);"></i>
+                        <span>Recién salidos de nuestro horno</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Destacados / Más Vendidos -->
+    <!-- Franja de Momentos / Accesos Rápidos -->
+    <section class="moments-strip">
+        <div class="container">
+            <div class="moments-grid">
+                <a href="galeria.html" class="moment-card">
+                    <div class="moment-icon"><i class="fas fa-birthday-cake"></i></div>
+                    <div>
+                        <h3>Pasteles de Casa</h3>
+                        <p>Tres leches, trufa y fruta fresca</p>
+                    </div>
+                </a>
+                <a href="crear-pedido.html" class="moment-card">
+                    <div class="moment-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+                    <div>
+                        <h3>A Tu Gusto</h3>
+                        <p>Dedicatoria, tamaño y relleno</p>
+                    </div>
+                </a>
+                <a href="galeria.html" class="moment-card">
+                    <div class="moment-icon"><i class="fas fa-mug-hot"></i></div>
+                    <div>
+                        <h3>Para Compartir</h3>
+                        <p>Especialidades listas hoy</p>
+                    </div>
+                </a>
+                <a href="ver-pedido.html" class="moment-card">
+                    <div class="moment-icon"><i class="fas fa-receipt"></i></div>
+                    <div>
+                        <h3>Rastrea Tu Pedido</h3>
+                        <p>Consulta el estatus en línea</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Los Más Vendidos (Conectado a Supabase) -->
     <section class="section featured">
         <div class="container">
-            <div style="text-align: center; margin-bottom: 2.5rem;">
-                <span
-                    style="color: var(--color-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;">Favoritos
-                    de nuestros clientes</span>
-                <h2 class="section-title" style="margin-bottom: 0px; border-bottom: none; padding-bottom: 0;">Los Más
-                    Vendidos <i class="fas fa-award" style="color: #FFD700; margin-left: 10px;"></i></h2>
-                <div
-                    style="width: 80px; height: 3px; background-color: var(--color-primary); margin: 0.5rem auto 0 auto; border-radius: 5px;">
-                </div>
+            <div class="section-header-clean">
+                <span class="section-eyebrow">Favoritos de Nuestros Clientes</span>
+                <h2 class="section-title">Los Más Vendidos</h2>
+                <p class="section-lead">
+                    Nuestras especialidades más pedidas, preparadas cada mañana con crema fresca y pan esponjoso.
+                </p>
             </div>
 
             <div class="grid featured-grid" id="homepageCatalog">
                 <div style="text-align: center; grid-column: 1 / -1; padding: 2rem;">
-                    <i class="fas fa-spinner fa-spin fa-2x"
-                        style="color: var(--color-primary); margin-bottom: 1rem;"></i>
-                    <p>Cargando nuestras especialidades...</p>
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--color-primary); margin-bottom: 0.8rem;"></i>
+                    <p style="color: var(--color-text-light); font-size: 0.92rem;">Cargando nuestras especialidades...</p>
                 </div>
             </div>
 
             <div class="text-center mt-4">
-                <a href="galeria.html" class="btn btn-outline">Ver todos los pasteles</a>
+                <a href="galeria.html" class="btn btn-outline">
+                    <span>Ver todo el catálogo</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Sobre Nosotros -->
+    <!-- Sobre Nosotros + Collage Compacto (Sucursal + Video Decorado) -->
     <section id="nosotros" class="section about bg-light">
         <div class="container about-container">
-            <div class="about-image">
-                <img src="img/local.jpeg" alt="Nuestra Pastelería" class="rounded-img shadow">
+            <div class="about-collage">
+                <div class="collage-card" style="height: 215px; border-radius: 18px; overflow: hidden; position: relative;">
+                    <img src="img/local.jpeg" alt="Sucursal Pastelería La Estrella" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                    <span class="collage-caption"><i class="fas fa-store" style="color: var(--color-secondary);"></i> Nuestra sucursal</span>
+                </div>
+                <div class="collage-card" style="height: 215px; border-radius: 18px; overflow: hidden; position: relative;">
+                    <video autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <source src="videos/pastel.mp4" type="video/mp4">
+                    </video>
+                    <span class="collage-caption"><i class="fas fa-heart" style="color: var(--color-accent);"></i> Hecho a mano</span>
+                </div>
             </div>
+
             <div class="about-text">
                 <span class="subtitle">Nuestra Historia</span>
-                <h2 class="section-title left">Tradición y Calidad desde 1999</h2>
-                <p>En Pastelería La Estrella, somos una pastelería tradicional fundada en 1999 con el firme propósito de
-                    endulzar la vida de nuestras familias y clientes. Cada una de nuestras recetas está hecha con amor,
-                    tradición y los ingredientes de la mas alta calidad.</p>
-                <p>Nuestro compromiso no es solo crear pasteles que se vean increíbles, sino que su sabor se quede en tu
-                    memoria para siempre.</p>
+                <h2 class="section-title left">Tradición y Calidez desde 1999</h2>
+                <p>
+                    En <strong>Pastelería La Estrella</strong> somos una pastelería familiar nacida en Tizayuca con el propósito de endulzar tus celebraciones con recetas caseras, bizcocho suave y el dulzor ideal.
+                </p>
+                <p>
+                    Cada pastel se decora a mano todos los días para que siempre lleves a tu mesa calidad y sabor auténtico.
+                </p>
 
-                <div class="features">
+                <div class="features-pillars">
                     <div class="feature-item">
                         <i class="fas fa-star feature-icon"></i>
-                        <span>Ingredientes Premium</span>
+                        <span>Ingredientes Selectos</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-heart feature-icon"></i>
-                        <span>Tradición</span>
+                        <span>Receta Familiar</span>
                     </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bread-slice feature-icon"></i>
+                        <span>Horneado Diario</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-smile feature-icon"></i>
+                        <span>Trato Cercano</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cómo Hacer Tu Pedido (3 Pasos) -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header-clean">
+                <span class="section-eyebrow">Fácil y Rápido</span>
+                <h2 class="section-title">Tu Pastel en 3 Pasos</h2>
+                <p class="section-lead">
+                    Aparta en línea en minutos y recoge listo en nuestra sucursal.
+                </p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Elige tu favorito</h3>
+                    <p>Selecciona un pastel del catálogo o personaliza el tamaño, sabor y relleno.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Agrega tu dedicatoria</h3>
+                    <p>Indícanos el mensaje para el festejado, así como la fecha y hora de entrega.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Recoge y celebra</h3>
+                    <p>Pasa por tu pastel recién hecho o escríbenos por WhatsApp para cualquier detalle.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Cálido de Visita -->
+    <section class="section" style="padding-top: 0.5rem;">
+        <div class="container">
+            <div class="visit-banner">
+                <div>
+                    <h2>¿Antojo de algo dulce hoy?</h2>
+                    <p>Visítanos en el centro de Tizayuca o escríbenos para apartar tu pastel favorito.</p>
+                    <div class="visit-details">
+                        <span><i class="fas fa-map-marker-alt"></i> Av. Boulevar Ejército Mexicano No.1, Centro, Tizayuca</span>
+                        <span><i class="fas fa-clock"></i> Lun – Dom: 9:00 am a 9:00 pm</span>
+                        <span><i class="fas fa-phone"></i> 55 1572 3305</span>
+                    </div>
+                </div>
+                <div class="visit-actions">
+                    <a href="https://wa.me/5215515723305?text=Hola%20Pasteler%C3%ADa%20La%20Estrella!%20Quisiera%20apartar%20un%20pastel" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>Pedir por WhatsApp</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -127,24 +263,23 @@
 
     <footer-component></footer-component>
 
-    <script src="js/components.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/components.js?v=8"></script>
+    <script src="js/supabase.js?v=8"></script>
+    <script src="js/main.js?v=8"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const grid = document.getElementById('homepageCatalog');
 
             try {
-                // Fetch first 3 products for homepage
                 const productos = await fetchProductos();
                 if (!grid) return;
 
                 grid.innerHTML = '';
-                const displayLimit = 3;
+                const displayLimit = 6;
                 let cardsRendered = 0;
 
                 if (!productos || productos.length === 0) {
-                    grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Vuelve pronto para ver nuestras especialidades.</p>';
+                    grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-light);">Vuelve pronto para ver nuestras especialidades del día.</p>';
                     return;
                 }
 
@@ -159,24 +294,29 @@
                         precioBase = Math.min(...precios);
                     }
 
-                    // Simular que los primeros 2 son los más vendidos
                     const isBestSeller = index < 2;
+                    const hasCustomImg = Boolean(producto.imagen_url && !producto.imagen_url.includes('logo'));
+                    const imgSrc = producto.imagen_url || 'img/logo-horizontal.png?v=7';
+                    const imgFit = hasCustomImg ? 'cover' : 'contain';
+                    const imgPad = hasCustomImg ? '0' : '2rem';
 
                     const card = document.createElement('div');
                     card.className = 'product-card';
-                    card.style.position = 'relative'; // Para que el ribbon funcione
+                    card.style.position = 'relative';
                     card.innerHTML = `
-                        ${isBestSeller ? '<div class="ribbon"><i class="fas fa-fire"></i> MÁS VENDIDO</div>' : ''}
+                        ${isBestSeller ? '<div class="ribbon"><i class="fas fa-star"></i> Favorito</div>' : ''}
                         <div class="product-img-wrapper">
-                            <img src="${producto.imagen_url || 'img/logo.jpeg'}" alt="${producto.nombre}" class="product-img" onerror="this.src='img/logo.jpeg'">
+                            <img src="${imgSrc}" alt="${producto.nombre}" class="product-img" style="object-fit: ${imgFit}; padding: ${imgPad};" onerror="this.src='img/logo-horizontal.png?v=7'; this.style.objectFit='contain'; this.style.padding='2rem';">
                             ${producto.categorias ? `<span class="badge">${producto.categorias.nombre || ''}</span>` : ''}
                         </div>
                         <div class="product-info">
                             <h3 class="product-title">${producto.nombre}</h3>
-                            <p class="product-desc">${producto.descripcion || 'Delicioso pastel artesanal.'}</p>
+                            <p class="product-desc">${producto.descripcion || 'Delicioso pastel artesanal preparado con ingredientes frescos.'}</p>
                             <div class="product-footer">
                                 <span class="price">${precioBase > 0 ? `Desde $${precioBase} MXN` : 'Consultar'}</span>
-                                <a href="crear-pedido.html?producto=${producto.id_producto}" class="btn-icon" style="background: var(--color-secondary); color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" title="Pedir este"><i class="fas fa-cart-plus"></i></a>
+                                <a href="crear-pedido.html?producto=${producto.id_producto}" class="btn-icon" title="Pedir este pastel">
+                                    <i class="fas fa-cart-plus"></i>
+                                </a>
                             </div>
                         </div>
                     `;
@@ -187,7 +327,7 @@
 
             } catch (error) {
                 console.error(error);
-                if (grid) grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red;">Error cargando especialidades.</p>';
+                if (grid) grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #b91c1c;">No pudimos cargar la vitrina en este momento. Intenta recargar la página.</p>';
             }
         });
     </script>

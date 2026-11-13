@@ -7,37 +7,40 @@
     <title>Ver Pedido | Pastelería La Estrella</title>
     <meta name="description" content="Rastrea el estado de tu pedido.">
 
+    <link rel="icon" type="image/png" href="img/logo.png?v=8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=8">
 
     <!-- Librería para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         .search-container {
-            max-width: 600px;
+            max-width: 520px;
             margin: 0 auto;
             background: var(--color-white);
-            padding: 3rem;
+            padding: 2.2rem 2rem;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-sm);
             text-align: center;
         }
 
         .search-input {
             width: 100%;
-            padding: 1rem;
-            font-size: 1.2rem;
-            border: 2px solid var(--color-border);
+            padding: 0.85rem 1.2rem;
+            font-size: 1.05rem;
+            border: 1.5px solid var(--color-border-strong);
             border-radius: 30px;
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             font-family: var(--font-body);
+            background: var(--color-bg);
             transition: var(--transition);
         }
 
@@ -186,12 +189,11 @@
 
     <header-component></header-component>
 
-    <section class="page-header" style="background-color: #fcf5ee; padding: 4rem 0; text-align: center;">
+    <section class="page-header">
         <div class="container">
-            <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--color-primary);">Rastrea
-                Tu Pedido</h1>
-            <p style="font-size: 1.1rem; color: var(--color-text-light);">Ingresa tu número de orden para ver tu ticket
-                y estado de preparación.</p>
+            <span class="section-eyebrow">Seguimiento en Línea</span>
+            <h1 class="hero-title">Rastrea Tu Pedido</h1>
+            <p>Ingresa tu número de folio para ver tu ticket digital y el estatus de preparación.</p>
         </div>
     </section>
 
@@ -199,13 +201,17 @@
         <div class="container">
 
             <div class="search-container">
-                <i class="fas fa-search"
-                    style="font-size: 2.5rem; color: var(--color-secondary); margin-bottom: 1rem;"></i>
-                <h2 style="margin-bottom: 1.5rem;">Número de Folio</h2>
+                <div style="width: 52px; height: 52px; border-radius: 14px; background: var(--color-secondary-soft); color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 0.9rem;">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <h2 style="margin-bottom: 0.4rem; font-size: 1.45rem;">Número de Folio</h2>
+                <p style="font-size: 0.88rem; color: var(--color-text-light); margin-bottom: 1.2rem;">Lo encuentras en tu comprobante de compra.</p>
                 <input type="text" id="orderNumber" class="search-input" placeholder="Ej. EST-84920">
-                <button id="searchBtn" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">Buscar
-                    Folio</button>
-                <div id="errorMsg" style="color: red; margin-top: 1rem; display: none;">Folio no encontrado.</div>
+                <button id="searchBtn" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-search"></i>
+                    <span>Buscar Folio</span>
+                </button>
+                <div id="errorMsg" style="color: #b91c1c; margin-top: 1rem; font-size: 0.9rem; display: none;">Folio no encontrado.</div>
             </div>
 
             <!-- Div que se muestra al buscar -->
@@ -282,10 +288,10 @@
 
     <footer-component></footer-component>
 
-    <script src="js/components.js?v=3"></script>
-    <script src="js/supabase.js?v=3"></script>
-    <script src="js/pdf-generator.js?v=3"></script>
-    <script src="js/main.js?v=3"></script>
+    <script src="js/components.js?v=8"></script>
+    <script src="js/supabase.js?v=8"></script>
+    <script src="js/pdf-generator.js?v=8"></script>
+    <script src="js/main.js?v=8"></script>
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">

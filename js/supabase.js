@@ -125,8 +125,22 @@ async function fetchProductos() {
         if (!response.ok) throw new Error('Error al obtener productos');
         const productos = await response.json();
 
+        // Filtrar productos que el usuario solicitó ocultar
+        const productosFiltrados = productos.filter(p => {
+            if (!p.nombre) return true; // Si no tiene nombre, no lo filtramos por si acaso
+            const nombreNormalizado = p.nombre.toLowerCase();
+            
+            if (nombreNormalizado.includes('tres chocolates') || 
+                nombreNormalizado.includes('chesscake') || 
+                nombreNormalizado.includes('cheesecake') || 
+                nombreNormalizado === 'pan') {
+                return false;
+            }
+            return true;
+        });
+
         // Add full URL to image_url using the bucket folder structure
-        return productos.map(p => {
+        return productosFiltrados.map(p => {
             p.imagen_url = getProductoImageUrl(p);
             return p;
         });
